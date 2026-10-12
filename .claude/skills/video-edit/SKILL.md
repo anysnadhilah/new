@@ -113,6 +113,12 @@ Look at `work/sheets.jpg` (setups and angles) and read `transcript.txt` (per-cli
 - In/out points from the speech map: start ~0.05-0.07s before the first word, end at the silence start after the
   last word. Kill dead air between sections; confirm short pauses with silencedetect before trimming (Whisper can
   invent a leading word at a cut).
+- **User rule (never cut the last word short):** every out-point sits at least 0.3-0.5s after Whisper's end time
+  for the last word, so the speaker finishes saying it. Whisper ends words early, worst on the last, drawn-out word
+  of a line. A noisy room (car, traffic) hides the silence, so silencedetect finds nothing: then keep the full
+  0.3-0.5s pad, never fall back to the bare word time. Listen to every join before rendering.
+- **Not English, or mixed (e.g. Malay + English):** the English-only Whisper models mangle it. Transcribe with the
+  multilingual `large-v3` (language set, e.g. `ms`) and build caption times from that, not from `small.en`/`medium.en`.
 - Two segments in a row from the same angle: punch one in (zoom 1.3-1.9 from the 4K original, cx/cy on the chest).
 - Unsure words (keyword, CTA trigger): re-transcribe that snippet with medium.en and a prompt containing the names.
 - Format: `[{"id": "hook", "clip": "c1", "in": 12.66, "out": 15.72, "zoom": 1.0, "cx": 0.5, "cy": 0.5, "line": "..."}]`
