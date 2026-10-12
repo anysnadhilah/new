@@ -116,8 +116,9 @@ Transcription runs locally and costs no tokens; reading word-timing dumps and ma
 4. Build the EDL from those lines with a script (sentence start - 0.06s, last word end + 0.4s pad), not by reading
    word times by hand. One snapshot round, one draft render, then wait for notes. No extra polish rounds unasked.
 5. Skip the background cutout when no word sits behind the head (it is the slowest step on CPU).
-6. **User default: be creative, max 3 overlays per reel.** Without being asked, pick the (up to) 3 strongest
-   moments for the message and add a motion-graphic / UI overlay there (app-style card, toggle, counter, chart...).
+6. **User default: be creative, at least 3 overlays per reel, aim for 5-6.** Without being asked, pick the 5-6
+   strongest moments for the message (never fewer than 3) and add a motion-graphic / UI overlay there (app-style
+   card, toggle, counter, chart, checklist...). Spread them across the reel, one at a time on screen.
    Never cover the face, never change the cut, stay inside the safe zone, generic data unless the user gives real
    data, no copied logos. Show one snapshot round of them before the render. Small emoji/underline accents do not
    count toward the 3.
