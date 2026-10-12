@@ -107,6 +107,16 @@ PY SK/scripts/ingest.py <project> <clips or folder> [--newest 5]
 ```
 Look at `work/sheets.jpg` (setups and angles) and read `transcript.txt` (per-clip lines, words with times, speech map).
 
+### 2b. User workflow: understand first, the user picks the lines (saves tokens)
+Transcription runs locally and costs no tokens; reading word-timing dumps and many snapshots is what is expensive.
+1. Transcribe every clip, but read only the sentence-level transcript (never print `word@time` lists).
+2. Give the user: a 1-2 sentence English summary per clip, a suggested story order and main message, and ONE
+   numbered list of every line across the clips (mark nothing as cut yet). Then STOP and wait.
+3. The user replies with line numbers + a target length (usually 60-120s), e.g. "keep 3-10, 16-18, target 90s".
+4. Build the EDL from those lines with a script (sentence start - 0.06s, last word end + 0.4s pad), not by reading
+   word times by hand. One snapshot round, one draft render, then wait for notes. No extra polish rounds unasked.
+5. Skip the background cutout when no word sits behind the head (it is the slowest step on CPU).
+
 ### 3. Pick takes -> `<project>/edl.json`
 - Rebuild the script from the takes: people repeat a line until it lands. Use the LAST complete clean take unless
   the user says otherwise ("the better section starts at 0:47" means one continuous take from there).
