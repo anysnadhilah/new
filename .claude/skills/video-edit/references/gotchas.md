@@ -63,3 +63,11 @@
   (the cutout loads the same library); antivirus can make ffmpeg fail once with `spawn EBUSY`. Retry once, then
   tell the user what Windows blocked.
 - Windows on ARM (Snapdragon): the transcription engine has no ARM build; setup.py asks for the x64 Python.
+
+## Audio across clips (cost a full render)
+- Phones record some clips in mono and others in stereo. The concat demuxer takes the first part's channel layout, so
+  a mono part read as stereo plays at half speed: a deep, slowed "man's voice" from that clip on, and every later
+  part off the lips. assemble.py now writes every part as 48 kHz stereo (`-ac 2`).
+- Each part's audio must be exactly as long as its video (n frames / 30). A few ms short per join adds up: 0.43s off
+  the lips after 12 cuts. assemble.py now cuts n = round(d*30) frames and trims/pads the audio to n/30.
+- After assembling, cross-correlate each part of aroll.mp4 with its source: lag 0.000s and corr > 0.9 for every part.
