@@ -4,6 +4,10 @@
 - ffmpeg concat -> 0.033s video start offset + VFR gaps -> remove-background outputs extra frames -> the cutout drifts
   (by 20s it lagged a few frames: two copies of the speaker on screen after a cut). assemble.py re-encodes with
   `setpts=N/30/TB -fps_mode cfr`; cutout.py asserts equal frame counts.
+- Voice drifting ahead of the lips (seen from ~0:30 on a 1:54 reel: +73ms at 30s, +243ms at the end): the
+  HyperFrames render mixes the audio ~0.2% fast while the picture stays frame-exact. aroll.mp4 itself was in sync
+  (checked by cross-correlating every segment against the source). mux_audio.py rebuilds the soundtrack from the
+  page's <audio> tags with ffmpeg, copies the video stream and verifies the voice against aroll.mp4.
 - `tl.set` at a rounded time fires one frame late: use `frame/30 - 0.002`.
 - `hyperframes snapshot` seeks approximately at cut boundaries; it can show the next shot a frame early. Only frames
   extracted from the final render (`check_cuts.py`) prove a cut.

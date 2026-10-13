@@ -2,7 +2,8 @@
 """Register raw clips for a /video-edit project, make contact sheets, transcribe every clip.
 
 Usage (run with PY, the skill's Python from .platform.json; it has faster-whisper):
-  PY ingest.py <project_dir> <clip files or one folder> [--newest N]
+  PY ingest.py <project_dir> <clip files or one folder> [--newest N] [--lang ms]
+  --lang: any language but English (e.g. ms for Malay/English mix) uses the multilingual large-v3-turbo model.
 
 Writes into <project_dir>:
   sources.json             {"c1": "/abs/original.MP4", ...}  (ordered oldest -> newest by file time)
@@ -44,9 +45,11 @@ def speech_regions(f):
 def main():
     skillenv.utf8_stdio()
     proj, args = skillenv.path_arg(sys.argv[1]), sys.argv[2:]
-    newest = None
+    newest, lang = None, 'en'
     if '--newest' in args:
         i = args.index('--newest'); newest = int(args[i + 1]); args = args[:i] + args[i + 2:]
+    if '--lang' in args:
+        i = args.index('--lang'); lang = args[i + 1]; args = args[:i] + args[i + 2:]
     files = []
     for a in map(skillenv.path_arg, args):
         if os.path.isdir(a):
@@ -73,12 +76,12 @@ def main():
     stack = ['-filter_complex', f'vstack={len(sheets)}'] if len(sheets) > 1 else []
     subprocess.run([FF, '-loglevel', 'error', '-y', *ins, *stack, os.path.join(work, 'sheets.jpg')], check=True)
 
-    m = WhisperModel('small.en', compute_type='int8')
+    m = WhisperModel('small.en' if lang == 'en' else 'large-v3-turbo', compute_type='int8')
     lines = []
     for cid, f in sources.items():
         wav = os.path.join(work, f'{cid}.wav')
         subprocess.run([FF, '-loglevel', 'error', '-y', '-i', f, '-vn', '-ac', '1', '-ar', '16000', wav], check=True)
-        segs, _ = m.transcribe(wav, word_timestamps=True, vad_filter=False)
+        segs, _ = m.transcribe(wav, word_timestamps=True, vad_filter=False, language=lang)
         words = []
         lines.append(f'===== {cid}  {os.path.basename(f)}')
         for s in segs:

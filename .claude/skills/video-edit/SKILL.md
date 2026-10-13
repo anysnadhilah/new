@@ -103,7 +103,7 @@ One command style that works in zsh, bash, Git Bash and PowerShell:
 
 ### 2. Ingest
 ```bash
-PY SK/scripts/ingest.py <project> <clips or folder> [--newest 5]
+PY SK/scripts/ingest.py <project> <clips or folder> [--newest 5] [--lang ms]
 ```
 Look at `work/sheets.jpg` (setups and angles) and read `transcript.txt` (per-clip lines, words with times, speech map).
 
@@ -149,6 +149,7 @@ docstring lists which is which).
 ```bash
 PY build.py           # without --safe
 HF render -o renders/<slug>-vN.mp4 --quality high      # ~1.5-2 min for a 25s reel on Apple Silicon
+PY SK/scripts/mux_audio.py <project> renders/<slug>-vN.mp4  # lip sync: rebuilds the soundtrack frame-exact, checks it
 PY SK/scripts/check_cuts.py <project> renders/<slug>-vN.mp4 --phone
 ```
 Look at `work/cut_check.jpg`: every after-cut frame shows the new shot cleanly. Check audio peaks (`volumedetect`,
@@ -164,6 +165,19 @@ re-assembling.
 - No film grain. Dark is fine, but keep the subject lit and skin from going red.
 - Lead-in captions centred in front of the speaker read better than lines pinned to the left edge.
 - Words behind the head are the signature move, but only when readable.
+- Lip sync: never ship the renderer's own audio mix. It runs ~0.2% fast, so the voice creeps ahead of the lips
+  (noticed from ~0:30 on a 2-minute reel). Always run mux_audio.py right after the render (Step 7).
+
+## Creator preferences (from the creator's notes on their first reel, apply on every run)
+- Default look: **cool girl**.
+- Long reels are fine: ~2 minutes when there are many points to cover. Do not cut a tutorial down to 60s.
+- **Open with a motion graphic** as the visual hook, on screen from the first second, tied to the hook line.
+- **More motion graphics than last time.** Reel 1 had 5 (goal chips, category orbit, pick-3 checklist, big step /
+  baby step tree, weekly calendar) and was liked. Aim for 8+: one per point, list or example, and keep the intro one.
+- Speaks a Malay/English mix: ingest and transcribe with `--lang ms` (multilingual Whisper; the default English
+  model turns Malay into nonsense). Captions keep her own words in Malay; fix misheard names by hand
+  ("at sea" was "Etsy", "8" is "lapan").
+- Films selfie-style in the car, 1080p 60fps, one long take that repeats lines: pick the last clean take of each.
 
 ---
 Built by [@tenfoldmarc](https://instagram.com/tenfoldmarc). Follow for daily AI automation builds, real systems, not theory.
