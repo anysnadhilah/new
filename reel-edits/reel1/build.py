@@ -130,20 +130,31 @@ SERIF = [  # (t, end, text, size)
 ]
 
 
-def serif_top(t, size):
-    """baseline about 30% of the x-height below her head top (layout.md); never above the 220 safe line"""
-    ht = HEAD.get(seg_at(t)['id'], 470)
-    return max(222, round(ht + .15 * size - .72 * size))
+def head_top(t, b):
+    """highest point her head reaches across every segment the word spans"""
+    ids = [x['id'] for x in SEGS if x['frame'] / 30 < b and (x['frame'] + x['frames']) / 30 > t + .05]
+    return min(HEAD.get(i, 470) for i in ids)
+
+
+def serif_place(t, b, size):
+    """-> (top, size, front). Behind the head with the baseline just above her hijab, so the rounded top only takes
+    the descenders; if that does not fit under the 220 safe line even at 110px, the word goes in front instead."""
+    ht = head_top(t, b)
+    fit = (ht - 222) / .77
+    if fit >= 110:
+        size = min(size, int(fit))
+        return round(ht - .77 * size), size, False
+    return 230, size, True
 
 
 def serif():
     back, front, tw = [], [], []
     for k, (t, b, text, size) in enumerate(SERIF):
         sid = f's{k}'
-        top = serif_top(t, size)
+        top, size, fr = serif_place(t, b, size)
         chars = ''.join(f'<span class="ch">{"&nbsp;" if c == " " else c}</span>' for c in text)
-        el = f'<div id="{sid}" class="serif" style="top:{top}px;font-size:{size}px">{chars}</div>'
-        back.append(el)
+        el = f'<div id="{sid}" class="serif{" front" if fr else ""}" style="top:{top}px;font-size:{size}px">{chars}</div>'
+        (front if fr else back).append(el)
         tw += [f"gsap.set('#{sid}',{{autoAlpha:0}});",
                f"tl.set('#{sid}',{{autoAlpha:1}},{t - .04:.3f});",
                f"tl.fromTo('#{sid} .ch',{{autoAlpha:0,y:30,filter:'blur(10px)'}},{{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,"
@@ -161,7 +172,7 @@ def serif():
                *([f"tl.to('#sp{k}',{{scale:.65,duration:.45,yoyo:true,repeat:1,ease:'sine.inOut'}},{t + .35:.3f});"] if b - t > 1.5 else []),
                f"tl.to('#sp{k}',{{autoAlpha:0,scale:0,duration:.16}},{b - .16:.3f});",
                f"tl.set('#sp{k}',{{autoAlpha:0}},{b:.3f});"]
-    return back, sparks, tw
+    return back, front + sparks, tw
 
 
 def show(sel, a, b, frm="{autoAlpha:0,y:50,scale:.9}", to="autoAlpha:1,y:0,scale:1"):
@@ -216,8 +227,10 @@ def g_strike():
     """red hand-drawn line through 'tengok je' (the serif word sits behind her head)"""
     k = [i for i, s in enumerate(SERIF) if s[2] == 'tengok je'][0]
     t, b, _, size = SERIF[k]
-    top = serif_top(t, size) + int(size * .55)
-    html = [f'<svg id="gstrike" class="strike" style="top:{top}px" width="760" height="60" viewBox="0 0 760 60">'
+    top, size, front = serif_place(t, b, size)
+    top += int(size * .55)
+    fr = ' front' if front else ''
+    html = [f'<svg id="gstrike" class="strike{fr}" style="top:{top}px" width="760" height="60" viewBox="0 0 760 60">'
             '<path id="stk" d="M10 40 C 200 20, 480 46, 750 18" fill="none" stroke="#E0574F" stroke-width="12" stroke-linecap="round"/></svg>']
     tw = ["gsap.set('#stk',{strokeDasharray:800,strokeDashoffset:800});", "gsap.set('#gstrike',{autoAlpha:0});",
           f"tl.set('#gstrike',{{autoAlpha:1}},{41.30:.3f});",
@@ -337,6 +350,8 @@ html,body{{width:1080px;height:1920px;overflow:hidden;background:#000}}
 .serif{{position:absolute;left:0;right:0;z-index:3;text-align:center;color:{YEL};font-family:'Instrument Serif';font-style:italic;
   font-weight:400;line-height:.92;white-space:nowrap;letter-spacing:-.01em;text-shadow:0 8px 36px rgba(60,30,20,.45)}}
 .serif .ch{{display:inline-block}}
+.serif.front{{z-index:8}}
+.strike.front{{z-index:8}}
 .spark{{position:absolute;z-index:8;color:{YEL};line-height:1;text-shadow:0 0 18px rgba(250,230,122,.6)}}
 .strike{{position:absolute;left:160px;z-index:3;filter:drop-shadow(0 4px 10px rgba(0,0,0,.25))}}
 
@@ -393,7 +408,7 @@ def build():
     c_html, c_tw = captions()
     s_back, s_sp, s_tw = serif()
     st_html, st_tw = g_strike()
-    s_back += st_html
+    (s_sp if 'front' in st_html[0] else s_back).extend(st_html)
     parts = [g_rm(), g_plan(), (st_html[:0], st_tw), g_tree(), g_task(), g_prog()]
     g_html = [h for p in parts for h in p[0]]
     tweens = grades() + s_tw + c_tw + [t for p in parts for t in p[1]]
