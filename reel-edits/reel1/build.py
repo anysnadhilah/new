@@ -16,6 +16,7 @@ import subprocess
 import sys
 
 SAFE = '--safe' in sys.argv or bool(os.environ.get('SAFE'))
+LAYER = os.environ.get('LAYER', '')   # 'back' / 'front': graphics only, transparent, for the ffmpeg composite
 DUR = float(subprocess.run([shutil.which('ffprobe') or 'ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries',
                             'stream=duration', '-of', 'csv=p=0', 'assets/aroll.mp4'],
                            capture_output=True, encoding='utf-8', errors='replace').stdout.strip().split(',')[0])
@@ -448,6 +449,26 @@ window.__timelines["main"] = tl;
 '''
 
 
-with open('index.html', 'w', encoding='utf-8', newline='\n') as _f:
-    _f.write(build())
+def layer(html):
+    """strip media and the other layer; transparent page. back = words under the cutout, front = everything above"""
+    import re
+    html = re.sub(r'\s*<audio[^>]*></audio>', '', html)
+    html = re.sub(r'\s*<video[^>]*></video>', '', html)
+    html = html.replace('<div id="cutwrap"></div>', '')
+    html = html.replace('background:#000}}', 'background:transparent}}').replace('background:#000}', 'background:transparent}')
+    html = html.replace('<div id="gwarm" class="fx"></div>', '')
+    if LAYER == 'back':
+        html = html.replace('</style>', '#root>*:not(#stage){display:none!important}</style>')
+    else:
+        html = html.replace('</style>', '#stage{display:none!important}</style>')
+    return html
+
+
+out = build()
+if LAYER:
+    out = layer(out)
+    if os.environ.get('TEST'):
+        out = out.replace(f'data-duration="{DUR:.3f}"', 'data-duration="3.000"', 1)
+with open(f'{LAYER}.html' if LAYER else 'index.html', 'w', encoding='utf-8', newline='\n') as _f:
+    _f.write(out)
 print(f'wrote index.html {DUR:.3f}s  {len(CUTS)} cuts  {len(CAPS)} caption chunks  head data: {bool(HEAD)}')

@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="ms" data-resolution="portrait">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:transparent}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;background:transparent}
+#stage{position:absolute;inset:0;transform-origin:50% 45%}
+.full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#bgv{z-index:0}
+#cutwrap{position:absolute;inset:0;z-index:4}
+.fx{position:absolute;inset:0;pointer-events:none}
+#gwarm{z-index:7;background:linear-gradient(180deg,rgba(255,226,200,.10),rgba(255,196,170,.16));mix-blend-mode:soft-light}
+#gvig{z-index:7;background:radial-gradient(120% 70% at 50% 45%,rgba(255,255,255,0) 52%,rgba(60,35,25,.34) 100%)}
+#ggrad{z-index:7;background:linear-gradient(180deg,rgba(60,35,25,.30) 0%,rgba(60,35,25,0) 26%,rgba(60,35,25,0) 58%,rgba(40,24,18,.55) 78%,rgba(40,24,18,.25) 100%)}
+
+.cap{position:absolute;left:70px;right:130px;z-index:8;text-align:center;color:#FFF8EF;font:500 60px Inter;letter-spacing:-1px;
+  line-height:1.16;text-shadow:0 2px 24px rgba(50,25,15,.75),0 1px 4px rgba(40,20,10,.5)}
+.gw{display:inline-block}
+.serif{position:absolute;left:0;right:0;z-index:3;text-align:center;color:#FAE67A;font-family:'Instrument Serif';font-style:italic;
+  font-weight:400;line-height:.92;white-space:nowrap;letter-spacing:-.01em;text-shadow:0 8px 36px rgba(60,30,20,.45)}
+.serif .ch{display:inline-block}
+.serif.front{z-index:8}
+.strike.front{z-index:8}
+.spark{position:absolute;z-index:8;color:#FAE67A;line-height:1;text-shadow:0 0 18px rgba(250,230,122,.6)}
+.strike{position:absolute;left:160px;z-index:3;filter:drop-shadow(0 4px 10px rgba(0,0,0,.25))}
+
+.card{position:absolute;z-index:9;border-radius:34px;box-shadow:0 30px 70px rgba(40,20,12,.45),0 6px 16px rgba(40,20,12,.25)}
+.pill{background:rgba(255,248,239,.94);padding:26px 40px 30px;color:#2B2320}
+.hand{font:600 50px Caveat;color:#C2453E;line-height:1}
+.hand.dark{color:#C2453E;margin-bottom:10px}
+.rmrow{position:relative;height:112px;margin-top:4px}
+.rmn{position:absolute;left:0;top:0;font:italic 400 116px 'Instrument Serif';color:#2B2320;line-height:1;transform-origin:0 70%}
+.per{position:absolute;right:0;bottom:22px;font:500 40px Inter;color:#7A6A60}
+.bar{height:16px;border-radius:99px;background:rgba(43,35,32,.12);overflow:hidden;margin-top:12px}
+.bar.big{height:30px;margin:18px 0 18px}
+.fill{height:100%;width:100%;border-radius:99px;background:linear-gradient(90deg,#F2C94C,#FAE67A);transform-origin:0 50%}
+.paper{background:#FFFBF3 repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 62px,rgba(120,150,190,.28) 62px 64px);
+  padding:34px 40px 30px 96px;color:#2B2320}
+.holes{position:absolute;left:28px;top:24px;bottom:24px;display:flex;flex-direction:column;justify-content:space-between}
+.holes i{display:block;width:26px;height:26px;border-radius:50%;background:#3a2c28;box-shadow:inset 0 3px 5px rgba(0,0,0,.5)}
+.plabel{font:600 30px Inter;letter-spacing:.24em;color:#9C8A80}
+.pwrite{font:600 100px Caveat;color:#2B2320;line-height:1.1;margin-top:10px;white-space:nowrap}
+.pch{display:inline-block}
+.pline{position:absolute;left:96px;top:196px}
+.pstar{position:absolute;right:40px;top:40px;font-size:64px;color:#E0B83A}
+.tree{position:absolute;left:0;top:1212px;width:1080px;height:280px;z-index:9}
+.node{position:absolute;left:315px;width:450px;top:0;text-align:center;padding:10px 0 14px;border-radius:99px;background:#FAE67A;color:#2B2320;
+  font:italic 400 76px 'Instrument Serif';line-height:1;box-shadow:0 20px 50px rgba(40,20,12,.4)}
+.node em{font:500 34px Inter;font-style:normal;color:#5b4a40}
+.tlines{position:absolute;left:0;top:100px}
+.chip{position:absolute;top:172px;width:290px;text-align:center;padding:18px 8px;border-radius:26px;background:rgba(255,248,239,.95);
+  color:#2B2320;font:600 31px Inter;letter-spacing:-.5px;box-shadow:0 18px 40px rgba(40,20,12,.38);white-space:nowrap}
+.chip b{display:inline-block;width:42px;height:42px;line-height:42px;border-radius:50%;background:#2B2320;color:#FAE67A;font:600 26px Inter;
+  margin-right:10px;vertical-align:2px}
+.tbig{position:absolute;left:0;right:0;top:-150px;text-align:center;font:italic 400 130px 'Instrument Serif';color:#FAE67A;
+  text-shadow:0 8px 36px rgba(60,30,20,.5)}
+.list{padding:18px 40px 18px 96px;height:auto}
+.trow{display:flex;align-items:center;gap:22px;height:100px}
+.box{flex:none;width:56px;height:56px;border-radius:14px;border:4px solid #2B2320;display:flex;align-items:center;justify-content:center}
+.tt{font:600 38px Inter;letter-spacing:-.8px;line-height:1.1}
+.tt small{display:block;font:600 24px Inter;letter-spacing:.2em;text-transform:uppercase;color:#9C8A80}
+.prow{display:flex;justify-content:space-between;align-items:baseline;position:relative;font:600 34px Inter;letter-spacing:.18em;
+  text-transform:uppercase;color:#7A6A60}
+.pct{position:absolute;right:0;top:-12px;font:italic 400 76px 'Instrument Serif';letter-spacing:0;color:#2B2320;text-transform:none}
+#pnote{font-size:54px;text-align:center}
+#root>*:not(#stage){display:none!important}</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="127.300" data-width="1080" data-height="1920">
+  <div id="stage">
+<div id="s6" class="serif" style="top:241px;font-size:160px"><span class="ch">b</span><span class="ch">r</span><span class="ch">e</span><span class="ch">a</span><span class="ch">k</span><span class="ch">&nbsp;</span><span class="ch">d</span><span class="ch">o</span><span class="ch">w</span><span class="ch">n</span></div>
+<div id="s7" class="serif" style="top:309px;font-size:160px"><span class="ch">b</span><span class="ch">i</span><span class="ch">g</span><span class="ch">&nbsp;</span><span class="ch">s</span><span class="ch">t</span><span class="ch">e</span><span class="ch">p</span></div>
+<div id="s8" class="serif" style="top:309px;font-size:160px"><span class="ch">b</span><span class="ch">a</span><span class="ch">b</span><span class="ch">y</span><span class="ch">&nbsp;</span><span class="ch">s</span><span class="ch">t</span><span class="ch">e</span><span class="ch">p</span></div>
+<div id="s9" class="serif" style="top:256px;font-size:150px"><span class="ch">n</span><span class="ch">e</span><span class="ch">x</span><span class="ch">t</span><span class="ch">&nbsp;</span><span class="ch">a</span><span class="ch">c</span><span class="ch">t</span><span class="ch">i</span><span class="ch">o</span><span class="ch">n</span></div>
+<div id="s10" class="serif" style="top:360px;font-size:130px"><span class="ch">b</span><span class="ch">r</span><span class="ch">e</span><span class="ch">a</span><span class="ch">k</span><span class="ch">&nbsp;</span><span class="ch">i</span><span class="ch">t</span><span class="ch">&nbsp;</span><span class="ch">d</span><span class="ch">o</span><span class="ch">w</span><span class="ch">n</span></div>
+<div id="s11" class="serif" style="top:309px;font-size:180px"><span class="ch">s</span><span class="ch">o</span><span class="ch">&nbsp;</span><span class="ch">b</span><span class="ch">a</span><span class="ch">d</span></div>
+<div id="s12" class="serif" style="top:348px;font-size:140px"><span class="ch">j</span><span class="ch">a</span><span class="ch">n</span><span class="ch">g</span><span class="ch">a</span><span class="ch">n</span><span class="ch">&nbsp;</span><span class="ch">p</span><span class="ch">a</span><span class="ch">d</span><span class="ch">a</span><span class="ch">m</span></div>
+    
+  </div>
+  <div id="gvig" class="fx"></div><div id="ggrad" class="fx"></div>
+<div id="s0" class="serif front" style="top:230px;font-size:190px"><span class="ch">i</span><span class="ch">m</span><span class="ch">p</span><span class="ch">i</span><span class="ch">a</span><span class="ch">n</span></div>
+<div id="s1" class="serif front" style="top:230px;font-size:150px"><span class="ch">a</span><span class="ch">n</span><span class="ch">g</span><span class="ch">a</span><span class="ch">n</span><span class="ch">-</span><span class="ch">a</span><span class="ch">n</span><span class="ch">g</span><span class="ch">a</span><span class="ch">n</span></div>
+<div id="s2" class="serif front" style="top:230px;font-size:170px"><span class="ch">i</span><span class="ch">t</span><span class="ch">u</span><span class="ch">&nbsp;</span><span class="ch">o</span><span class="ch">k</span><span class="ch">e</span><span class="ch">y</span><span class="ch">.</span></div>
+<div id="s3" class="serif front" style="top:230px;font-size:120px"><span class="ch">w</span><span class="ch">h</span><span class="ch">a</span><span class="ch">t</span><span class="ch">&nbsp;</span><span class="ch">t</span><span class="ch">o</span><span class="ch">&nbsp;</span><span class="ch">d</span><span class="ch">o</span><span class="ch">&nbsp;</span><span class="ch">n</span><span class="ch">e</span><span class="ch">x</span><span class="ch">t</span></div>
+<div id="s4" class="serif front" style="top:230px;font-size:170px"><span class="ch">t</span><span class="ch">e</span><span class="ch">n</span><span class="ch">g</span><span class="ch">o</span><span class="ch">k</span><span class="ch">&nbsp;</span><span class="ch">j</span><span class="ch">e</span></div>
+<div id="s5" class="serif front" style="top:230px;font-size:170px"><span class="ch">e</span><span class="ch">x</span><span class="ch">a</span><span class="ch">c</span><span class="ch">t</span><span class="ch">l</span><span class="ch">y</span><span class="ch">.</span></div>
+<div id="sp0" class="spark" style="left:120px;top:300px;font-size:54px">&#10022;</div>
+<div id="sp1" class="spark" style="left:900px;top:260px;font-size:36px">&#10022;</div>
+<div id="sp2" class="spark" style="left:930px;top:330px;font-size:44px">&#10022;</div>
+<div id="sp3" class="spark" style="left:110px;top:280px;font-size:46px">&#10022;</div>
+<div id="sp4" class="spark" style="left:920px;top:250px;font-size:40px">&#10022;</div>
+<div id="sp5" class="spark" style="left:130px;top:350px;font-size:34px">&#10022;</div>
+<div id="sp6" class="spark" style="left:930px;top:300px;font-size:44px">&#10022;</div>
+<svg id="gstrike" class="strike front" style="top:323px" width="760" height="60" viewBox="0 0 760 60"><path id="stk" d="M10 40 C 200 20, 480 46, 750 18" fill="none" stroke="#E0574F" stroke-width="12" stroke-linecap="round"/></svg>
+<div id="c0" class="cap" style="top:1300px"><span id="c0-0" class="gw">okey</span> <span id="c0-1" class="gw">kejap,</span></div>
+<div id="c1" class="cap" style="top:1300px"><span id="c1-0" class="gw">awak</span> <span id="c1-1" class="gw">ada</span> <span id="c1-2" class="gw">impian,</span></div>
+<div id="c2" class="cap" style="top:1300px"><span id="c2-0" class="gw">awak</span> <span id="c2-1" class="gw">ada</span> <span id="c2-2" class="gw">angan-angan.</span></div>
+<div id="c3" class="cap" style="top:1300px"><span id="c3-0" class="gw">kenapa</span> <span id="c3-1" class="gw">awak</span> <span id="c3-2" class="gw">tak</span> <span id="c3-3" class="gw">capai</span> <span id="c3-4" class="gw">lagi</span></div>
+<div id="c4" class="cap" style="top:1300px"><span id="c4-0" class="gw">impian</span> <span id="c4-1" class="gw">dan</span> <span id="c4-2" class="gw">angan-angan</span> <span id="c4-3" class="gw">awak?</span></div>
+<div id="c5" class="cap" style="top:1300px"><span id="c5-0" class="gw">sebenarnya,</span> <span id="c5-1" class="gw">saya</span> <span id="c5-2" class="gw">tahu,</span></div>
+<div id="c6" class="cap" style="top:1300px"><span id="c6-0" class="gw">awak</span> <span id="c6-1" class="gw">bukannya</span> <span id="c6-2" class="gw">tak</span> <span id="c6-3" class="gw">motivasi</span></div>
+<div id="c7" class="cap" style="top:1300px"><span id="c7-0" class="gw">tapi</span> <span id="c7-1" class="gw">awak</span> <span id="c7-2" class="gw">tak</span> <span id="c7-3" class="gw">tahu</span></div>
+<div id="c8" class="cap" style="top:1300px"><span id="c8-0" class="gw">apa</span> <span id="c8-1" class="gw">nak</span> <span id="c8-2" class="gw">buat</span> <span id="c8-3" class="gw">selanjutnya</span></div>
+<div id="c9" class="cap" style="top:1300px"><span id="c9-0" class="gw">untuk</span> <span id="c9-1" class="gw">mencapai</span> <span id="c9-2" class="gw">tujuan</span> <span id="c9-3" class="gw">awak.</span></div>
+<div id="c10" class="cap" style="top:1300px"><span id="c10-0" class="gw">dan</span> <span id="c10-1" class="gw">itu</span> <span id="c10-2" class="gw">okey.</span></div>
+<div id="c11" class="cap" style="top:1300px"><span id="c11-0" class="gw">sebab</span> <span id="c11-1" class="gw">dalam</span> <span id="c11-2" class="gw">video</span> <span id="c11-3" class="gw">ni,</span> <span id="c11-4" class="gw">saya</span> <span id="c11-5" class="gw">akan</span> <span id="c11-6" class="gw">beritahu</span></div>
+<div id="c12" class="cap" style="top:1300px"><span id="c12-0" class="gw">what</span> <span id="c12-1" class="gw">to</span> <span id="c12-2" class="gw">do</span> <span id="c12-3" class="gw">next</span></div>
+<div id="c13" class="cap" style="top:1300px"><span id="c13-0" class="gw">to</span> <span id="c13-1" class="gw">achieve</span> <span id="c13-2" class="gw">your</span> <span id="c13-3" class="gw">goal.</span></div>
+<div id="c14" class="cap" style="top:236px"><span id="c14-0" class="gw">sebagai</span> <span id="c14-1" class="gw">contoh</span> <span id="c14-2" class="gw">kan,</span></div>
+<div id="c15" class="cap" style="top:236px"><span id="c15-0" class="gw">you</span> <span id="c15-1" class="gw">nak</span> <span id="c15-2" class="gw">dapat</span> <span id="c15-3" class="gw">RM10,000</span> <span id="c15-4" class="gw">sebulan</span></div>
+<div id="c16" class="cap" style="top:236px"><span id="c16-0" class="gw">dalam</span> <span id="c16-1" class="gw">bisnis</span> <span id="c16-2" class="gw">you.</span></div>
+<div id="c17" class="cap" style="top:1300px"><span id="c17-0" class="gw">itu</span> <span id="c17-1" class="gw">adalah</span> <span id="c17-2" class="gw">goal</span> <span id="c17-3" class="gw">you.</span></div>
+<div id="c18" class="cap" style="top:236px"><span id="c18-0" class="gw">so</span> <span id="c18-1" class="gw">next,</span> <span id="c18-2" class="gw">apa</span> <span id="c18-3" class="gw">you</span> <span id="c18-4" class="gw">perlu</span> <span id="c18-5" class="gw">buat</span> <span id="c18-6" class="gw">adalah</span></div>
+<div id="c19" class="cap" style="top:236px"><span id="c19-0" class="gw">ambil</span> <span id="c19-1" class="gw">planner</span> <span id="c19-2" class="gw">you.</span></div>
+<div id="c20" class="cap" style="top:236px"><span id="c20-0" class="gw">and</span> <span id="c20-1" class="gw">then</span> <span id="c20-2" class="gw">ambil</span> <span id="c20-3" class="gw">kertas</span> <span id="c20-4" class="gw">ke</span> <span id="c20-5" class="gw">apa</span> <span id="c20-6" class="gw">kan.</span></div>
+<div id="c21" class="cap" style="top:236px"><span id="c21-0" class="gw">tulis</span> <span id="c21-1" class="gw">kat</span> <span id="c21-2" class="gw">dalam</span> <span id="c21-3" class="gw">planner</span> <span id="c21-4" class="gw">you,</span></div>
+<div id="c22" class="cap" style="top:236px"><span id="c22-0" class="gw">goal</span> <span id="c22-1" class="gw">you.</span></div>
+<div id="c23" class="cap" style="top:1300px"><span id="c23-0" class="gw">apa</span> <span id="c23-1" class="gw">you</span> <span id="c23-2" class="gw">perlu</span> <span id="c23-3" class="gw">buat</span> <span id="c23-4" class="gw">adalah,</span></div>
+<div id="c24" class="cap" style="top:1300px"><span id="c24-0" class="gw">bukan</span> <span id="c24-1" class="gw">tengok</span> <span id="c24-2" class="gw">je</span> <span id="c24-3" class="gw">goal</span> <span id="c24-4" class="gw">tu</span> <span id="c24-5" class="gw">hari-hari.</span></div>
+<div id="c25" class="cap" style="top:1300px"><span id="c25-0" class="gw">kalau</span> <span id="c25-1" class="gw">tengok</span> <span id="c25-2" class="gw">je,</span> <span id="c25-3" class="gw">dia</span> <span id="c25-4" class="gw">memang</span></div>
+<div id="c26" class="cap" style="top:1300px"><span id="c26-0" class="gw">tak</span> <span id="c26-1" class="gw">akan</span> <span id="c26-2" class="gw">bergerak.</span></div>
+<div id="c27" class="cap" style="top:1300px"><span id="c27-0" class="gw">you</span> <span id="c27-1" class="gw">kena</span> <span id="c27-2" class="gw">tahu</span> <span id="c27-3" class="gw">exactly</span></div>
+<div id="c28" class="cap" style="top:1300px"><span id="c28-0" class="gw">what</span> <span id="c28-1" class="gw">to</span> <span id="c28-2" class="gw">do</span> <span id="c28-3" class="gw">next.</span></div>
+<div id="c29" class="cap" style="top:1300px"><span id="c29-0" class="gw">so,</span> <span id="c29-1" class="gw">apa</span> <span id="c29-2" class="gw">yang</span> <span id="c29-3" class="gw">awak</span> <span id="c29-4" class="gw">perlu</span> <span id="c29-5" class="gw">buat</span> <span id="c29-6" class="gw">adalah</span></div>
+<div id="c30" class="cap" style="top:1300px"><span id="c30-0" class="gw">break</span> <span id="c30-1" class="gw">down</span> <span id="c30-2" class="gw">your</span> <span id="c30-3" class="gw">goal.</span></div>
+<div id="c31" class="cap" style="top:236px"><span id="c31-0" class="gw">tadi</span> <span id="c31-1" class="gw">awak</span> <span id="c31-2" class="gw">cakap</span> <span id="c31-3" class="gw">yang</span> <span id="c31-4" class="gw">awak</span> <span id="c31-5" class="gw">nak</span></div>
+<div id="c32" class="cap" style="top:236px"><span id="c32-0" class="gw">achieve</span> <span id="c32-1" class="gw">10k</span> <span id="c32-2" class="gw">sebulan.</span></div>
+<div id="c33" class="cap" style="top:236px"><span id="c33-0" class="gw">so,</span> <span id="c33-1" class="gw">macam</span> <span id="c33-2" class="gw">mana</span> <span id="c33-3" class="gw">awak</span> <span id="c33-4" class="gw">nak</span> <span id="c33-5" class="gw">achieve</span> <span id="c33-6" class="gw">that</span> <span id="c33-7" class="gw">10k?</span></div>
+<div id="c34" class="cap" style="top:236px"><span id="c34-0" class="gw">berapa</span> <span id="c34-1" class="gw">total</span> <span id="c34-2" class="gw">produk</span> <span id="c34-3" class="gw">yang</span> <span id="c34-4" class="gw">awak</span> <span id="c34-5" class="gw">perlu</span> <span id="c34-6" class="gw">jual</span></div>
+<div id="c35" class="cap" style="top:236px"><span id="c35-0" class="gw">dalam</span> <span id="c35-1" class="gw">masa</span> <span id="c35-2" class="gw">sebulan</span></div>
+<div id="c36" class="cap" style="top:236px"><span id="c36-0" class="gw">untuk</span> <span id="c36-1" class="gw">achieve</span> <span id="c36-2" class="gw">that</span> <span id="c36-3" class="gw">10k?</span></div>
+<div id="c37" class="cap" style="top:236px"><span id="c37-0" class="gw">lepas</span> <span id="c37-1" class="gw">itu,</span> <span id="c37-2" class="gw">berapa</span> <span id="c37-3" class="gw">harga</span> <span id="c37-4" class="gw">produk</span> <span id="c37-5" class="gw">tersebut?</span></div>
+<div id="c38" class="cap" style="top:236px"><span id="c38-0" class="gw">and</span> <span id="c38-1" class="gw">then</span> <span id="c38-2" class="gw">marketing,</span></div>
+<div id="c39" class="cap" style="top:236px"><span id="c39-0" class="gw">apa</span> <span id="c39-1" class="gw">yang</span> <span id="c39-2" class="gw">awak</span> <span id="c39-3" class="gw">nak</span> <span id="c39-4" class="gw">buat?</span></div>
+<div id="c40" class="cap" style="top:1300px"><span id="c40-0" class="gw">so,</span> <span id="c40-1" class="gw">that's</span> <span id="c40-2" class="gw">your</span> <span id="c40-3" class="gw">big</span> <span id="c40-4" class="gw">step.</span></div>
+<div id="c41" class="cap" style="top:1300px"><span id="c41-0" class="gw">kemudian,</span> <span id="c41-1" class="gw">you</span> <span id="c41-2" class="gw">boleh</span> <span id="c41-3" class="gw">pecahkan</span> <span id="c41-4" class="gw">lagi</span></div>
+<div id="c42" class="cap" style="top:1300px"><span id="c42-0" class="gw">kepada</span> <span id="c42-1" class="gw">baby</span> <span id="c42-2" class="gw">step.</span></div>
+<div id="c43" class="cap" style="top:1300px"><span id="c43-0" class="gw">marketing</span> <span id="c43-1" class="gw">apa?</span></div>
+<div id="c44" class="cap" style="top:236px"><span id="c44-0" class="gw">mungkin,</span> <span id="c44-1" class="gw">task</span> <span id="c44-2" class="gw">yang</span> <span id="c44-3" class="gw">pertama</span> <span id="c44-4" class="gw">adalah,</span></div>
+<div id="c45" class="cap" style="top:236px"><span id="c45-0" class="gw">decide</span> <span id="c45-1" class="gw">nak</span> <span id="c45-2" class="gw">guna</span> <span id="c45-3" class="gw">marketing</span> <span id="c45-4" class="gw">apa.</span></div>
+<div id="c46" class="cap" style="top:236px"><span id="c46-0" class="gw">task</span> <span id="c46-1" class="gw">yang</span> <span id="c46-2" class="gw">kedua,</span></div>
+<div id="c47" class="cap" style="top:236px"><span id="c47-0" class="gw">buat</span> <span id="c47-1" class="gw">video.</span></div>
+<div id="c48" class="cap" style="top:1300px"><span id="c48-0" class="gw">bila</span> <span id="c48-1" class="gw">awak</span> <span id="c48-2" class="gw">dah</span> <span id="c48-3" class="gw">tahu</span></div>
+<div id="c49" class="cap" style="top:1300px"><span id="c49-0" class="gw">what</span> <span id="c49-1" class="gw">is</span> <span id="c49-2" class="gw">your</span> <span id="c49-3" class="gw">next</span> <span id="c49-4" class="gw">action</span></div>
+<div id="c50" class="cap" style="top:1300px"><span id="c50-0" class="gw">towards</span> <span id="c50-1" class="gw">your</span> <span id="c50-2" class="gw">goal,</span></div>
+<div id="c51" class="cap" style="top:1300px"><span id="c51-0" class="gw">it</span> <span id="c51-1" class="gw">becomes</span> <span id="c51-2" class="gw">a</span> <span id="c51-3" class="gw">bit</span> <span id="c51-4" class="gw">more</span> <span id="c51-5" class="gw">easier</span></div>
+<div id="c52" class="cap" style="top:1300px"><span id="c52-0" class="gw">untuk</span> <span id="c52-1" class="gw">you</span> <span id="c52-2" class="gw">achieve</span> <span id="c52-3" class="gw">that</span> <span id="c52-4" class="gw">goal.</span></div>
+<div id="c53" class="cap" style="top:1300px"><span id="c53-0" class="gw">sebab</span> <span id="c53-1" class="gw">itu</span> <span id="c53-2" class="gw">penting</span></div>
+<div id="c54" class="cap" style="top:1300px"><span id="c54-0" class="gw">untuk</span> <span id="c54-1" class="gw">you</span> <span id="c54-2" class="gw">break</span> <span id="c54-3" class="gw">it</span> <span id="c54-4" class="gw">down.</span></div>
+<div id="c55" class="cap" style="top:1300px"><span id="c55-0" class="gw">to</span> <span id="c55-1" class="gw">be</span> <span id="c55-2" class="gw">honest</span> <span id="c55-3" class="gw">with</span> <span id="c55-4" class="gw">you</span> <span id="c55-5" class="gw">guys,</span></div>
+<div id="c56" class="cap" style="top:1300px"><span id="c56-0" class="gw">I</span> <span id="c56-1" class="gw">am</span> <span id="c56-2" class="gw">so</span> <span id="c56-3" class="gw">bad,</span></div>
+<div id="c57" class="cap" style="top:1300px"><span id="c57-0" class="gw">so,</span> <span id="c57-1" class="gw">so</span> <span id="c57-2" class="gw">bad</span></div>
+<div id="c58" class="cap" style="top:1300px"><span id="c58-0" class="gw">at</span> <span id="c58-1" class="gw">breaking</span> <span id="c58-2" class="gw">down</span></div>
+<div id="c59" class="cap" style="top:1300px"><span id="c59-0" class="gw">my</span> <span id="c59-1" class="gw">goal</span> <span id="c59-2" class="gw">before.</span></div>
+<div id="c60" class="cap" style="top:1300px"><span id="c60-0" class="gw">so,</span> <span id="c60-1" class="gw">kalau</span> <span id="c60-2" class="gw">you</span> <span id="c60-3" class="gw">ada</span> <span id="c60-4" class="gw">goal</span></div>
+<div id="c61" class="cap" style="top:1300px"><span id="c61-0" class="gw">and</span> <span id="c61-1" class="gw">you</span> <span id="c61-2" class="gw">tak</span> <span id="c61-3" class="gw">dapat</span> <span id="c61-4" class="gw">nak</span> <span id="c61-5" class="gw">achieve</span> <span id="c61-6" class="gw">your</span> <span id="c61-7" class="gw">goal</span> <span id="c61-8" class="gw">lagi,</span></div>
+<div id="c62" class="cap" style="top:1300px"><span id="c62-0" class="gw">you</span> <span id="c62-1" class="gw">tak</span> <span id="c62-2" class="gw">tahu</span> <span id="c62-3" class="gw">kenapa</span> <span id="c62-4" class="gw">goal</span> <span id="c62-5" class="gw">you</span> <span id="c62-6" class="gw">tak</span> <span id="c62-7" class="gw">bergerak</span> <span id="c62-8" class="gw">pun</span></div>
+<div id="c63" class="cap" style="top:1300px"><span id="c63-0" class="gw">sampai</span> <span id="c63-1" class="gw">you</span> <span id="c63-2" class="gw">rasa</span> <span id="c63-3" class="gw">macam</span> <span id="c63-4" class="gw">malas</span> <span id="c63-5" class="gw">lah,</span></div>
+<div id="c64" class="cap" style="top:1300px"><span id="c64-0" class="gw">macam</span> <span id="c64-1" class="gw">tu</span> <span id="c64-2" class="gw">sekali.</span></div>
+<div id="c65" class="cap" style="top:1300px"><span id="c65-0" class="gw">actually,</span></div>
+<div id="c66" class="cap" style="top:1300px"><span id="c66-0" class="gw">jangan</span> <span id="c66-1" class="gw">padam</span> <span id="c66-2" class="gw">lagi</span> <span id="c66-3" class="gw">goal</span> <span id="c66-4" class="gw">you</span> <span id="c66-5" class="gw">tu.</span></div>
+<div id="c67" class="cap" style="top:1300px"><span id="c67-0" class="gw">you</span> <span id="c67-1" class="gw">just</span> <span id="c67-2" class="gw">need</span> <span id="c67-3" class="gw">to</span> <span id="c67-4" class="gw">figure</span> <span id="c67-5" class="gw">out</span></div>
+<div id="c68" class="cap" style="top:1300px"><span id="c68-0" class="gw">what</span> <span id="c68-1" class="gw">are</span> <span id="c68-2" class="gw">the</span> <span id="c68-3" class="gw">next</span> <span id="c68-4" class="gw">actions</span></div>
+<div id="c69" class="cap" style="top:236px"><span id="c69-0" class="gw">untuk</span> <span id="c69-1" class="gw">you</span> <span id="c69-2" class="gw">move</span></div>
+<div id="c70" class="cap" style="top:236px"><span id="c70-0" class="gw">or</span> <span id="c70-1" class="gw">progress</span> <span id="c70-2" class="gw">towards</span> <span id="c70-3" class="gw">that</span> <span id="c70-4" class="gw">goal.</span></div>
+<div id="c71" class="cap" style="top:236px"><span id="c71-0" class="gw">okay,</span> <span id="c71-1" class="gw">remember,</span></div>
+<div id="c72" class="cap" style="top:236px"><span id="c72-0" class="gw">small</span> <span id="c72-1" class="gw">progress</span> <span id="c72-2" class="gw">is</span> <span id="c72-3" class="gw">still</span> <span id="c72-4" class="gw">a</span> <span id="c72-5" class="gw">progress.</span></div>
+<div id="grm" class="card pill" style="left:190px;top:1200px;width:700px"><div class="hand">goal bulan ni</div><div class="rmrow"><span id="rmn0" class="rmn">RM0</span><span id="rmn1" class="rmn">RM400</span><span id="rmn2" class="rmn">RM1,200</span><span id="rmn3" class="rmn">RM2,500</span><span id="rmn4" class="rmn">RM4,000</span><span id="rmn5" class="rmn">RM5,600</span><span id="rmn6" class="rmn">RM7,000</span><span id="rmn7" class="rmn">RM8,200</span><span id="rmn8" class="rmn">RM9,100</span><span id="rmn9" class="rmn">RM9,700</span><span id="rmn10" class="rmn">RM10,000</span><span class="per">/ sebulan</span></div><div class="bar"><div id="rmfill" class="fill"></div></div></div>
+<div id="gplan" class="card paper" style="left:170px;top:1192px;width:740px;height:268px"><div class="holes"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="plabel">MY GOAL</div><div class="pwrite"><span id="pc0" class="pch">R</span><span id="pc1" class="pch">M</span><span id="pc2" class="pch">1</span><span id="pc3" class="pch">0</span><span id="pc4" class="pch">k</span><span id="pc5" class="pch">&nbsp;</span><span id="pc6" class="pch">s</span><span id="pc7" class="pch">e</span><span id="pc8" class="pch">b</span><span id="pc9" class="pch">u</span><span id="pc10" class="pch">l</span><span id="pc11" class="pch">a</span><span id="pc12" class="pch">n</span></div><svg class="pline" width="520" height="40" viewBox="0 0 520 40"><path id="pul" d="M6 26 C 120 8, 300 34, 512 14" fill="none" stroke="#E0574F" stroke-width="7" stroke-linecap="round"/></svg><div id="pstar" class="pstar">&#10022;</div></div>
+<div id="gtree" class="tree"><div id="tnode" class="node">RM10k <em>/ sebulan</em></div><svg class="tlines" width="1080" height="80" viewBox="0 0 1080 80"><path id="tl0" d="M540 2 C 540 50, 220 30, 220 78" fill="none" stroke="#FFF8EF" stroke-width="4" stroke-linecap="round" opacity=".85"/><path id="tl1" d="M540 2 C 540 50, 520 30, 520 78" fill="none" stroke="#FFF8EF" stroke-width="4" stroke-linecap="round" opacity=".85"/><path id="tl2" d="M540 2 C 540 50, 820 30, 820 78" fill="none" stroke="#FFF8EF" stroke-width="4" stroke-linecap="round" opacity=".85"/></svg><div id="tc0" class="chip" style="left:75px"><b>1</b>berapa produk?</div><div id="tc1" class="chip" style="left:375px"><b>2</b>harga produk?</div><div id="tc2" class="chip" style="left:675px"><b>3</b>marketing?</div></div>
+<div id="gtask" class="card paper list" style="left:150px;top:1215px;width:780px"><div id="tr0" class="trow"><span class="box"><svg width="40" height="40" viewBox="0 0 40 40"><path id="tk0" d="M8 21 L17 30 L33 11" fill="none" stroke="#2B2320" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tt"><small>task 1</small>decide nak guna marketing apa</span></div><div id="tr1" class="trow"><span class="box"><svg width="40" height="40" viewBox="0 0 40 40"><path id="tk1" d="M8 21 L17 30 L33 11" fill="none" stroke="#2B2320" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tt"><small>task 2</small>buat video</span></div></div>
+<div id="gprog" class="card pill" style="left:150px;top:1238px;width:780px"><div class="prow"><span>progress</span><span id="pct0" class="pct">0%</span><span id="pct1" class="pct">12%</span><span id="pct2" class="pct">35%</span></div><div class="bar big"><div id="pfill" class="fill"></div></div><div id="pnote" class="hand">small progress is still a progress &#10022;</div></div>
+
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+gsap.set('.g',{filter:'sepia(.18) saturate(.9) contrast(.93) brightness(1.05) hue-rotate(-5deg)'});
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},0.631);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},15.931);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},21.098);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},26.398);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},37.598);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},48.931);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},50.598);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},69.098);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},81.331);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},86.331);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},93.898);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},96.731);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},102.031);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},112.665);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},119.931);
+tl.fromTo('#stage',{scale:1.04},{scale:1,duration:.32,ease:'power2.out',immediateRender:false},120.765);
+gsap.set('#s0',{autoAlpha:0});
+tl.set('#s0',{autoAlpha:1},1.210);
+tl.fromTo('#s0 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},1.210);
+tl.to('#s0',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},1.940);
+tl.set('#s0',{autoAlpha:0},2.100);
+gsap.set('#s1',{autoAlpha:0});
+tl.set('#s1',{autoAlpha:1},2.540);
+tl.fromTo('#s1 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},2.540);
+tl.to('#s1',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},3.140);
+tl.set('#s1',{autoAlpha:0},3.300);
+gsap.set('#s2',{autoAlpha:0});
+tl.set('#s2',{autoAlpha:1},15.010);
+tl.fromTo('#s2 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},15.010);
+tl.to('#s2',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},15.740);
+tl.set('#s2',{autoAlpha:0},15.900);
+gsap.set('#s3',{autoAlpha:0});
+tl.set('#s3',{autoAlpha:1},18.700);
+tl.fromTo('#s3 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},18.700);
+tl.to('#s3',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},20.940);
+tl.set('#s3',{autoAlpha:0},21.100);
+gsap.set('#s4',{autoAlpha:0});
+tl.set('#s4',{autoAlpha:1},39.860);
+tl.fromTo('#s4 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},39.860);
+tl.to('#s4',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},42.220);
+tl.set('#s4',{autoAlpha:0},42.380);
+gsap.set('#s5',{autoAlpha:0});
+tl.set('#s5',{autoAlpha:1},46.160);
+tl.fromTo('#s5 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},46.160);
+tl.to('#s5',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},48.740);
+tl.set('#s5',{autoAlpha:0},48.900);
+gsap.set('#s6',{autoAlpha:0});
+tl.set('#s6',{autoAlpha:1},50.540);
+tl.fromTo('#s6 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},50.540);
+tl.to('#s6',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},52.320);
+tl.set('#s6',{autoAlpha:0},52.480);
+gsap.set('#s7',{autoAlpha:0});
+tl.set('#s7',{autoAlpha:1},69.620);
+tl.fromTo('#s7 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},69.620);
+tl.to('#s7',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},70.240);
+tl.set('#s7',{autoAlpha:0},70.400);
+gsap.set('#s8',{autoAlpha:0});
+tl.set('#s8',{autoAlpha:1},72.520);
+tl.fromTo('#s8 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},72.520);
+tl.to('#s8',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},73.840);
+tl.set('#s8',{autoAlpha:0},74.000);
+gsap.set('#s9',{autoAlpha:0});
+tl.set('#s9',{autoAlpha:1},83.840);
+tl.fromTo('#s9 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},83.840);
+tl.to('#s9',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},86.340);
+tl.set('#s9',{autoAlpha:0},86.500);
+gsap.set('#s10',{autoAlpha:0});
+tl.set('#s10',{autoAlpha:1},92.610);
+tl.fromTo('#s10 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},92.610);
+tl.to('#s10',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},93.690);
+tl.set('#s10',{autoAlpha:0},93.850);
+gsap.set('#s11',{autoAlpha:0});
+tl.set('#s11',{autoAlpha:1},97.440);
+tl.fromTo('#s11 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},97.440);
+tl.to('#s11',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},99.720);
+tl.set('#s11',{autoAlpha:0},99.880);
+gsap.set('#s12',{autoAlpha:0});
+tl.set('#s12',{autoAlpha:1},113.833);
+tl.fromTo('#s12 .ch',{autoAlpha:0,y:30,filter:'blur(10px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.42,ease:'power3.out',stagger:.03,immediateRender:false},113.833);
+tl.to('#s12',{autoAlpha:0,y:-10,filter:'blur(8px)',duration:.16,ease:'power2.in'},115.423);
+tl.set('#s12',{autoAlpha:0},115.583);
+gsap.set('#sp0',{autoAlpha:0,scale:0});
+tl.to('#sp0',{autoAlpha:1,scale:1,rotation:90,duration:.35,ease:'back.out(2.5)'},1.400);
+tl.to('#sp0',{scale:.65,duration:.45,yoyo:true,repeat:1,ease:'sine.inOut'},1.750);
+tl.to('#sp0',{autoAlpha:0,scale:0,duration:.16},3.140);
+tl.set('#sp0',{autoAlpha:0},3.300);
+gsap.set('#sp1',{autoAlpha:0,scale:0});
+tl.to('#sp1',{autoAlpha:1,scale:1,rotation:90,duration:.35,ease:'back.out(2.5)'},1.550);
+tl.to('#sp1',{scale:.65,duration:.45,yoyo:true,repeat:1,ease:'sine.inOut'},1.900);
+tl.to('#sp1',{autoAlpha:0,scale:0,duration:.16},3.140);
+tl.set('#sp1',{autoAlpha:0},3.300);
+gsap.set('#sp2',{autoAlpha:0,scale:0});
+tl.to('#sp2',{autoAlpha:1,scale:1,rotation:90,duration:.35,ease:'back.out(2.5)'},15.150);
+tl.to('#sp2',{autoAlpha:0,scale:0,duration:.16},15.740);
+tl.set('#sp2',{autoAlpha:0},15.900);
+gsap.set('#sp3',{autoAlpha:0,scale:0});
+tl.to('#sp3',{autoAlpha:1,scale:1,rotation:90,duration:.35,ease:'back.out(2.5)'},46.300);
+tl.to('#sp3',{scale:.65,duration:.45,yoyo:true,repeat:1,ease:'sine.inOut'},46.650);
+tl.to('#sp3',{autoAlpha:0,scale:0,duration:.16},48.740);
+tl.set('#sp3',{autoAlpha:0},48.900);
+gsap.set('#sp4',{autoAlpha:0,scale:0});
+tl.to('#sp4',{autoAlpha:1,scale:1,rotation:90,duration:.35,ease:'back.out(2.5)'},97.600);
+tl.to('#sp4',{scale:.65,duration:.45,yoyo:true,repeat:1,ease:'sine.inOut'},97.950);
+tl.to('#sp4',{autoAlpha:0,scale:0,duration:.16},99.720);
+tl.set('#sp4',{autoAlpha:0},99.880);
+gsap.set('#sp5',{autoAlpha:0,scale:0});
+tl.to('#sp5',{autoAlpha:1,scale:1,rotation:90,duration:.35,ease:'back.out(2.5)'},97.720);
+tl.to('#sp5',{scale:.65,duration:.45,yoyo:true,repeat:1,ease:'sine.inOut'},98.070);
+tl.to('#sp5',{autoAlpha:0,scale:0,duration:.16},99.720);
+tl.set('#sp5',{autoAlpha:0},99.880);
+gsap.set('#sp6',{autoAlpha:0,scale:0});
+tl.to('#sp6',{autoAlpha:1,scale:1,rotation:90,duration:.35,ease:'back.out(2.5)'},72.660);
+tl.to('#sp6',{autoAlpha:0,scale:0,duration:.16},73.840);
+tl.set('#sp6',{autoAlpha:0},74.000);
+gsap.set('#c0 .gw',{autoAlpha:0});
+tl.fromTo('#c0-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},0.260);
+tl.fromTo('#c0-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},0.425);
+tl.to('#c0',{autoAlpha:0,duration:.12},0.760);
+tl.set('#c0',{autoAlpha:0},0.880);
+gsap.set('#c1 .gw',{autoAlpha:0});
+tl.fromTo('#c1-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},0.870);
+tl.fromTo('#c1-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},1.190);
+tl.fromTo('#c1-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},1.510);
+tl.to('#c1',{autoAlpha:0,duration:.12},2.030);
+tl.set('#c1',{autoAlpha:0},2.150);
+gsap.set('#c2 .gw',{autoAlpha:0});
+tl.fromTo('#c2-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},2.110);
+tl.fromTo('#c2-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},2.420);
+tl.fromTo('#c2-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},2.730);
+tl.to('#c2',{autoAlpha:0,duration:.12},3.210);
+tl.set('#c2',{autoAlpha:0},3.330);
+gsap.set('#c3 .gw',{autoAlpha:0});
+tl.fromTo('#c3-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},3.290);
+tl.fromTo('#c3-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},3.484);
+tl.fromTo('#c3-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},3.678);
+tl.fromTo('#c3-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},3.872);
+tl.fromTo('#c3-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},4.066);
+tl.to('#c3',{autoAlpha:0,duration:.12},4.430);
+tl.set('#c3',{autoAlpha:0},4.550);
+gsap.set('#c4 .gw',{autoAlpha:0});
+tl.fromTo('#c4-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},4.510);
+tl.fromTo('#c4-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},4.830);
+tl.fromTo('#c4-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},5.150);
+tl.fromTo('#c4-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},5.470);
+tl.to('#c4',{autoAlpha:0,duration:.12},7.110);
+tl.set('#c4',{autoAlpha:0},7.230);
+gsap.set('#c5 .gw',{autoAlpha:0});
+tl.fromTo('#c5-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},7.190);
+tl.fromTo('#c5-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},7.510);
+tl.fromTo('#c5-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},7.830);
+tl.to('#c5',{autoAlpha:0,duration:.12},8.550);
+tl.set('#c5',{autoAlpha:0},8.670);
+gsap.set('#c6 .gw',{autoAlpha:0});
+tl.fromTo('#c6-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},8.630);
+tl.fromTo('#c6-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},8.923);
+tl.fromTo('#c6-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},9.215);
+tl.fromTo('#c6-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},9.508);
+tl.to('#c6',{autoAlpha:0,duration:.12},9.970);
+tl.set('#c6',{autoAlpha:0},10.090);
+gsap.set('#c7 .gw',{autoAlpha:0});
+tl.fromTo('#c7-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},10.050);
+tl.fromTo('#c7-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},10.343);
+tl.fromTo('#c7-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},10.635);
+tl.fromTo('#c7-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},10.928);
+tl.to('#c7',{autoAlpha:0,duration:.12},11.390);
+tl.set('#c7',{autoAlpha:0},11.510);
+gsap.set('#c8 .gw',{autoAlpha:0});
+tl.fromTo('#c8-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},11.470);
+tl.fromTo('#c8-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},11.703);
+tl.fromTo('#c8-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},11.935);
+tl.fromTo('#c8-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},12.168);
+tl.to('#c8',{autoAlpha:0,duration:.12},12.570);
+tl.set('#c8',{autoAlpha:0},12.690);
+gsap.set('#c9 .gw',{autoAlpha:0});
+tl.fromTo('#c9-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},12.650);
+tl.fromTo('#c9-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},12.970);
+tl.fromTo('#c9-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},13.290);
+tl.fromTo('#c9-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},13.610);
+tl.to('#c9',{autoAlpha:0,duration:.12},14.790);
+tl.set('#c9',{autoAlpha:0},14.910);
+gsap.set('#c10 .gw',{autoAlpha:0});
+tl.fromTo('#c10-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},14.870);
+tl.fromTo('#c10-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},15.117);
+tl.fromTo('#c10-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},15.363);
+tl.to('#c10',{autoAlpha:0,duration:.12},15.780);
+tl.set('#c10',{autoAlpha:0},15.900);
+gsap.set('#c11 .gw',{autoAlpha:0});
+tl.fromTo('#c11-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},15.890);
+tl.fromTo('#c11-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},16.210);
+tl.fromTo('#c11-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},16.530);
+tl.fromTo('#c11-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},16.850);
+tl.fromTo('#c11-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},17.170);
+tl.fromTo('#c11-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},17.490);
+tl.fromTo('#c11-6',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},17.810);
+tl.to('#c11',{autoAlpha:0,duration:.12},18.650);
+tl.set('#c11',{autoAlpha:0},18.770);
+gsap.set('#c12 .gw',{autoAlpha:0});
+tl.fromTo('#c12-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},18.730);
+tl.fromTo('#c12-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},18.883);
+tl.fromTo('#c12-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},19.035);
+tl.fromTo('#c12-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},19.188);
+tl.to('#c12',{autoAlpha:0,duration:.12},19.510);
+tl.set('#c12',{autoAlpha:0},19.630);
+gsap.set('#c13 .gw',{autoAlpha:0});
+tl.fromTo('#c13-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},19.590);
+tl.fromTo('#c13-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},19.895);
+tl.fromTo('#c13-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},20.200);
+tl.fromTo('#c13-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},20.505);
+tl.to('#c13',{autoAlpha:0,duration:.12},20.980);
+tl.set('#c13',{autoAlpha:0},21.100);
+gsap.set('#c14 .gw',{autoAlpha:0});
+tl.fromTo('#c14-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},21.140);
+tl.fromTo('#c14-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},21.460);
+tl.fromTo('#c14-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},21.780);
+tl.to('#c14',{autoAlpha:0,duration:.12},22.560);
+tl.set('#c14',{autoAlpha:0},22.680);
+gsap.set('#c15 .gw',{autoAlpha:0});
+tl.fromTo('#c15-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},22.640);
+tl.fromTo('#c15-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},22.960);
+tl.fromTo('#c15-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},23.280);
+tl.fromTo('#c15-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},23.600);
+tl.fromTo('#c15-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},23.920);
+tl.to('#c15',{autoAlpha:0,duration:.12},25.000);
+tl.set('#c15',{autoAlpha:0},25.120);
+gsap.set('#c16 .gw',{autoAlpha:0});
+tl.fromTo('#c16-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},25.080);
+tl.fromTo('#c16-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},25.400);
+tl.fromTo('#c16-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},25.720);
+tl.to('#c16',{autoAlpha:0,duration:.12},26.260);
+tl.set('#c16',{autoAlpha:0},26.380);
+gsap.set('#c17 .gw',{autoAlpha:0});
+tl.fromTo('#c17-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},26.470);
+tl.fromTo('#c17-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},26.790);
+tl.fromTo('#c17-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},27.110);
+tl.fromTo('#c17-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},27.430);
+tl.to('#c17',{autoAlpha:0,duration:.12},28.350);
+tl.set('#c17',{autoAlpha:0},28.470);
+gsap.set('#c18 .gw',{autoAlpha:0});
+tl.fromTo('#c18-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},28.430);
+tl.fromTo('#c18-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},28.626);
+tl.fromTo('#c18-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},28.821);
+tl.fromTo('#c18-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},29.017);
+tl.fromTo('#c18-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},29.213);
+tl.fromTo('#c18-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},29.409);
+tl.fromTo('#c18-6',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},29.604);
+tl.to('#c18',{autoAlpha:0,duration:.12},29.970);
+tl.set('#c18',{autoAlpha:0},30.090);
+gsap.set('#c19 .gw',{autoAlpha:0});
+tl.fromTo('#c19-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},30.050);
+tl.fromTo('#c19-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},30.370);
+tl.fromTo('#c19-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},30.690);
+tl.to('#c19',{autoAlpha:0,duration:.12},31.890);
+tl.set('#c19',{autoAlpha:0},32.010);
+gsap.set('#c20 .gw',{autoAlpha:0});
+tl.fromTo('#c20-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},31.970);
+tl.fromTo('#c20-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},32.290);
+tl.fromTo('#c20-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},32.610);
+tl.fromTo('#c20-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},32.930);
+tl.fromTo('#c20-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},33.250);
+tl.fromTo('#c20-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},33.570);
+tl.fromTo('#c20-6',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},33.890);
+tl.to('#c20',{autoAlpha:0,duration:.12},34.830);
+tl.set('#c20',{autoAlpha:0},34.950);
+gsap.set('#c21 .gw',{autoAlpha:0});
+tl.fromTo('#c21-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},34.910);
+tl.fromTo('#c21-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},35.230);
+tl.fromTo('#c21-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},35.550);
+tl.fromTo('#c21-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},35.870);
+tl.fromTo('#c21-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},36.190);
+tl.to('#c21',{autoAlpha:0,duration:.12},36.950);
+tl.set('#c21',{autoAlpha:0},37.070);
+gsap.set('#c22 .gw',{autoAlpha:0});
+tl.fromTo('#c22-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},37.030);
+tl.fromTo('#c22-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},37.170);
+tl.to('#c22',{autoAlpha:0,duration:.12},37.480);
+tl.set('#c22',{autoAlpha:0},37.600);
+gsap.set('#c23 .gw',{autoAlpha:0});
+tl.fromTo('#c23-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},37.720);
+tl.fromTo('#c23-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},38.040);
+tl.fromTo('#c23-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},38.360);
+tl.fromTo('#c23-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},38.680);
+tl.fromTo('#c23-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},39.000);
+tl.to('#c23',{autoAlpha:0,duration:.12},39.640);
+tl.set('#c23',{autoAlpha:0},39.760);
+gsap.set('#c24 .gw',{autoAlpha:0});
+tl.fromTo('#c24-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},39.720);
+tl.fromTo('#c24-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},40.040);
+tl.fromTo('#c24-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},40.360);
+tl.fromTo('#c24-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},40.680);
+tl.fromTo('#c24-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},41.000);
+tl.fromTo('#c24-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},41.320);
+tl.to('#c24',{autoAlpha:0,duration:.12},42.300);
+tl.set('#c24',{autoAlpha:0},42.420);
+gsap.set('#c25 .gw',{autoAlpha:0});
+tl.fromTo('#c25-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},42.380);
+tl.fromTo('#c25-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},42.550);
+tl.fromTo('#c25-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},42.720);
+tl.fromTo('#c25-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},42.890);
+tl.fromTo('#c25-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},43.060);
+tl.to('#c25',{autoAlpha:0,duration:.12},43.400);
+tl.set('#c25',{autoAlpha:0},43.520);
+gsap.set('#c26 .gw',{autoAlpha:0});
+tl.fromTo('#c26-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},43.480);
+tl.fromTo('#c26-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},43.800);
+tl.fromTo('#c26-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},44.120);
+tl.to('#c26',{autoAlpha:0,duration:.12},44.720);
+tl.set('#c26',{autoAlpha:0},44.840);
+gsap.set('#c27 .gw',{autoAlpha:0});
+tl.fromTo('#c27-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},44.800);
+tl.fromTo('#c27-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},45.120);
+tl.fromTo('#c27-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},45.440);
+tl.fromTo('#c27-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},45.760);
+tl.to('#c27',{autoAlpha:0,duration:.12},47.280);
+tl.set('#c27',{autoAlpha:0},47.400);
+gsap.set('#c28 .gw',{autoAlpha:0});
+tl.fromTo('#c28-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},47.360);
+tl.fromTo('#c28-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},47.672);
+tl.fromTo('#c28-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},47.985);
+tl.fromTo('#c28-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},48.297);
+tl.to('#c28',{autoAlpha:0,duration:.12},48.780);
+tl.set('#c28',{autoAlpha:0},48.900);
+gsap.set('#c29 .gw',{autoAlpha:0});
+tl.fromTo('#c29-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},48.890);
+tl.fromTo('#c29-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},49.096);
+tl.fromTo('#c29-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},49.301);
+tl.fromTo('#c29-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},49.507);
+tl.fromTo('#c29-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},49.713);
+tl.fromTo('#c29-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},49.919);
+tl.fromTo('#c29-6',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},50.124);
+tl.to('#c29',{autoAlpha:0,duration:.12},50.500);
+tl.set('#c29',{autoAlpha:0},50.620);
+gsap.set('#c30 .gw',{autoAlpha:0});
+tl.fromTo('#c30-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},50.580);
+tl.fromTo('#c30-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},50.900);
+tl.fromTo('#c30-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},51.220);
+tl.fromTo('#c30-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},51.540);
+tl.to('#c30',{autoAlpha:0,duration:.12},52.400);
+tl.set('#c30',{autoAlpha:0},52.520);
+gsap.set('#c31 .gw',{autoAlpha:0});
+tl.fromTo('#c31-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},52.480);
+tl.fromTo('#c31-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},52.588);
+tl.fromTo('#c31-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},52.697);
+tl.fromTo('#c31-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},52.805);
+tl.fromTo('#c31-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},52.913);
+tl.fromTo('#c31-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},53.022);
+tl.to('#c31',{autoAlpha:0,duration:.12},53.300);
+tl.set('#c31',{autoAlpha:0},53.420);
+gsap.set('#c32 .gw',{autoAlpha:0});
+tl.fromTo('#c32-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},53.380);
+tl.fromTo('#c32-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},53.700);
+tl.fromTo('#c32-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},54.020);
+tl.to('#c32',{autoAlpha:0,duration:.12},55.160);
+tl.set('#c32',{autoAlpha:0},55.280);
+gsap.set('#c33 .gw',{autoAlpha:0});
+tl.fromTo('#c33-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},55.240);
+tl.fromTo('#c33-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},55.491);
+tl.fromTo('#c33-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},55.742);
+tl.fromTo('#c33-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},55.994);
+tl.fromTo('#c33-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},56.245);
+tl.fromTo('#c33-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},56.496);
+tl.fromTo('#c33-6',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},56.748);
+tl.fromTo('#c33-7',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},56.999);
+tl.to('#c33',{autoAlpha:0,duration:.12},57.420);
+tl.set('#c33',{autoAlpha:0},57.540);
+gsap.set('#c34 .gw',{autoAlpha:0});
+tl.fromTo('#c34-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},57.500);
+tl.fromTo('#c34-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},57.820);
+tl.fromTo('#c34-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},58.140);
+tl.fromTo('#c34-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},58.460);
+tl.fromTo('#c34-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},58.780);
+tl.fromTo('#c34-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},59.100);
+tl.fromTo('#c34-6',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},59.420);
+tl.to('#c34',{autoAlpha:0,duration:.12},60.460);
+tl.set('#c34',{autoAlpha:0},60.580);
+gsap.set('#c35 .gw',{autoAlpha:0});
+tl.fromTo('#c35-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},60.540);
+tl.fromTo('#c35-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},60.860);
+tl.fromTo('#c35-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},61.180);
+tl.to('#c35',{autoAlpha:0,duration:.12},61.760);
+tl.set('#c35',{autoAlpha:0},61.880);
+gsap.set('#c36 .gw',{autoAlpha:0});
+tl.fromTo('#c36-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},61.840);
+tl.fromTo('#c36-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},62.160);
+tl.fromTo('#c36-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},62.480);
+tl.fromTo('#c36-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},62.800);
+tl.to('#c36',{autoAlpha:0,duration:.12},64.740);
+tl.set('#c36',{autoAlpha:0},64.860);
+gsap.set('#c37 .gw',{autoAlpha:0});
+tl.fromTo('#c37-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},64.820);
+tl.fromTo('#c37-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},65.140);
+tl.fromTo('#c37-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},65.460);
+tl.fromTo('#c37-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},65.780);
+tl.fromTo('#c37-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},66.100);
+tl.fromTo('#c37-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},66.420);
+tl.to('#c37',{autoAlpha:0,duration:.12},67.060);
+tl.set('#c37',{autoAlpha:0},67.180);
+gsap.set('#c38 .gw',{autoAlpha:0});
+tl.fromTo('#c38-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},67.140);
+tl.fromTo('#c38-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},67.363);
+tl.fromTo('#c38-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},67.587);
+tl.to('#c38',{autoAlpha:0,duration:.12},67.980);
+tl.set('#c38',{autoAlpha:0},68.100);
+gsap.set('#c39 .gw',{autoAlpha:0});
+tl.fromTo('#c39-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},68.060);
+tl.fromTo('#c39-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},68.206);
+tl.fromTo('#c39-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},68.352);
+tl.fromTo('#c39-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},68.498);
+tl.fromTo('#c39-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},68.644);
+tl.to('#c39',{autoAlpha:0,duration:.12},68.960);
+tl.set('#c39',{autoAlpha:0},69.080);
+gsap.set('#c40 .gw',{autoAlpha:0});
+tl.fromTo('#c40-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},69.160);
+tl.fromTo('#c40-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},69.354);
+tl.fromTo('#c40-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},69.548);
+tl.fromTo('#c40-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},69.742);
+tl.fromTo('#c40-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},69.936);
+tl.to('#c40',{autoAlpha:0,duration:.12},70.300);
+tl.set('#c40',{autoAlpha:0},70.420);
+gsap.set('#c41 .gw',{autoAlpha:0});
+tl.fromTo('#c41-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},70.380);
+tl.fromTo('#c41-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},70.666);
+tl.fromTo('#c41-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},70.952);
+tl.fromTo('#c41-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},71.238);
+tl.fromTo('#c41-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},71.524);
+tl.to('#c41',{autoAlpha:0,duration:.12},71.980);
+tl.set('#c41',{autoAlpha:0},72.100);
+gsap.set('#c42 .gw',{autoAlpha:0});
+tl.fromTo('#c42-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},72.060);
+tl.fromTo('#c42-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},72.380);
+tl.fromTo('#c42-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},72.700);
+tl.to('#c42',{autoAlpha:0,duration:.12},73.880);
+tl.set('#c42',{autoAlpha:0},74.000);
+gsap.set('#c43 .gw',{autoAlpha:0});
+tl.fromTo('#c43-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},73.960);
+tl.fromTo('#c43-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},74.205);
+tl.to('#c43',{autoAlpha:0,duration:.12},74.620);
+tl.set('#c43',{autoAlpha:0},74.740);
+gsap.set('#c44 .gw',{autoAlpha:0});
+tl.fromTo('#c44-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},74.700);
+tl.fromTo('#c44-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},75.020);
+tl.fromTo('#c44-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},75.340);
+tl.fromTo('#c44-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},75.660);
+tl.fromTo('#c44-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},75.980);
+tl.to('#c44',{autoAlpha:0,duration:.12},76.740);
+tl.set('#c44',{autoAlpha:0},76.860);
+gsap.set('#c45 .gw',{autoAlpha:0});
+tl.fromTo('#c45-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},76.820);
+tl.fromTo('#c45-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},77.140);
+tl.fromTo('#c45-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},77.460);
+tl.fromTo('#c45-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},77.780);
+tl.fromTo('#c45-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},78.100);
+tl.to('#c45',{autoAlpha:0,duration:.12},78.740);
+tl.set('#c45',{autoAlpha:0},78.860);
+gsap.set('#c46 .gw',{autoAlpha:0});
+tl.fromTo('#c46-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},78.820);
+tl.fromTo('#c46-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},79.140);
+tl.fromTo('#c46-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},79.460);
+tl.to('#c46',{autoAlpha:0,duration:.12},80.260);
+tl.set('#c46',{autoAlpha:0},80.380);
+gsap.set('#c47 .gw',{autoAlpha:0});
+tl.fromTo('#c47-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},80.340);
+tl.fromTo('#c47-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},80.660);
+tl.to('#c47',{autoAlpha:0,duration:.12},81.180);
+tl.set('#c47',{autoAlpha:0},81.300);
+gsap.set('#c48 .gw',{autoAlpha:0});
+tl.fromTo('#c48-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},81.360);
+tl.fromTo('#c48-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},81.680);
+tl.fromTo('#c48-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},82.000);
+tl.fromTo('#c48-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},82.320);
+tl.to('#c48',{autoAlpha:0,duration:.12},82.830);
+tl.set('#c48',{autoAlpha:0},82.950);
+gsap.set('#c49 .gw',{autoAlpha:0});
+tl.fromTo('#c49-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},82.910);
+tl.fromTo('#c49-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},83.230);
+tl.fromTo('#c49-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},83.550);
+tl.fromTo('#c49-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},83.870);
+tl.fromTo('#c49-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},84.190);
+tl.to('#c49',{autoAlpha:0,duration:.12},84.810);
+tl.set('#c49',{autoAlpha:0},84.930);
+gsap.set('#c50 .gw',{autoAlpha:0});
+tl.fromTo('#c50-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},84.890);
+tl.fromTo('#c50-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},85.210);
+tl.fromTo('#c50-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},85.530);
+tl.to('#c50',{autoAlpha:0,duration:.12},86.470);
+tl.set('#c50',{autoAlpha:0},86.590);
+gsap.set('#c51 .gw',{autoAlpha:0});
+tl.fromTo('#c51-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},86.550);
+tl.fromTo('#c51-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},86.865);
+tl.fromTo('#c51-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},87.180);
+tl.fromTo('#c51-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},87.495);
+tl.fromTo('#c51-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},87.810);
+tl.fromTo('#c51-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},88.125);
+tl.to('#c51',{autoAlpha:0,duration:.12},88.610);
+tl.set('#c51',{autoAlpha:0},88.730);
+gsap.set('#c52 .gw',{autoAlpha:0});
+tl.fromTo('#c52-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},88.690);
+tl.fromTo('#c52-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},89.010);
+tl.fromTo('#c52-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},89.330);
+tl.fromTo('#c52-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},89.650);
+tl.fromTo('#c52-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},89.970);
+tl.to('#c52',{autoAlpha:0,duration:.12},91.130);
+tl.set('#c52',{autoAlpha:0},91.250);
+gsap.set('#c53 .gw',{autoAlpha:0});
+tl.fromTo('#c53-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},91.210);
+tl.fromTo('#c53-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},91.413);
+tl.fromTo('#c53-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},91.617);
+tl.to('#c53',{autoAlpha:0,duration:.12},91.990);
+tl.set('#c53',{autoAlpha:0},92.110);
+gsap.set('#c54 .gw',{autoAlpha:0});
+tl.fromTo('#c54-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},92.070);
+tl.fromTo('#c54-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},92.368);
+tl.fromTo('#c54-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},92.666);
+tl.fromTo('#c54-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},92.964);
+tl.fromTo('#c54-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},93.262);
+tl.to('#c54',{autoAlpha:0,duration:.12},93.730);
+tl.set('#c54',{autoAlpha:0},93.850);
+gsap.set('#c55 .gw',{autoAlpha:0});
+tl.fromTo('#c55-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},93.860);
+tl.fromTo('#c55-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},94.180);
+tl.fromTo('#c55-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},94.500);
+tl.fromTo('#c55-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},94.820);
+tl.fromTo('#c55-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},95.140);
+tl.fromTo('#c55-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},95.460);
+tl.to('#c55',{autoAlpha:0,duration:.12},96.660);
+tl.set('#c55',{autoAlpha:0},96.780);
+gsap.set('#c56 .gw',{autoAlpha:0});
+tl.fromTo('#c56-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},96.740);
+tl.fromTo('#c56-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},96.857);
+tl.fromTo('#c56-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},96.975);
+tl.fromTo('#c56-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},97.093);
+tl.to('#c56',{autoAlpha:0,duration:.12},97.380);
+tl.set('#c56',{autoAlpha:0},97.500);
+gsap.set('#c57 .gw',{autoAlpha:0});
+tl.fromTo('#c57-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},97.460);
+tl.fromTo('#c57-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},97.780);
+tl.fromTo('#c57-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},98.100);
+tl.to('#c57',{autoAlpha:0,duration:.12},99.800);
+tl.set('#c57',{autoAlpha:0},99.920);
+gsap.set('#c58 .gw',{autoAlpha:0});
+tl.fromTo('#c58-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},99.880);
+tl.fromTo('#c58-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},100.143);
+tl.fromTo('#c58-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},100.407);
+tl.to('#c58',{autoAlpha:0,duration:.12},100.840);
+tl.set('#c58',{autoAlpha:0},100.960);
+gsap.set('#c59 .gw',{autoAlpha:0});
+tl.fromTo('#c59-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},100.920);
+tl.fromTo('#c59-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},101.167);
+tl.fromTo('#c59-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},101.413);
+tl.to('#c59',{autoAlpha:0,duration:.12},101.830);
+tl.set('#c59',{autoAlpha:0},101.950);
+gsap.set('#c60 .gw',{autoAlpha:0});
+tl.fromTo('#c60-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},102.213);
+tl.fromTo('#c60-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},102.371);
+tl.fromTo('#c60-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},102.529);
+tl.fromTo('#c60-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},102.687);
+tl.fromTo('#c60-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},102.845);
+tl.to('#c60',{autoAlpha:0,duration:.12},103.173);
+tl.set('#c60',{autoAlpha:0},103.293);
+gsap.set('#c61 .gw',{autoAlpha:0});
+tl.fromTo('#c61-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},103.253);
+tl.fromTo('#c61-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},103.573);
+tl.fromTo('#c61-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},103.893);
+tl.fromTo('#c61-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},104.213);
+tl.fromTo('#c61-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},104.533);
+tl.fromTo('#c61-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},104.853);
+tl.fromTo('#c61-6',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},105.173);
+tl.fromTo('#c61-7',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},105.493);
+tl.fromTo('#c61-8',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},105.813);
+tl.to('#c61',{autoAlpha:0,duration:.12},106.453);
+tl.set('#c61',{autoAlpha:0},106.573);
+gsap.set('#c62 .gw',{autoAlpha:0});
+tl.fromTo('#c62-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},106.533);
+tl.fromTo('#c62-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},106.717);
+tl.fromTo('#c62-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},106.900);
+tl.fromTo('#c62-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},107.083);
+tl.fromTo('#c62-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},107.267);
+tl.fromTo('#c62-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},107.450);
+tl.fromTo('#c62-6',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},107.633);
+tl.fromTo('#c62-7',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},107.817);
+tl.fromTo('#c62-8',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},108.000);
+tl.to('#c62',{autoAlpha:0,duration:.12},108.353);
+tl.set('#c62',{autoAlpha:0},108.473);
+gsap.set('#c63 .gw',{autoAlpha:0});
+tl.fromTo('#c63-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},108.433);
+tl.fromTo('#c63-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},108.753);
+tl.fromTo('#c63-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},109.073);
+tl.fromTo('#c63-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},109.393);
+tl.fromTo('#c63-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},109.713);
+tl.fromTo('#c63-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},110.033);
+tl.to('#c63',{autoAlpha:0,duration:.12},111.753);
+tl.set('#c63',{autoAlpha:0},111.873);
+gsap.set('#c64 .gw',{autoAlpha:0});
+tl.fromTo('#c64-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},111.833);
+tl.fromTo('#c64-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},112.003);
+tl.fromTo('#c64-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},112.173);
+tl.to('#c64',{autoAlpha:0,duration:.12},112.513);
+tl.set('#c64',{autoAlpha:0},112.633);
+gsap.set('#c65 .gw',{autoAlpha:0});
+tl.fromTo('#c65-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},112.873);
+tl.to('#c65',{autoAlpha:0,duration:.12},113.793);
+tl.set('#c65',{autoAlpha:0},113.913);
+gsap.set('#c66 .gw',{autoAlpha:0});
+tl.fromTo('#c66-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},113.873);
+tl.fromTo('#c66-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},114.122);
+tl.fromTo('#c66-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},114.370);
+tl.fromTo('#c66-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},114.618);
+tl.fromTo('#c66-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},114.867);
+tl.fromTo('#c66-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},115.115);
+tl.to('#c66',{autoAlpha:0,duration:.12},115.533);
+tl.set('#c66',{autoAlpha:0},115.653);
+gsap.set('#c67 .gw',{autoAlpha:0});
+tl.fromTo('#c67-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},115.613);
+tl.fromTo('#c67-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},115.933);
+tl.fromTo('#c67-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},116.253);
+tl.fromTo('#c67-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},116.573);
+tl.fromTo('#c67-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},116.893);
+tl.fromTo('#c67-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},117.213);
+tl.to('#c67',{autoAlpha:0,duration:.12},118.073);
+tl.set('#c67',{autoAlpha:0},118.193);
+gsap.set('#c68 .gw',{autoAlpha:0});
+tl.fromTo('#c68-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},118.153);
+tl.fromTo('#c68-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},118.451);
+tl.fromTo('#c68-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},118.749);
+tl.fromTo('#c68-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},119.047);
+tl.fromTo('#c68-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},119.345);
+tl.to('#c68',{autoAlpha:0,duration:.12},119.813);
+tl.set('#c68',{autoAlpha:0},119.933);
+gsap.set('#c69 .gw',{autoAlpha:0});
+tl.fromTo('#c69-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},119.893);
+tl.fromTo('#c69-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},120.213);
+tl.fromTo('#c69-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},120.533);
+tl.to('#c69',{autoAlpha:0,duration:.12},121.353);
+tl.set('#c69',{autoAlpha:0},121.473);
+gsap.set('#c70 .gw',{autoAlpha:0});
+tl.fromTo('#c70-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},121.433);
+tl.fromTo('#c70-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},121.753);
+tl.fromTo('#c70-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},122.073);
+tl.fromTo('#c70-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},122.393);
+tl.fromTo('#c70-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},122.713);
+tl.to('#c70',{autoAlpha:0,duration:.12},124.093);
+tl.set('#c70',{autoAlpha:0},124.213);
+gsap.set('#c71 .gw',{autoAlpha:0});
+tl.fromTo('#c71-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},124.173);
+tl.fromTo('#c71-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},124.493);
+tl.to('#c71',{autoAlpha:0,duration:.12},125.113);
+tl.set('#c71',{autoAlpha:0},125.233);
+gsap.set('#c72 .gw',{autoAlpha:0});
+tl.fromTo('#c72-0',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},125.193);
+tl.fromTo('#c72-1',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},125.496);
+tl.fromTo('#c72-2',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},125.799);
+tl.fromTo('#c72-3',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},126.102);
+tl.fromTo('#c72-4',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},126.404);
+tl.fromTo('#c72-5',{autoAlpha:0,y:14,filter:'blur(6px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.26,ease:'power2.out',immediateRender:false},126.707);
+gsap.set('#grm',{autoAlpha:0,y:50,scale:.9});
+tl.to('#grm',{autoAlpha:1,y:0,scale:1,duration:.5,ease:'back.out(1.5)'},22.600);
+tl.to('#grm',{autoAlpha:0,y:-30,scale:.94,duration:.2,ease:'power2.in'},26.280);
+tl.set('#grm',{autoAlpha:0},26.480);
+gsap.set('.rmn',{autoAlpha:0});
+gsap.set('#rmn0',{autoAlpha:1});
+gsap.set('#rmfill',{scaleX:0});
+tl.to('#rmfill',{scaleX:1,duration:1.10,ease:'power2.out'},23.300);
+tl.set('#rmn0',{autoAlpha:0},23.410);
+tl.set('#rmn1',{autoAlpha:1},23.410);
+tl.set('#rmn1',{autoAlpha:0},23.520);
+tl.set('#rmn2',{autoAlpha:1},23.520);
+tl.set('#rmn2',{autoAlpha:0},23.630);
+tl.set('#rmn3',{autoAlpha:1},23.630);
+tl.set('#rmn3',{autoAlpha:0},23.740);
+tl.set('#rmn4',{autoAlpha:1},23.740);
+tl.set('#rmn4',{autoAlpha:0},23.850);
+tl.set('#rmn5',{autoAlpha:1},23.850);
+tl.set('#rmn5',{autoAlpha:0},23.960);
+tl.set('#rmn6',{autoAlpha:1},23.960);
+tl.set('#rmn6',{autoAlpha:0},24.070);
+tl.set('#rmn7',{autoAlpha:1},24.070);
+tl.set('#rmn7',{autoAlpha:0},24.180);
+tl.set('#rmn8',{autoAlpha:1},24.180);
+tl.set('#rmn8',{autoAlpha:0},24.290);
+tl.set('#rmn9',{autoAlpha:1},24.290);
+tl.set('#rmn9',{autoAlpha:0},24.400);
+tl.set('#rmn10',{autoAlpha:1},24.400);
+tl.fromTo('#rmn10',{scale:1.18},{scale:1,duration:.4,ease:'back.out(3)',immediateRender:false},24.400);
+gsap.set('#gplan',{autoAlpha:0,y:80,rotation:-4,scale:.9});
+tl.to('#gplan',{autoAlpha:1,y:0,rotation:-2,scale:1,duration:.5,ease:'back.out(1.5)'},30.000);
+tl.to('#gplan',{autoAlpha:0,y:-30,scale:.94,duration:.2,ease:'power2.in'},37.540);
+tl.set('#gplan',{autoAlpha:0},37.740);
+gsap.set('.pch',{autoAlpha:0});
+gsap.set('#pul',{strokeDasharray:560,strokeDashoffset:560});
+gsap.set('#pstar',{autoAlpha:0,scale:0});
+tl.set('#pc0',{autoAlpha:1},34.950);
+tl.set('#pc1',{autoAlpha:1},35.085);
+tl.set('#pc2',{autoAlpha:1},35.219);
+tl.set('#pc3',{autoAlpha:1},35.354);
+tl.set('#pc4',{autoAlpha:1},35.488);
+tl.set('#pc5',{autoAlpha:1},35.623);
+tl.set('#pc6',{autoAlpha:1},35.758);
+tl.set('#pc7',{autoAlpha:1},35.892);
+tl.set('#pc8',{autoAlpha:1},36.027);
+tl.set('#pc9',{autoAlpha:1},36.162);
+tl.set('#pc10',{autoAlpha:1},36.296);
+tl.set('#pc11',{autoAlpha:1},36.431);
+tl.set('#pc12',{autoAlpha:1},36.565);
+tl.to('#pul',{strokeDashoffset:0,duration:.5,ease:'power2.inOut'},37.000);
+tl.to('#pstar',{autoAlpha:1,scale:1,rotation:120,duration:.4,ease:'back.out(2.5)'},37.070);
+gsap.set('#stk',{strokeDasharray:800,strokeDashoffset:800});
+gsap.set('#gstrike',{autoAlpha:0});
+tl.set('#gstrike',{autoAlpha:1},41.300);
+tl.to('#stk',{strokeDashoffset:0,duration:.35,ease:'power2.out'},41.300);
+tl.set('#gstrike',{autoAlpha:0},42.380);
+gsap.set('#gtree',{autoAlpha:0});
+tl.set('#gtree',{autoAlpha:1},53.300);
+gsap.set('#tnode',{autoAlpha:0,scale:.6,y:30});
+tl.to('#tnode',{autoAlpha:1,scale:1,y:0,duration:.5,ease:'back.out(2)'},53.350);
+gsap.set('#tl0',{strokeDasharray:260,strokeDashoffset:260});
+tl.to('#tl0',{strokeDashoffset:0,duration:.35,ease:'power2.out'},57.250);
+gsap.set('#tc0',{autoAlpha:0,scale:.5,y:30});
+tl.to('#tc0',{autoAlpha:1,scale:1,y:0,duration:.45,ease:'back.out(2.2)'},57.500);
+gsap.set('#tl1',{strokeDasharray:260,strokeDashoffset:260});
+tl.to('#tl1',{strokeDashoffset:0,duration:.35,ease:'power2.out'},64.570);
+gsap.set('#tc1',{autoAlpha:0,scale:.5,y:30});
+tl.to('#tc1',{autoAlpha:1,scale:1,y:0,duration:.45,ease:'back.out(2.2)'},64.820);
+gsap.set('#tl2',{strokeDasharray:260,strokeDashoffset:260});
+tl.to('#tl2',{strokeDashoffset:0,duration:.35,ease:'power2.out'},66.890);
+gsap.set('#tc2',{autoAlpha:0,scale:.5,y:30});
+tl.to('#tc2',{autoAlpha:1,scale:1,y:0,duration:.45,ease:'back.out(2.2)'},67.140);
+tl.to('#gtree',{autoAlpha:0,y:-30,duration:.2,ease:'power2.in'},68.980);
+tl.set('#gtree',{autoAlpha:0},69.180);
+gsap.set('#gtask',{autoAlpha:0,y:80,rotation:3,scale:.9});
+tl.to('#gtask',{autoAlpha:1,y:0,rotation:1,scale:1,duration:.5,ease:'back.out(1.5)'},74.700);
+tl.to('#gtask',{autoAlpha:0,y:-30,scale:.94,duration:.2,ease:'power2.in'},81.110);
+tl.set('#gtask',{autoAlpha:0},81.310);
+gsap.set('#tr0',{autoAlpha:0,x:-30});
+tl.to('#tr0',{autoAlpha:1,x:0,duration:.35,ease:'power3.out'},75.800);
+gsap.set('#tk0',{strokeDasharray:50,strokeDashoffset:50});
+tl.to('#tk0',{strokeDashoffset:0,duration:.3,ease:'power2.out'},78.100);
+tl.to('#tr0 .box',{backgroundColor:'#FAE67A',duration:.2},78.100);
+gsap.set('#tr1',{autoAlpha:0,x:-30});
+tl.to('#tr1',{autoAlpha:1,x:0,duration:.35,ease:'power3.out'},78.860);
+gsap.set('#tk1',{strokeDasharray:50,strokeDashoffset:50});
+tl.to('#tk1',{strokeDashoffset:0,duration:.3,ease:'power2.out'},80.800);
+tl.to('#tr1 .box',{backgroundColor:'#FAE67A',duration:.2},80.800);
+gsap.set('#gprog',{autoAlpha:0,y:50,scale:.9});
+tl.to('#gprog',{autoAlpha:1,y:0,scale:1,duration:.5,ease:'back.out(1.5)'},120.833);
+gsap.set('#pfill',{scaleX:0});
+gsap.set(['#pct1','#pct2'],{autoAlpha:0});
+gsap.set('#pnote',{autoAlpha:0,y:16});
+tl.to('#pfill',{scaleX:.12,duration:.7,ease:'power2.out'},122.033);
+tl.set('#pct0',{autoAlpha:0},122.333);
+tl.set('#pct1',{autoAlpha:1},122.333);
+tl.to('#pfill',{scaleX:.35,duration:.8,ease:'back.out(1.6)'},125.233);
+tl.set('#pct1',{autoAlpha:0},125.533);
+tl.set('#pct2',{autoAlpha:1},125.533);
+tl.to('#pnote',{autoAlpha:1,y:0,duration:.5,ease:'power3.out'},125.433);
+tl.set({}, {}, 127.300);
+window.__timelines["main"] = tl;
+</script>
+</body>
+</html>
