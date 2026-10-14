@@ -1,6 +1,9 @@
 # Gotchas (each one cost a render)
 
 ## Timing / sync
+- Cutting at the -35 dB silence start clipped the tails of words ("small progress is still a progres-", "what to do
+  nex-"): in a car or room with background noise the soft last consonant is quieter than -35 dB. The user's rule:
+  never cut a sentence before it is finished. End segments after the -50 dB decay (see SKILL.md step 3).
 - ffmpeg concat -> 0.033s video start offset + VFR gaps -> remove-background outputs extra frames -> the cutout drifts
   (by 20s it lagged a few frames: two copies of the speaker on screen after a cut). assemble.py re-encodes with
   `setpts=N/30/TB -fps_mode cfr`; cutout.py asserts equal frame counts.

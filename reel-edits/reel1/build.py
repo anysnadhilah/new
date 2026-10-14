@@ -26,12 +26,24 @@ with open('segments.json', encoding='utf-8') as _f:
     SEGS = json.load(_f)
 SEG = {s['id']: s for s in SEGS}
 CUTS = [s['frame'] / 30 - .002 for s in SEGS[1:]]
-# v2 cut drops two repeated 'to be honest' takes: every time measured on v1 from 104.6s on moves by SHIFT
-SHIFT = SEG['honestB1']['frame'] / 30 - 104.600
+# Every time below was measured on the v2 cut (times from 104.6s on were measured on v1 and go through S first).
+# v3 lets each sentence finish (no clipped word endings), which moves every segment: R maps a v2 cut time to the
+# same moment of the same source clip in the current cut.
+with open('work/v0/segments_v2.json', encoding='utf-8') as _f:
+    OLD = json.load(_f)
+
+
+def R(t):
+    o = OLD[0]
+    for x in OLD:
+        if x['frame'] / 30 <= t + 1e-3:
+            o = x
+    n = SEG[o['id']]
+    return n['frame'] / 30 + (o['src_in'] + (t - o['frame'] / 30) - n['src_in'])
 
 
 def S(t):
-    return t + SHIFT
+    return R(t - 2.566667)
 
 
 HEAD = {}   # segment id -> head top y (from headpos.py), filled below if work/head.json exists
@@ -51,10 +63,10 @@ def seg_at(t):
 GIRL_F = 'sepia(.18) saturate(.9) contrast(.93) brightness(1.05) hue-rotate(-5deg)'
 
 # ------------------------------------------------------------------ motion graphic windows (chest band is theirs)
-G_RM = (22.60, 26.48)        # "you nak dapat RM10,000 sebulan dalam bisnis you"
-G_PLAN = (30.00, 37.74)      # "ambil planner you ... tulis kat dalam planner you, goal you"
-G_TREE = (53.30, 69.18)      # "achieve 10k ... berapa produk ... harga ... marketing"
-G_TASK = (74.70, 81.31)      # "task yang pertama ... task yang kedua, buat video"
+G_RM = (R(22.60), R(26.48))        # "you nak dapat RM10,000 sebulan dalam bisnis you"
+G_PLAN = (R(30.00), R(37.74))      # "ambil planner you ... tulis kat dalam planner you, goal you"
+G_TREE = (R(53.30), R(69.18))      # "achieve 10k ... berapa produk ... harga ... marketing"
+G_TASK = (R(74.70), R(81.31))      # "task yang pertama ... task yang kedua, buat video"
 G_PROG = (S(123.40), DUR)       # "move or progress ... small progress is still a progress"
 GFX = [G_RM, G_PLAN, G_TREE, G_TASK, G_PROG]
 
@@ -65,29 +77,29 @@ def in_gfx(a, b):
 
 # ------------------------------------------------------------------ captions (what she actually said)
 CAPS = [  # (start, text)   each chunk stays until the next one starts (or the end time in ENDS)
-    (0.30, 'okey kejap,'), (0.91, 'awak ada impian,'), (2.15, 'awak ada angan-angan.'),
-    (3.33, 'kenapa awak tak capai lagi'), (4.55, 'impian dan angan-angan awak?'),
-    (7.23, 'sebenarnya, saya tahu,'), (8.67, 'awak bukannya tak motivasi'), (10.09, 'tapi awak tak tahu'),
-    (11.51, 'apa nak buat selanjutnya'), (12.69, 'untuk mencapai tujuan awak.'), (14.91, 'dan itu okey.'),
-    (15.93, 'sebab dalam video ni, saya akan beritahu'), (18.77, 'what to do next'), (19.63, 'to achieve your goal.'),
-    (21.18, 'sebagai contoh kan,'), (22.68, 'you nak dapat RM10,000 sebulan'), (25.12, 'dalam bisnis you.'),
-    (26.51, 'itu adalah goal you.'), (28.47, 'so next, apa you perlu buat adalah'), (30.09, 'ambil planner you.'),
-    (32.01, 'and then ambil kertas ke apa kan.'), (34.95, 'tulis kat dalam planner you,'), (37.07, 'goal you.'),
-    (37.76, 'apa you perlu buat adalah,'), (39.76, 'bukan tengok je goal tu hari-hari.'),
-    (42.42, 'kalau tengok je, dia memang'), (43.52, 'tak akan bergerak.'), (44.84, 'you kena tahu exactly'),
-    (47.40, 'what to do next.'),
-    (48.93, 'so, apa yang awak perlu buat adalah'), (50.62, 'break down your goal.'),
-    (52.52, 'tadi awak cakap yang awak nak'), (53.42, 'achieve 10k sebulan.'),
-    (55.28, 'so, macam mana awak nak achieve that 10k?'), (57.54, 'berapa total produk yang awak perlu jual'),
-    (60.58, 'dalam masa sebulan'), (61.88, 'untuk achieve that 10k?'), (64.86, 'lepas itu, berapa harga produk tersebut?'),
-    (67.18, 'and then marketing,'), (68.10, 'apa yang awak nak buat?'),
-    (69.20, "so, that's your big step."), (70.42, 'kemudian, you boleh pecahkan lagi'), (72.10, 'kepada baby step.'),
-    (74.00, 'marketing apa?'), (74.74, 'mungkin, task yang pertama adalah,'), (76.86, 'decide nak guna marketing apa.'),
-    (78.86, 'task yang kedua,'), (80.38, 'buat video.'),
-    (81.40, 'bila awak dah tahu'), (82.95, 'what is your next action'), (84.93, 'towards your goal,'),
-    (86.59, 'it becomes a bit more easier'), (88.73, 'untuk you achieve that goal.'), (91.25, 'sebab itu penting'),
-    (92.11, 'untuk you break it down.'),
-    (93.90, 'to be honest with you guys,'), (96.78, 'I am so bad,'), (97.50, 'so, so bad'), (99.92, 'at breaking down'), (100.96, 'my goal before.'),
+    (R(0.30), 'okey kejap,'), (R(0.91), 'awak ada impian,'), (R(2.15), 'awak ada angan-angan.'),
+    (R(3.33), 'kenapa awak tak capai lagi'), (R(4.55), 'impian dan angan-angan awak?'),
+    (R(7.23), 'sebenarnya, saya tahu,'), (R(8.67), 'awak bukannya tak motivasi'), (R(10.09), 'tapi awak tak tahu'),
+    (R(11.51), 'apa nak buat selanjutnya'), (R(12.69), 'untuk mencapai tujuan awak.'), (R(14.91), 'dan itu okey.'),
+    (R(15.93), 'sebab dalam video ni, saya akan beritahu'), (R(18.77), 'what to do next'), (R(19.63), 'to achieve your goal.'),
+    (R(21.18), 'sebagai contoh kan,'), (R(22.68), 'you nak dapat RM10,000 sebulan'), (R(25.12), 'dalam bisnis you.'),
+    (R(26.51), 'itu adalah goal you.'), (R(28.47), 'so next, apa you perlu buat adalah'), (R(30.09), 'ambil planner you.'),
+    (R(32.01), 'and then ambil kertas ke apa kan.'), (R(34.95), 'tulis kat dalam planner you,'), (R(37.07), 'goal you.'),
+    (R(37.76), 'apa you perlu buat adalah,'), (R(39.76), 'bukan tengok je goal tu hari-hari.'),
+    (R(42.42), 'kalau tengok je, dia memang'), (R(43.52), 'tak akan bergerak.'), (R(44.84), 'you kena tahu exactly'),
+    (R(47.40), 'what to do next.'),
+    (R(48.93), 'so, apa yang awak perlu buat adalah'), (R(50.62), 'break down your goal.'),
+    (R(52.52), 'tadi awak cakap yang awak nak'), (R(53.42), 'achieve 10k sebulan.'),
+    (R(55.28), 'so, macam mana awak nak achieve that 10k?'), (R(57.54), 'berapa total produk yang awak perlu jual'),
+    (R(60.58), 'dalam masa sebulan'), (R(61.88), 'untuk achieve that 10k?'), (R(64.86), 'lepas itu, berapa harga produk tersebut?'),
+    (R(67.18), 'and then marketing,'), (R(68.10), 'apa yang awak nak buat?'),
+    (R(69.20), "so, that's your big step."), (R(70.42), 'kemudian, you boleh pecahkan lagi'), (R(72.10), 'kepada baby step.'),
+    (R(74.00), 'marketing apa?'), (R(74.74), 'mungkin, task yang pertama adalah,'), (R(76.86), 'decide nak guna marketing apa.'),
+    (R(78.86), 'task yang kedua,'), (R(80.38), 'buat video.'),
+    (R(81.40), 'bila awak dah tahu'), (R(82.95), 'what is your next action'), (R(84.93), 'towards your goal,'),
+    (R(86.59), 'it becomes a bit more easier'), (R(88.73), 'untuk you achieve that goal.'), (R(91.25), 'sebab itu penting'),
+    (R(92.11), 'untuk you break it down.'),
+    (R(93.90), 'to be honest with you guys,'), (R(96.78), 'I am so bad,'), (R(97.50), 'so, so bad'), (R(99.92), 'at breaking down'), (R(100.96), 'my goal before.'),
     (S(104.82), 'so, kalau you ada goal'), (S(105.86), 'and you tak dapat nak achieve your goal lagi,'),
     (S(109.14), 'you tak tahu kenapa goal you tak bergerak pun'), (S(111.04), 'sampai you rasa macam malas lah,'),
     (S(114.44), 'macam tu sekali.'),
@@ -95,8 +107,8 @@ CAPS = [  # (start, text)   each chunk stays until the next one starts (or the e
     (S(120.76), 'what are the next actions'), (S(122.50), 'untuk you move'), (S(124.04), 'or progress towards that goal.'),
     (S(126.78), 'okay, remember,'), (S(127.80), 'small progress is still a progress.'),
 ]
-ENDS = {0.30: .88, 14.91: 15.90, 19.63: 21.10, 25.12: 26.38, 37.07: 37.60, 47.40: 48.90, 68.10: 69.08, 80.38: 81.30,
-        92.11: 93.85, 100.96: 101.95, S(114.44): S(115.20), S(127.80): DUR}
+ENDS = {R(0.30): R(0.88), R(14.91): R(15.90), R(19.63): R(21.10), R(25.12): R(26.38), R(37.07): R(37.60), R(47.40): R(48.90), R(68.10): R(69.08), R(80.38): R(81.30),
+        R(92.11): R(93.85), R(100.96): R(101.95), S(114.44): S(115.20), S(127.80): DUR}
 TOP_CAP, LOW_CAP = 236, 1300
 
 
@@ -123,11 +135,11 @@ def captions():
 
 # ------------------------------------------------------------------ yellow serif punch words, behind her head
 SERIF = [  # (t, end, text, size)
-    (1.25, 2.10, 'impian', 190), (2.58, 3.30, 'angan-angan', 150), (15.05, 15.90, 'itu okey.', 170),
-    (18.74, 21.10, 'what to do next', 120), (39.90, 42.38, 'tengok je', 170),
-    (46.20, 48.90, 'exactly.', 170), (50.58, 52.48, 'break down', 160),
-    (69.66, 70.40, 'big step', 160), (72.56, 74.00, 'baby step', 160), (83.88, 86.50, 'next action', 150), (92.65, 93.85, 'break it down', 130),
-    (97.48, 99.88, 'so bad', 180), (S(116.44), S(118.15), 'jangan padam', 140),
+    (R(1.25), R(2.10), 'impian', 190), (R(2.58), R(3.30), 'angan-angan', 150), (R(15.05), R(15.90), 'itu okey.', 170),
+    (R(18.74), R(21.10), 'what to do next', 120), (R(39.90), R(42.38), 'tengok je', 170),
+    (R(46.20), R(48.90), 'exactly.', 170), (R(50.58), R(52.48), 'break down', 160),
+    (R(69.66), R(70.40), 'big step', 160), (R(72.56), R(74.00), 'baby step', 160), (R(83.88), R(86.50), 'next action', 150), (R(92.65), R(93.85), 'break it down', 130),
+    (R(97.48), R(99.88), 'so bad', 180), (S(116.44), S(118.15), 'jangan padam', 140),
 ]
 
 
@@ -164,9 +176,9 @@ def serif():
                f"tl.set('#{sid}',{{autoAlpha:0}},{b:.3f});"]
     # tiny twinkling sparkles beside a few of them (front layer)
     sparks = []
-    for k, (x, y, sz, t, b) in enumerate([(120, 300, 54, 1.40, 3.30), (900, 260, 36, 1.55, 3.30), (930, 330, 44, 15.15, 15.90),
-                                          (110, 280, 46, 46.30, 48.90), (920, 250, 40, 97.60, 99.88),
-                                          (130, 350, 34, 97.72, 99.88), (930, 300, 44, 72.66, 74.00)]):
+    for k, (x, y, sz, t, b) in enumerate([(120, 300, 54, R(1.40), R(3.30)), (900, 260, 36, R(1.55), R(3.30)), (930, 330, 44, R(15.15), R(15.90)),
+                                          (110, 280, 46, R(46.30), R(48.90)), (920, 250, 40, R(97.60), R(99.88)),
+                                          (130, 350, 34, R(97.72), R(99.88)), (930, 300, 44, R(72.66), R(74.00))]):
         sparks.append(f'<div id="sp{k}" class="spark" style="left:{x}px;top:{y}px;font-size:{sz}px">&#10022;</div>')
         tw += [f"gsap.set('#sp{k}',{{autoAlpha:0,scale:0}});",
                f"tl.to('#sp{k}',{{autoAlpha:1,scale:1,rotation:90,duration:.35,ease:'back.out(2.5)'}},{t:.3f});",
@@ -188,7 +200,7 @@ def show(sel, a, b, frm="{autoAlpha:0,y:50,scale:.9}", to="autoAlpha:1,y:0,scale
 def g_rm():
     a, b = G_RM
     steps = [0, 400, 1200, 2500, 4000, 5600, 7000, 8200, 9100, 9700, 10000]
-    t0, t1 = 23.30, 24.40
+    t0, t1 = R(23.30), R(24.40)
     nums = ''.join(f'<span id="rmn{i}" class="rmn">RM{v:,}</span>' for i, v in enumerate(steps))
     html = [f'<div id="grm" class="card pill" style="left:190px;top:1200px;width:700px">'
             f'<div class="hand">goal bulan ni</div><div class="rmrow">{nums}<span class="per">/ sebulan</span></div>'
@@ -216,11 +228,11 @@ def g_plan():
     tw = show('#gplan', a, b, frm="{autoAlpha:0,y:80,rotation:-4,scale:.9}", to="autoAlpha:1,y:0,rotation:-2,scale:1")
     tw += ["gsap.set('.pch',{autoAlpha:0});", "gsap.set('#pul',{strokeDasharray:560,strokeDashoffset:560});",
            "gsap.set('#pstar',{autoAlpha:0,scale:0});"]
-    t0, t1 = 34.95, 36.70
+    t0, t1 = R(34.95), R(36.70)
     for i in range(len(text)):
         tw.append(f"tl.set('#pc{i}',{{autoAlpha:1}},{t0 + (t1 - t0) * i / len(text):.3f});")
-    tw += [f"tl.to('#pul',{{strokeDashoffset:0,duration:.5,ease:'power2.inOut'}},{37.00:.3f});",
-           f"tl.to('#pstar',{{autoAlpha:1,scale:1,rotation:120,duration:.4,ease:'back.out(2.5)'}},{37.07:.3f});"]
+    tw += [f"tl.to('#pul',{{strokeDashoffset:0,duration:.5,ease:'power2.inOut'}},{R(37.00):.3f});",
+           f"tl.to('#pstar',{{autoAlpha:1,scale:1,rotation:120,duration:.4,ease:'back.out(2.5)'}},{R(37.07):.3f});"]
     return html, tw
 
 
@@ -234,15 +246,15 @@ def g_strike():
     html = [f'<svg id="gstrike" class="strike{fr}" style="top:{top}px" width="760" height="60" viewBox="0 0 760 60">'
             '<path id="stk" d="M10 40 C 200 20, 480 46, 750 18" fill="none" stroke="#E0574F" stroke-width="12" stroke-linecap="round"/></svg>']
     tw = ["gsap.set('#stk',{strokeDasharray:800,strokeDashoffset:800});", "gsap.set('#gstrike',{autoAlpha:0});",
-          f"tl.set('#gstrike',{{autoAlpha:1}},{41.30:.3f});",
-          f"tl.to('#stk',{{strokeDashoffset:0,duration:.35,ease:'power2.out'}},{41.30:.3f});",
+          f"tl.set('#gstrike',{{autoAlpha:1}},{R(41.30):.3f});",
+          f"tl.to('#stk',{{strokeDashoffset:0,duration:.35,ease:'power2.out'}},{R(41.30):.3f});",
           f"tl.set('#gstrike',{{autoAlpha:0}},{b:.3f});"]
     return html, tw
 
 
 def g_tree():
     a, b = G_TREE
-    chips = [('berapa produk?', 57.50), ('harga produk?', 64.82), ('marketing?', 67.14)]
+    chips = [('berapa produk?', R(57.50)), ('harga produk?', R(64.82)), ('marketing?', R(67.14))]
     xs = [75, 375, 675]
     html = ['<div id="gtree" class="tree">'
             '<div id="tnode" class="node">RM10k <em>/ sebulan</em></div>'
@@ -267,7 +279,7 @@ def g_tree():
 
 def g_task():
     a, b = G_TASK
-    rows = [('decide nak guna marketing apa', 75.80, 78.10), ('buat video', 78.86, 80.80)]
+    rows = [('decide nak guna marketing apa', R(75.80), R(78.10)), ('buat video', R(78.86), R(80.80))]
     body = ''.join(f'<div id="tr{i}" class="trow"><span class="box"><svg width="40" height="40" viewBox="0 0 40 40">'
                    f'<path id="tk{i}" d="M8 21 L17 30 L33 11" fill="none" stroke="#2B2320" stroke-width="5" stroke-linecap="round" '
                    f'stroke-linejoin="round"/></svg></span><span class="tt"><small>task {i + 1}</small>{txt}</span></div>'
@@ -308,12 +320,12 @@ def grades():
     return tw
 
 
-SFX = ([('sparkle', 1.25, .22), ('pop', 2.58, .15), ('sparkle', 15.05, .2), ('whoosh-short', 18.70, .2),
-        ('whoosh-short', G_RM[0], .25), ('click-soft', 24.40, .5), ('whoosh-short', G_PLAN[0], .25), ('sparkle', 37.07, .2),
-        ('whoosh-short', 41.28, .2), ('pop', 46.20, .15), ('whoosh-short', 50.55, .22),
-        ('pop', 53.35, .16), ('pop', 57.50, .16), ('pop', 64.82, .16), ('pop', 67.14, .16), ('sparkle', 72.56, .2),
-        ('whoosh-short', G_TASK[0], .25), ('click', 78.10, .6), ('click', 80.80, .6), ('pop', 83.88, .14),
-        ('whoosh-short', 92.60, .18), ('sparkle', 97.48, .2), ('whoosh-short', S(116.40), .2),
+SFX = ([('sparkle', R(1.25), .22), ('pop', R(2.58), .15), ('sparkle', R(15.05), .2), ('whoosh-short', R(18.70), .2),
+        ('whoosh-short', G_RM[0], .25), ('click-soft', R(24.40), .5), ('whoosh-short', G_PLAN[0], .25), ('sparkle', R(37.07), .2),
+        ('whoosh-short', R(41.28), .2), ('pop', R(46.20), .15), ('whoosh-short', R(50.55), .22),
+        ('pop', R(53.35), .16), ('pop', R(57.50), .16), ('pop', R(64.82), .16), ('pop', R(67.14), .16), ('sparkle', R(72.56), .2),
+        ('whoosh-short', G_TASK[0], .25), ('click', R(78.10), .6), ('click', R(80.80), .6), ('pop', R(83.88), .14),
+        ('whoosh-short', R(92.60), .18), ('sparkle', R(97.48), .2), ('whoosh-short', S(116.40), .2),
         ('whoosh-short', G_PROG[0], .25), ('sparkle', S(128.00), .25)])
 SFX_LEN = {'whoosh-short': .57, 'pop': .72, 'sparkle': 1.8, 'click': .3, 'click-soft': .37}
 SFX_GAIN = 0.75

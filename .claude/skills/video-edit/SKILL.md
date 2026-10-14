@@ -91,6 +91,7 @@ One command style that works in zsh, bash, Git Bash and PowerShell:
 5. Credit other creators on screen (@handle) whenever their reels appear. Real numbers on the user's own profile;
    anything else (commenters, chat history) is a generic placeholder, never a real person, never fabricated proof.
 6. Prove cuts from the final render, not from snapshots.
+   Never cut the speaker off mid-word: every sentence ends with its last sound fully intact (see step 3).
 7. Never delete the user's files. Originals are read, never modified.
 
 ## Workflow
@@ -110,9 +111,12 @@ Look at `work/sheets.jpg` (setups and angles) and read `transcript.txt` (per-cli
 ### 3. Pick takes -> `<project>/edl.json`
 - Rebuild the script from the takes: people repeat a line until it lands. Use the LAST complete clean take unless
   the user says otherwise ("the better section starts at 0:47" means one continuous take from there).
-- In/out points from the speech map: start ~0.05-0.07s before the first word, end at the silence start after the
-  last word. Kill dead air between sections; confirm short pauses with silencedetect before trimming (Whisper can
-  invent a leading word at a cut).
+- In/out points from the speech map: start ~0.10-0.12s before the first word. **Never cut a word short:** the
+  out-point goes after the voice has fully decayed, not at the -35 dB silence start (soft endings like "progres*s*",
+  "goa*l*", "nex*t*" sit below -35 dB and get clipped). Find the decay with `silencedetect=n=-50dB:d=0.12` and end
+  ~0.08-0.10s after it, capped just before the next word. The last line of the reel gets ~0.4s of air after it.
+  Listen-check every section end in the render. Kill dead air between sections; confirm short pauses with
+  silencedetect before trimming (Whisper can invent a leading word at a cut).
 - Two segments in a row from the same angle: punch one in (zoom 1.3-1.9 from the 4K original, cx/cy on the chest).
 - Unsure words (keyword, CTA trigger): re-transcribe that snippet with medium.en and a prompt containing the names.
 - Format: `[{"id": "hook", "clip": "c1", "in": 12.66, "out": 15.72, "zoom": 1.0, "cx": 0.5, "cy": 0.5, "line": "..."}]`
