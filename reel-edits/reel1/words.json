@@ -1,0 +1,1832 @@
+[
+ {
+  "text": "You",
+  "start": 0.0,
+  "end": 0.34,
+  "seg": "hook"
+ },
+ {
+  "text": "pernah",
+  "start": 0.34,
+  "end": 0.62,
+  "seg": "hook"
+ },
+ {
+  "text": "imagine",
+  "start": 0.62,
+  "end": 1.14,
+  "seg": "hook"
+ },
+ {
+  "text": "tak,",
+  "start": 1.14,
+  "end": 1.42,
+  "seg": "hook"
+ },
+ {
+  "text": "one",
+  "start": 1.54,
+  "end": 1.88,
+  "seg": "hook"
+ },
+ {
+  "text": "day",
+  "start": 1.88,
+  "end": 2.14,
+  "seg": "hook"
+ },
+ {
+  "text": "you",
+  "start": 2.14,
+  "end": 2.38,
+  "seg": "hook"
+ },
+ {
+  "text": "dapat",
+  "start": 2.38,
+  "end": 2.74,
+  "seg": "hook"
+ },
+ {
+  "text": "quit",
+  "start": 2.74,
+  "end": 3.0,
+  "seg": "hook"
+ },
+ {
+  "text": "your",
+  "start": 3.0,
+  "end": 3.32,
+  "seg": "hook"
+ },
+ {
+  "text": "9-5",
+  "start": 3.32,
+  "end": 3.6,
+  "seg": "hook"
+ },
+ {
+  "text": "and",
+  "start": 4.267,
+  "end": 4.56,
+  "seg": "hook2"
+ },
+ {
+  "text": "you",
+  "start": 4.56,
+  "end": 4.8,
+  "seg": "hook2"
+ },
+ {
+  "text": "dapat",
+  "start": 4.8,
+  "end": 5.1,
+  "seg": "hook2"
+ },
+ {
+  "text": "hidup",
+  "start": 5.1,
+  "end": 5.62,
+  "seg": "hook2"
+ },
+ {
+  "text": "dengan",
+  "start": 5.62,
+  "end": 6.1,
+  "seg": "hook2"
+ },
+ {
+  "text": "side",
+  "start": 6.1,
+  "end": 6.38,
+  "seg": "hook2"
+ },
+ {
+  "text": "income",
+  "start": 6.38,
+  "end": 6.8,
+  "seg": "hook2"
+ },
+ {
+  "text": "yang",
+  "start": 6.8,
+  "end": 7.08,
+  "seg": "hook2"
+ },
+ {
+  "text": "you",
+  "start": 7.08,
+  "end": 7.36,
+  "seg": "hook2"
+ },
+ {
+  "text": "start",
+  "start": 7.36,
+  "end": 7.52,
+  "seg": "hook2"
+ },
+ {
+  "text": "sekarang.",
+  "start": 7.52,
+  "end": 8.02,
+  "seg": "hook2"
+ },
+ {
+  "text": "And",
+  "start": 8.5,
+  "end": 8.68,
+  "seg": "amount"
+ },
+ {
+  "text": "amount",
+  "start": 8.68,
+  "end": 8.94,
+  "seg": "amount"
+ },
+ {
+  "text": "side",
+  "start": 8.94,
+  "end": 9.16,
+  "seg": "amount"
+ },
+ {
+  "text": "income",
+  "start": 9.16,
+  "end": 9.48,
+  "seg": "amount"
+ },
+ {
+  "text": "tu",
+  "start": 9.48,
+  "end": 9.8,
+  "seg": "amount"
+ },
+ {
+  "text": "cukup",
+  "start": 9.8,
+  "end": 10.42,
+  "seg": "amount"
+ },
+ {
+  "text": "untuk",
+  "start": 10.42,
+  "end": 10.84,
+  "seg": "amount"
+ },
+ {
+  "text": "support",
+  "start": 10.84,
+  "end": 11.4,
+  "seg": "amount"
+ },
+ {
+  "text": "your",
+  "start": 11.4,
+  "end": 11.92,
+  "seg": "amount"
+ },
+ {
+  "text": "current",
+  "start": 11.92,
+  "end": 12.48,
+  "seg": "amount"
+ },
+ {
+  "text": "lifestyle",
+  "start": 12.48,
+  "end": 13.14,
+  "seg": "amount"
+ },
+ {
+  "text": "for",
+  "start": 13.14,
+  "end": 13.98,
+  "seg": "amount"
+ },
+ {
+  "text": "years",
+  "start": 13.98,
+  "end": 14.58,
+  "seg": "amount"
+ },
+ {
+  "text": "to",
+  "start": 14.58,
+  "end": 14.9,
+  "seg": "amount"
+ },
+ {
+  "text": "come.",
+  "start": 14.9,
+  "end": 15.04,
+  "seg": "amount"
+ },
+ {
+  "text": "Tapi",
+  "start": 15.12,
+  "end": 15.7,
+  "seg": "problem"
+ },
+ {
+  "text": "masalahnya,",
+  "start": 15.7,
+  "end": 16.8,
+  "seg": "problem"
+ },
+ {
+  "text": "sampai",
+  "start": 17.1,
+  "end": 17.26,
+  "seg": "problem"
+ },
+ {
+  "text": "sekarang",
+  "start": 17.26,
+  "end": 17.94,
+  "seg": "problem"
+ },
+ {
+  "text": "you",
+  "start": 17.94,
+  "end": 18.16,
+  "seg": "problem"
+ },
+ {
+  "text": "masih",
+  "start": 18.16,
+  "end": 18.58,
+  "seg": "problem"
+ },
+ {
+  "text": "belum",
+  "start": 18.58,
+  "end": 18.94,
+  "seg": "problem"
+ },
+ {
+  "text": "start",
+  "start": 18.94,
+  "end": 19.28,
+  "seg": "problem"
+ },
+ {
+  "text": "side",
+  "start": 19.28,
+  "end": 19.62,
+  "seg": "problem"
+ },
+ {
+  "text": "income",
+  "start": 19.62,
+  "end": 20.14,
+  "seg": "problem"
+ },
+ {
+  "text": "ataupun",
+  "start": 20.14,
+  "end": 21.14,
+  "seg": "problem"
+ },
+ {
+  "text": "apa-apa",
+  "start": 21.14,
+  "end": 21.58,
+  "seg": "problem"
+ },
+ {
+  "text": "jenis",
+  "start": 21.88,
+  "end": 22.2,
+  "seg": "problem"
+ },
+ {
+  "text": "bisnes.",
+  "start": 22.2,
+  "end": 22.62,
+  "seg": "problem"
+ },
+ {
+  "text": "Tak",
+  "start": 22.7,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "apa,",
+  "start": 22.9,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "kalau",
+  "start": 23.36,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "you",
+  "start": 23.56,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "ada",
+  "start": 23.78,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "impian",
+  "start": 24.08,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "macam",
+  "start": 24.44,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "ni,",
+  "start": 24.7,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "I",
+  "start": 25.3,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "nak",
+  "start": 25.36,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "you",
+  "start": 25.56,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "cuba",
+  "start": 25.86,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "plan",
+  "start": 26.5,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "terbalik.",
+  "start": 27.0,
+  "end": 0,
+  "seg": "plan"
+ },
+ {
+  "text": "First,",
+  "start": 27.783,
+  "end": 0,
+  "seg": "first"
+ },
+ {
+  "text": "you",
+  "start": 28.22,
+  "end": 28.24,
+  "seg": "first"
+ },
+ {
+  "text": "perlu",
+  "start": 28.24,
+  "end": 28.44,
+  "seg": "first"
+ },
+ {
+  "text": "tentukan",
+  "start": 28.44,
+  "end": 29.08,
+  "seg": "first"
+ },
+ {
+  "text": "berapa",
+  "start": 29.08,
+  "end": 29.8,
+  "seg": "first"
+ },
+ {
+  "text": "amount",
+  "start": 29.8,
+  "end": 30.3,
+  "seg": "first"
+ },
+ {
+  "text": "side",
+  "start": 30.3,
+  "end": 30.58,
+  "seg": "first"
+ },
+ {
+  "text": "income",
+  "start": 30.58,
+  "end": 31.06,
+  "seg": "first"
+ },
+ {
+  "text": "yang",
+  "start": 31.06,
+  "end": 31.48,
+  "seg": "first"
+ },
+ {
+  "text": "you",
+  "start": 31.48,
+  "end": 31.76,
+  "seg": "first"
+ },
+ {
+  "text": "perlukan",
+  "start": 31.76,
+  "end": 32.28,
+  "seg": "first"
+ },
+ {
+  "text": "untuk",
+  "start": 32.28,
+  "end": 32.98,
+  "seg": "first"
+ },
+ {
+  "text": "you",
+  "start": 32.98,
+  "end": 33.48,
+  "seg": "first"
+ },
+ {
+  "text": "resign.",
+  "start": 33.48,
+  "end": 33.78,
+  "seg": "first"
+ },
+ {
+  "text": "Sebagai",
+  "start": 33.92,
+  "end": 34.3,
+  "seg": "example"
+ },
+ {
+  "text": "contoh,",
+  "start": 34.3,
+  "end": 34.82,
+  "seg": "example"
+ },
+ {
+  "text": "RM20,000",
+  "start": 35.0,
+  "end": 35.16,
+  "seg": "example"
+ },
+ {
+  "text": "sebulan.",
+  "start": 35.44,
+  "end": 35.86,
+  "seg": "example"
+ },
+ {
+  "text": "Ah,",
+  "start": 36.1,
+  "end": 36.14,
+  "seg": "example"
+ },
+ {
+  "text": "I'm",
+  "start": 36.48,
+  "end": 36.74,
+  "seg": "example"
+ },
+ {
+  "text": "sorry",
+  "start": 36.74,
+  "end": 36.98,
+  "seg": "example"
+ },
+ {
+  "text": "for",
+  "start": 36.98,
+  "end": 37.2,
+  "seg": "example"
+ },
+ {
+  "text": "the",
+  "start": 37.2,
+  "end": 37.46,
+  "seg": "example"
+ },
+ {
+  "text": "example",
+  "start": 37.46,
+  "end": 37.78,
+  "seg": "example"
+ },
+ {
+  "text": "guys,",
+  "start": 37.78,
+  "end": 38.22,
+  "seg": "example"
+ },
+ {
+  "text": "tapi",
+  "start": 38.72,
+  "end": 38.72,
+  "seg": "example"
+ },
+ {
+  "text": "I",
+  "start": 38.72,
+  "end": 39.24,
+  "seg": "example"
+ },
+ {
+  "text": "tak",
+  "start": 39.24,
+  "end": 39.48,
+  "seg": "example"
+ },
+ {
+  "text": "nak",
+  "start": 39.48,
+  "end": 39.6,
+  "seg": "example"
+ },
+ {
+  "text": "encourage",
+  "start": 39.6,
+  "end": 40.04,
+  "seg": "example"
+ },
+ {
+  "text": "you",
+  "start": 40.04,
+  "end": 40.52,
+  "seg": "example"
+ },
+ {
+  "text": "resign",
+  "start": 40.52,
+  "end": 41.04,
+  "seg": "example"
+ },
+ {
+  "text": "your",
+  "start": 41.04,
+  "end": 41.44,
+  "seg": "example"
+ },
+ {
+  "text": "current",
+  "start": 41.44,
+  "end": 41.74,
+  "seg": "example"
+ },
+ {
+  "text": "job",
+  "start": 41.74,
+  "end": 42.26,
+  "seg": "example"
+ },
+ {
+  "text": "until",
+  "start": 42.26,
+  "end": 43.08,
+  "seg": "example"
+ },
+ {
+  "text": "you",
+  "start": 43.08,
+  "end": 43.36,
+  "seg": "example"
+ },
+ {
+  "text": "achieve",
+  "start": 43.36,
+  "end": 43.6,
+  "seg": "example"
+ },
+ {
+  "text": "this",
+  "start": 43.6,
+  "end": 43.9,
+  "seg": "example"
+ },
+ {
+  "text": "amount.",
+  "start": 43.9,
+  "end": 44.28,
+  "seg": "example"
+ },
+ {
+  "text": "Tapi",
+  "start": 44.72,
+  "end": 45.08,
+  "seg": "example"
+ },
+ {
+  "text": "kita",
+  "start": 45.08,
+  "end": 46.4,
+  "seg": "example"
+ },
+ {
+  "text": "reducekan",
+  "start": 46.4,
+  "end": 47.06,
+  "seg": "example"
+ },
+ {
+  "text": "sikit",
+  "start": 47.06,
+  "end": 47.3,
+  "seg": "example"
+ },
+ {
+  "text": "amount",
+  "start": 47.3,
+  "end": 47.7,
+  "seg": "example"
+ },
+ {
+  "text": "sebagai",
+  "start": 47.7,
+  "end": 48.1,
+  "seg": "example"
+ },
+ {
+  "text": "contoh",
+  "start": 48.1,
+  "end": 48.46,
+  "seg": "example"
+ },
+ {
+  "text": "RM5,000",
+  "start": 48.46,
+  "end": 48.74,
+  "seg": "example"
+ },
+ {
+  "text": "sebulan.",
+  "start": 48.96,
+  "end": 49.48,
+  "seg": "example"
+ },
+ {
+  "text": "Second,",
+  "start": 49.5,
+  "end": 49.98,
+  "seg": "second"
+ },
+ {
+  "text": "you",
+  "start": 50.14,
+  "end": 50.3,
+  "seg": "second"
+ },
+ {
+  "text": "perlu",
+  "start": 50.3,
+  "end": 50.58,
+  "seg": "second"
+ },
+ {
+  "text": "fikir",
+  "start": 50.58,
+  "end": 51.34,
+  "seg": "second"
+ },
+ {
+  "text": "apa",
+  "start": 51.34,
+  "end": 51.86,
+  "seg": "second"
+ },
+ {
+  "text": "yang",
+  "start": 51.86,
+  "end": 52.06,
+  "seg": "second"
+ },
+ {
+  "text": "you",
+  "start": 52.06,
+  "end": 52.28,
+  "seg": "second"
+ },
+ {
+  "text": "boleh",
+  "start": 52.28,
+  "end": 52.56,
+  "seg": "second"
+ },
+ {
+  "text": "bina",
+  "start": 52.56,
+  "end": 53.06,
+  "seg": "second"
+ },
+ {
+  "text": "untuk",
+  "start": 53.06,
+  "end": 53.44,
+  "seg": "second"
+ },
+ {
+  "text": "sampai",
+  "start": 53.44,
+  "end": 53.94,
+  "seg": "second"
+ },
+ {
+  "text": "ke",
+  "start": 53.94,
+  "end": 54.3,
+  "seg": "second"
+ },
+ {
+  "text": "tahap",
+  "start": 54.3,
+  "end": 54.82,
+  "seg": "second"
+ },
+ {
+  "text": "tu,",
+  "start": 54.82,
+  "end": 55.14,
+  "seg": "second"
+ },
+ {
+  "text": "RM5,000",
+  "start": 55.32,
+  "end": 55.46,
+  "seg": "second"
+ },
+ {
+  "text": "sebulan",
+  "start": 55.62,
+  "end": 56.02,
+  "seg": "second"
+ },
+ {
+  "text": "ke",
+  "start": 56.02,
+  "end": 56.22,
+  "seg": "second"
+ },
+ {
+  "text": "RM20,000",
+  "start": 56.22,
+  "end": 56.48,
+  "seg": "second"
+ },
+ {
+  "text": "sebulan",
+  "start": 56.7,
+  "end": 57.16,
+  "seg": "second"
+ },
+ {
+  "text": "ke.",
+  "start": 57.16,
+  "end": 57.46,
+  "seg": "second"
+ },
+ {
+  "text": "Maybe",
+  "start": 57.7,
+  "end": 57.88,
+  "seg": "ideas"
+ },
+ {
+  "text": "you",
+  "start": 57.88,
+  "end": 58.12,
+  "seg": "ideas"
+ },
+ {
+  "text": "nak",
+  "start": 58.12,
+  "end": 58.26,
+  "seg": "ideas"
+ },
+ {
+  "text": "start",
+  "start": 58.26,
+  "end": 58.48,
+  "seg": "ideas"
+ },
+ {
+  "text": "jual",
+  "start": 58.48,
+  "end": 58.82,
+  "seg": "ideas"
+ },
+ {
+  "text": "Canva",
+  "start": 58.82,
+  "end": 59.32,
+  "seg": "ideas"
+ },
+ {
+  "text": "template",
+  "start": 59.32,
+  "end": 59.88,
+  "seg": "ideas"
+ },
+ {
+  "text": "ataupun",
+  "start": 59.88,
+  "end": 60.42,
+  "seg": "ideas"
+ },
+ {
+  "text": "PDF,",
+  "start": 60.42,
+  "end": 61.0,
+  "seg": "ideas"
+ },
+ {
+  "text": "Maybe",
+  "start": 61.44,
+  "end": 61.64,
+  "seg": "ideas"
+ },
+ {
+  "text": "you",
+  "start": 61.64,
+  "end": 61.78,
+  "seg": "ideas"
+ },
+ {
+  "text": "nak",
+  "start": 61.78,
+  "end": 61.92,
+  "seg": "ideas"
+ },
+ {
+  "text": "jual",
+  "start": 61.92,
+  "end": 62.08,
+  "seg": "ideas"
+ },
+ {
+  "text": "dekat",
+  "start": 62.08,
+  "end": 62.38,
+  "seg": "ideas"
+ },
+ {
+  "text": "Etsy",
+  "start": 62.38,
+  "end": 63.0,
+  "seg": "ideas"
+ },
+ {
+  "text": "ataupun",
+  "start": 63.0,
+  "end": 63.36,
+  "seg": "ideas"
+ },
+ {
+  "text": "you",
+  "start": 63.36,
+  "end": 63.5,
+  "seg": "ideas"
+ },
+ {
+  "text": "nak",
+  "start": 63.5,
+  "end": 63.7,
+  "seg": "ideas"
+ },
+ {
+  "text": "jual",
+  "start": 63.7,
+  "end": 63.88,
+  "seg": "ideas"
+ },
+ {
+  "text": "dekat",
+  "start": 63.88,
+  "end": 64.12,
+  "seg": "ideas"
+ },
+ {
+  "text": "Instagram",
+  "start": 64.12,
+  "end": 64.62,
+  "seg": "ideas"
+ },
+ {
+  "text": "you.",
+  "start": 64.62,
+  "end": 64.92,
+  "seg": "ideas"
+ },
+ {
+  "text": "Maybe",
+  "start": 65.12,
+  "end": 65.48,
+  "seg": "affil"
+ },
+ {
+  "text": "you",
+  "start": 65.48,
+  "end": 65.7,
+  "seg": "affil"
+ },
+ {
+  "text": "nak",
+  "start": 65.7,
+  "end": 65.86,
+  "seg": "affil"
+ },
+ {
+  "text": "buat",
+  "start": 65.86,
+  "end": 66.16,
+  "seg": "affil"
+ },
+ {
+  "text": "affiliate.",
+  "start": 66.16,
+  "end": 66.86,
+  "seg": "affil"
+ },
+ {
+  "text": "And",
+  "start": 67.18,
+  "end": 67.52,
+  "seg": "third"
+ },
+ {
+  "text": "third,",
+  "start": 67.52,
+  "end": 67.74,
+  "seg": "third"
+ },
+ {
+  "text": "instead",
+  "start": 67.8,
+  "end": 68.72,
+  "seg": "third2"
+ },
+ {
+  "text": "of",
+  "start": 68.72,
+  "end": 69.02,
+  "seg": "third2"
+ },
+ {
+  "text": "fikir",
+  "start": 69.02,
+  "end": 69.32,
+  "seg": "third2"
+ },
+ {
+  "text": "nak",
+  "start": 69.32,
+  "end": 69.52,
+  "seg": "third2"
+ },
+ {
+  "text": "resign",
+  "start": 69.52,
+  "end": 69.94,
+  "seg": "third2"
+ },
+ {
+  "text": "je,",
+  "start": 69.94,
+  "end": 70.24,
+  "seg": "third2"
+ },
+ {
+  "text": "you",
+  "start": 70.7,
+  "end": 70.86,
+  "seg": "third2"
+ },
+ {
+  "text": "fikir",
+  "start": 70.86,
+  "end": 71.54,
+  "seg": "third2"
+ },
+ {
+  "text": "small",
+  "start": 71.54,
+  "end": 72.38,
+  "seg": "third2"
+ },
+ {
+  "text": "milestone",
+  "start": 72.38,
+  "end": 73.02,
+  "seg": "third2"
+ },
+ {
+  "text": "yang",
+  "start": 73.02,
+  "end": 73.66,
+  "seg": "third2"
+ },
+ {
+  "text": "you",
+  "start": 73.66,
+  "end": 73.92,
+  "seg": "third2"
+ },
+ {
+  "text": "boleh",
+  "start": 73.92,
+  "end": 74.1,
+  "seg": "third2"
+ },
+ {
+  "text": "buat",
+  "start": 74.1,
+  "end": 74.32,
+  "seg": "third2"
+ },
+ {
+  "text": "dalam",
+  "start": 74.32,
+  "end": 74.6,
+  "seg": "third2"
+ },
+ {
+  "text": "masa",
+  "start": 74.6,
+  "end": 74.88,
+  "seg": "third2"
+ },
+ {
+  "text": "yang",
+  "start": 74.88,
+  "end": 75.02,
+  "seg": "third2"
+ },
+ {
+  "text": "terdekat.",
+  "start": 75.02,
+  "end": 75.36,
+  "seg": "third2"
+ },
+ {
+  "text": "Sebagai",
+  "start": 75.467,
+  "end": 75.84,
+  "seg": "launch"
+ },
+ {
+  "text": "contoh,",
+  "start": 75.84,
+  "end": 76.7,
+  "seg": "launch"
+ },
+ {
+  "text": "launch",
+  "start": 77.02,
+  "end": 77.2,
+  "seg": "launch"
+ },
+ {
+  "text": "your",
+  "start": 77.2,
+  "end": 77.58,
+  "seg": "launch"
+ },
+ {
+  "text": "first",
+  "start": 77.58,
+  "end": 77.92,
+  "seg": "launch"
+ },
+ {
+  "text": "product.",
+  "start": 77.92,
+  "end": 78.54,
+  "seg": "launch"
+ },
+ {
+  "text": "Dan",
+  "start": 78.733,
+  "end": 79.32,
+  "seg": "baby"
+ },
+ {
+  "text": "barulah",
+  "start": 79.32,
+  "end": 79.98,
+  "seg": "baby"
+ },
+ {
+  "text": "you",
+  "start": 79.98,
+  "end": 80.14,
+  "seg": "baby"
+ },
+ {
+  "text": "boleh",
+  "start": 80.14,
+  "end": 80.38,
+  "seg": "baby"
+ },
+ {
+  "text": "decide",
+  "start": 80.38,
+  "end": 80.86,
+  "seg": "baby"
+ },
+ {
+  "text": "lagi",
+  "start": 80.86,
+  "end": 81.4,
+  "seg": "baby"
+ },
+ {
+  "text": "baby",
+  "start": 81.4,
+  "end": 81.82,
+  "seg": "baby"
+ },
+ {
+  "text": "step",
+  "start": 81.82,
+  "end": 82.04,
+  "seg": "baby"
+ },
+ {
+  "text": "daripada",
+  "start": 82.04,
+  "end": 82.42,
+  "seg": "baby"
+ },
+ {
+  "text": "launch",
+  "start": 82.42,
+  "end": 82.68,
+  "seg": "baby"
+ },
+ {
+  "text": "your",
+  "start": 82.68,
+  "end": 82.84,
+  "seg": "baby"
+ },
+ {
+  "text": "first",
+  "start": 82.84,
+  "end": 83.06,
+  "seg": "baby"
+ },
+ {
+  "text": "product",
+  "start": 83.06,
+  "end": 83.32,
+  "seg": "baby"
+ },
+ {
+  "text": "ni,",
+  "start": 83.32,
+  "end": 83.7,
+  "seg": "baby"
+ },
+ {
+  "text": "apa",
+  "start": 84.14,
+  "end": 84.28,
+  "seg": "baby"
+ },
+ {
+  "text": "nak",
+  "start": 84.28,
+  "end": 84.48,
+  "seg": "baby"
+ },
+ {
+  "text": "buat",
+  "start": 84.48,
+  "end": 85.08,
+  "seg": "baby"
+ },
+ {
+  "text": "pada",
+  "start": 85.08,
+  "end": 85.4,
+  "seg": "baby"
+ },
+ {
+  "text": "minggu",
+  "start": 85.4,
+  "end": 85.74,
+  "seg": "baby"
+ },
+ {
+  "text": "ni.",
+  "start": 85.74,
+  "end": 85.94,
+  "seg": "baby"
+ },
+ {
+  "text": "Ini",
+  "start": 86.08,
+  "end": 86.38,
+  "seg": "planner"
+ },
+ {
+  "text": "adalah",
+  "start": 86.38,
+  "end": 86.82,
+  "seg": "planner"
+ },
+ {
+  "text": "konsep",
+  "start": 86.82,
+  "end": 87.54,
+  "seg": "planner"
+ },
+ {
+  "text": "power",
+  "start": 87.54,
+  "end": 88.0,
+  "seg": "planner"
+ },
+ {
+  "text": "planner",
+  "start": 88.0,
+  "end": 88.38,
+  "seg": "planner"
+ },
+ {
+  "text": "yang",
+  "start": 88.38,
+  "end": 89.02,
+  "seg": "planner"
+ },
+ {
+  "text": "I",
+  "start": 89.02,
+  "end": 89.52,
+  "seg": "planner"
+ },
+ {
+  "text": "design",
+  "start": 89.52,
+  "end": 89.94,
+  "seg": "planner"
+ },
+ {
+  "text": "which",
+  "start": 89.94,
+  "end": 90.22,
+  "seg": "planner"
+ },
+ {
+  "text": "is",
+  "start": 90.22,
+  "end": 90.46,
+  "seg": "planner"
+ },
+ {
+  "text": "my",
+  "start": 90.46,
+  "end": 90.68,
+  "seg": "planner"
+ },
+ {
+  "text": "goal",
+  "start": 90.68,
+  "end": 91.08,
+  "seg": "planner"
+ },
+ {
+  "text": "planner.",
+  "start": 91.08,
+  "end": 91.76,
+  "seg": "planner"
+ },
+ {
+  "text": "Yang",
+  "start": 92.36,
+  "end": 92.36,
+  "seg": "planner"
+ },
+ {
+  "text": "mana",
+  "start": 92.36,
+  "end": 93.44,
+  "seg": "planner"
+ },
+ {
+  "text": "I",
+  "start": 93.44,
+  "end": 93.8,
+  "seg": "planner2"
+ },
+ {
+  "text": "start",
+  "start": 93.8,
+  "end": 94.28,
+  "seg": "planner2"
+ },
+ {
+  "text": "with",
+  "start": 94.28,
+  "end": 94.88,
+  "seg": "planner2"
+ },
+ {
+  "text": "big",
+  "start": 94.88,
+  "end": 95.2,
+  "seg": "planner2"
+ },
+ {
+  "text": "dreams",
+  "start": 95.2,
+  "end": 95.66,
+  "seg": "planner2"
+ },
+ {
+  "text": "and",
+  "start": 95.66,
+  "end": 96.68,
+  "seg": "planner2"
+ },
+ {
+  "text": "then",
+  "start": 96.68,
+  "end": 97.08,
+  "seg": "planner2"
+ },
+ {
+  "text": "I",
+  "start": 97.08,
+  "end": 97.62,
+  "seg": "planner2"
+ },
+ {
+  "text": "work",
+  "start": 97.62,
+  "end": 98.1,
+  "seg": "planner2"
+ },
+ {
+  "text": "backward",
+  "start": 98.1,
+  "end": 98.8,
+  "seg": "planner2"
+ },
+ {
+  "text": "macam",
+  "start": 98.8,
+  "end": 99.42,
+  "seg": "planner2"
+ },
+ {
+  "text": "mana",
+  "start": 99.42,
+  "end": 99.74,
+  "seg": "planner2"
+ },
+ {
+  "text": "I",
+  "start": 99.74,
+  "end": 100.06,
+  "seg": "planner2"
+ },
+ {
+  "text": "nak",
+  "start": 100.06,
+  "end": 100.24,
+  "seg": "planner2"
+ },
+ {
+  "text": "achieve",
+  "start": 100.24,
+  "end": 100.68,
+  "seg": "planner2"
+ },
+ {
+  "text": "that",
+  "start": 100.68,
+  "end": 101.18,
+  "seg": "planner2"
+ },
+ {
+  "text": "goal",
+  "start": 101.18,
+  "end": 101.7,
+  "seg": "planner2"
+ },
+ {
+  "text": "dengan",
+  "start": 101.7,
+  "end": 102.26,
+  "seg": "planner2"
+ },
+ {
+  "text": "break",
+  "start": 102.26,
+  "end": 102.72,
+  "seg": "planner2"
+ },
+ {
+  "text": "it",
+  "start": 102.72,
+  "end": 102.88,
+  "seg": "planner2"
+ },
+ {
+  "text": "down.",
+  "start": 102.88,
+  "end": 103.06,
+  "seg": "planner2"
+ },
+ {
+  "text": "Of course,",
+  "start": 103.42,
+  "end": 103.7,
+  "seg": "course"
+ },
+ {
+  "text": "kalau",
+  "start": 103.98,
+  "end": 103.98,
+  "seg": "course"
+ },
+ {
+  "text": "you",
+  "start": 103.98,
+  "end": 104.2,
+  "seg": "course"
+ },
+ {
+  "text": "nak",
+  "start": 104.2,
+  "end": 104.48,
+  "seg": "course"
+ },
+ {
+  "text": "resign,",
+  "start": 104.48,
+  "end": 104.92,
+  "seg": "course"
+ },
+ {
+  "text": "you",
+  "start": 105.18,
+  "end": 105.26,
+  "seg": "course"
+ },
+ {
+  "text": "perlu",
+  "start": 105.26,
+  "end": 105.54,
+  "seg": "course"
+ },
+ {
+  "text": "ada",
+  "start": 105.54,
+  "end": 106.02,
+  "seg": "course"
+ },
+ {
+  "text": "financial",
+  "start": 106.02,
+  "end": 107.0,
+  "seg": "course"
+ },
+ {
+  "text": "stability.",
+  "start": 107.0,
+  "end": 107.88,
+  "seg": "course"
+ },
+ {
+  "text": "Sebab",
+  "start": 108.3,
+  "end": 108.62,
+  "seg": "course"
+ },
+ {
+  "text": "tu",
+  "start": 108.62,
+  "end": 108.84,
+  "seg": "course"
+ },
+ {
+  "text": "I",
+  "start": 108.84,
+  "end": 109.14,
+  "seg": "course"
+ },
+ {
+  "text": "mention",
+  "start": 109.14,
+  "end": 109.48,
+  "seg": "course"
+ },
+ {
+  "text": "RM20,000",
+  "start": 109.48,
+  "end": 109.82,
+  "seg": "course"
+ },
+ {
+  "text": "sebulan",
+  "start": 110.12,
+  "end": 110.54,
+  "seg": "course"
+ },
+ {
+  "text": "pada",
+  "start": 110.54,
+  "end": 110.84,
+  "seg": "course"
+ },
+ {
+  "text": "awal-awal",
+  "start": 110.84,
+  "end": 111.04,
+  "seg": "course"
+ },
+ {
+  "text": "tadi.",
+  "start": 111.3,
+  "end": 111.56,
+  "seg": "course"
+ },
+ {
+  "text": "Sebab",
+  "start": 111.85,
+  "end": 111.98,
+  "seg": "consist"
+ },
+ {
+  "text": "for",
+  "start": 111.98,
+  "end": 112.24,
+  "seg": "consist"
+ },
+ {
+  "text": "you",
+  "start": 112.24,
+  "end": 112.52,
+  "seg": "consist"
+ },
+ {
+  "text": "to",
+  "start": 112.52,
+  "end": 112.72,
+  "seg": "consist"
+ },
+ {
+  "text": "resign,",
+  "start": 112.72,
+  "end": 113.1,
+  "seg": "consist"
+ },
+ {
+  "text": "you",
+  "start": 113.28,
+  "end": 113.36,
+  "seg": "consist"
+ },
+ {
+  "text": "perlu",
+  "start": 113.36,
+  "end": 113.54,
+  "seg": "consist"
+ },
+ {
+  "text": "ada",
+  "start": 113.54,
+  "end": 113.84,
+  "seg": "consist"
+ },
+ {
+  "text": "income",
+  "start": 113.84,
+  "end": 114.38,
+  "seg": "consist"
+ },
+ {
+  "text": "yang",
+  "start": 114.38,
+  "end": 114.92,
+  "seg": "consist"
+ },
+ {
+  "text": "consistent.",
+  "start": 114.92,
+  "end": 115.82,
+  "seg": "consist"
+ },
+ {
+  "text": "But",
+  "start": 116.193,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "the",
+  "start": 116.233,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "point",
+  "start": 116.333,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "is,",
+  "start": 116.493,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "you",
+  "start": 117.083,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "tak",
+  "start": 117.173,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "perlu",
+  "start": 117.393,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "figure",
+  "start": 117.593,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "out",
+  "start": 117.953,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "everything",
+  "start": 118.273,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "today.",
+  "start": 118.853,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "You",
+  "start": 119.633,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "just",
+  "start": 119.873,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "need",
+  "start": 120.273,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "to",
+  "start": 120.533,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "plan",
+  "start": 120.713,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "what",
+  "start": 121.273,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "is",
+  "start": 122.013,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "your",
+  "start": 122.333,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "next",
+  "start": 122.633,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "action",
+  "start": 123.373,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "step",
+  "start": 123.653,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "to",
+  "start": 124.033,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "achieve",
+  "start": 125.113,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "your",
+  "start": 125.633,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "target,",
+  "start": 126.113,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "or",
+  "start": 126.573,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "your",
+  "start": 127.133,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "goal,",
+  "start": 127.413,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "or",
+  "start": 127.673,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "your",
+  "start": 128.593,
+  "end": 0,
+  "seg": "cta"
+ },
+ {
+  "text": "dreams.",
+  "start": 129.133,
+  "end": 0,
+  "seg": "cta"
+ }
+]

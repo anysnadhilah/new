@@ -1,0 +1,16 @@
+# media and generated files stay local; only the edit's source (EDL, captions, build script) is versioned
+*.mp4
+*.webm
+*.wav
+*.png
+*.jpg
+*.mp3
+*.woff2
+*.log
+work/
+snapshots/
+renders/
+node_modules/
+_cuttest/
+index.html
+__pycache__/
