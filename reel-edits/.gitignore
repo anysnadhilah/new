@@ -15,3 +15,4 @@ node_modules/
 */assets/sfx/
 */renders/
 */work/headpos.txt
+*.log
