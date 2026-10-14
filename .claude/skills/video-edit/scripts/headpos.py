@@ -36,7 +36,8 @@ for s in segs:
         if not ys:
             rows.append('no subject'); continue
         top = ys[0]
-        xs = [x for x in range(w) if px[x, min(h - 1, top + 25)] > 128]
         bb = im.point(lambda v: 255 if v > 128 else 0).getbbox()
+        # the row just below the head top can be empty (a thin hijab/hair tip): fall back to the body box
+        xs = [x for x in range(w) if px[x, min(h - 1, top + 25)] > 128] or [bb[0], bb[2]]
         rows.append(f"head top {top * 4:4d}  head x {xs[0] * 4}-{xs[-1] * 4}  body {[v * 4 for v in bb]}")
     print(f"{s['id']:8s} {t0:6.2f}s  " + ' | '.join(rows))
