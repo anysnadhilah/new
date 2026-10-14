@@ -4,6 +4,11 @@
 - ffmpeg concat -> 0.033s video start offset + VFR gaps -> remove-background outputs extra frames -> the cutout drifts
   (by 20s it lagged a few frames: two copies of the speaker on screen after a cut). assemble.py re-encodes with
   `setpts=N/30/TB -fps_mode cfr`; cutout.py asserts equal frame counts.
+- Voice drifting AHEAD of the lips toward the end (felt as "lag"): each segment's picture rounds up to whole frames
+  (60fps phone clips -> 30fps) while its audio stayed a few ms short. The a-roll plays fine in a player, but the
+  renderer reads the audio back to back, so 19 cuts added up to ~0.24s by the last line. assemble.py now cuts each
+  segment to a whole number of frames and pads/trims its audio to exactly that length, and prints the total drift
+  (must be +0 ms). Check a render with decoded audio length vs frames/30: a constant ~+13ms is AAC padding, fine.
 - `tl.set` at a rounded time fires one frame late: use `frame/30 - 0.002`.
 - `hyperframes snapshot` seeks approximately at cut boundaries; it can show the next shot a frame early. Only frames
   extracted from the final render (`check_cuts.py`) prove a cut.

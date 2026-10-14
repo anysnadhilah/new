@@ -41,6 +41,12 @@ def frames(f):
                                '-of', 'csv=p=0', f], **skillenv.TEXT).stdout.strip().split(',')[0])
 
 
+def audio_len(f):
+    out = subprocess.run([FP, '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=duration', '-of', 'csv=p=0', f],
+                         **skillenv.TEXT).stdout
+    return float(out.strip().split(',')[0])
+
+
 def main():
     skillenv.utf8_stdio()
     proj = skillenv.path_arg(sys.argv[1])
@@ -56,18 +62,23 @@ def main():
     for k, s in enumerate(edl):
         f = src[s['clip']]
         sw, sh = size(f)
-        d = s['out'] - s['in']
+        # Every segment is a whole number of frames, and its audio is cut to exactly that length. Without this the
+        # picture rounds up (60fps phone clips -> 30fps) while the audio stays a few ms short; the renderer reads the
+        # audio back to back, so the shortfall adds up and the voice drifts AHEAD of the lips (~0.2s after 19 cuts).
+        n = max(1, round((s['out'] - s['in']) * 30))
+        d = n / 30
         out = os.path.join(work, f'seg_{k}.mp4')
         # vertical fill: scale to cover 1080x1920 then centre-crop (handles 4K 9:16 and odd phone sizes)
         vf = (f"{crop(s.get('zoom', 1), s.get('cx', .5), s.get('cy', .5), sw, sh)}"
               'scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,fps=30')
-        subprocess.run([FF, '-loglevel', 'error', '-y', '-ss', f"{s['in']:.3f}", '-t', f'{d:.3f}', '-i', f,
-                        '-map', '0:v:0', '-map', '0:a:0', '-vf', vf,
-                        '-af', f'afade=t=in:d=0.02,afade=t=out:st={d - 0.03:.3f}:d=0.03',   # no clicks at the joins
+        subprocess.run([FF, '-loglevel', 'error', '-y', '-ss', f"{s['in']:.3f}", '-t', f'{d + 0.2:.3f}', '-i', f,
+                        '-map', '0:v:0', '-map', '0:a:0', '-vf', vf, '-frames:v', str(n),
+                        # no clicks at the joins; then pad/trim so the audio is exactly n frames long
+                        '-af', f'afade=t=in:d=0.02,afade=t=out:st={d - 0.03:.3f}:d=0.03,apad,atrim=end={d:.6f}',
                         '-c:v', 'libx264', '-crf', '14', '-preset', 'medium', '-pix_fmt', 'yuv420p',
                         '-c:a', 'pcm_s16le', '-ar', '48000', out], check=True)
         parts.append(out)
-        meta.append({**s, 'src_in': s['in'], 'src_out': s['out']})
+        meta.append({**s, 'src_in': s['in'], 'src_out': round(s['in'] + d, 3)})
     # the list holds bare file names (resolved next to concat.txt), so no drive letters or backslashes end up in it
     concat = os.path.join(work, 'concat.txt')
     with open(concat, 'w', encoding='utf-8', newline='\n') as fh:
@@ -76,11 +87,14 @@ def main():
                     '-vf', 'setpts=N/30/TB', '-r', '30', '-fps_mode', 'cfr', '-af', 'asetpts=PTS-STARTPTS',
                     '-c:v', 'libx264', '-crf', '14', '-preset', 'medium', '-g', '30', '-keyint_min', '30', '-pix_fmt', 'yuv420p',
                     '-c:a', 'aac', '-b:a', '192k', aroll], check=True)
-    fr = 0
+    fr, drift = 0, 0.0
     for k, m in enumerate(meta):
         n = frames(parts[k])
         m['frame'], m['frames'] = fr, n
         fr += n
+        drift += audio_len(parts[k]) - n / 30
+    print(f'audio vs picture after all segments: {drift * 1000:+.0f} ms' +
+          ('' if abs(drift) < .01 else '  << AUDIO DRIFT: the voice will not match the lips, investigate'))
     with open(os.path.join(proj, 'segments.json'), 'w', encoding='utf-8') as fh:
         json.dump(meta, fh, indent=1)
     for m in meta:
