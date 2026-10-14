@@ -1,6 +1,9 @@
 # Gotchas (each one cost a render)
 
 ## Timing / sync
+- Lip sync drifted: each segment's video was rounded up to whole frames while its audio kept its exact length, so
+  the voice ran ~16ms ahead per join (264ms by the end of a 17-segment reel). assemble.py now cuts every segment to
+  whole frames and pads/trims its audio to exactly frames/30. Check: sum of segment audio == video at every join.
 - Cutting at the -35 dB silence start clipped the tails of words ("small progress is still a progres-", "what to do
   nex-"): in a car or room with background noise the soft last consonant is quieter than -35 dB. The user's rule:
   never cut a sentence before it is finished. End segments after the -50 dB decay (see SKILL.md step 3).

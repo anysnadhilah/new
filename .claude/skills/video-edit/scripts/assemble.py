@@ -56,18 +56,22 @@ def main():
     for k, s in enumerate(edl):
         f = src[s['clip']]
         sw, sh = size(f)
-        d = s['out'] - s['in']
+        # whole frames, and the audio cut to exactly that length: video rounds each segment up to a whole frame while
+        # the audio kept its exact length, so the voice ran ahead of the picture by ~16ms per join (264ms after 17)
+        n = max(1, round((s['out'] - s['in']) * 30))
+        d = n / 30
         out = os.path.join(work, f'seg_{k}.mp4')
         # vertical fill: scale to cover 1080x1920 then centre-crop (handles 4K 9:16 and odd phone sizes)
         vf = (f"{crop(s.get('zoom', 1), s.get('cx', .5), s.get('cy', .5), sw, sh)}"
               'scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,fps=30')
-        subprocess.run([FF, '-loglevel', 'error', '-y', '-ss', f"{s['in']:.3f}", '-t', f'{d:.3f}', '-i', f,
+        subprocess.run([FF, '-loglevel', 'error', '-y', '-ss', f"{s['in']:.3f}", '-t', f'{d + .1:.3f}', '-i', f,
                         '-map', '0:v:0', '-map', '0:a:0', '-vf', vf,
-                        '-af', f'afade=t=in:d=0.02,afade=t=out:st={d - 0.03:.3f}:d=0.03',   # no clicks at the joins
+                        '-af', f'afade=t=in:d=0.02,afade=t=out:st={d - 0.03:.4f}:d=0.03,apad',   # no clicks at the joins
+                        '-frames:v', str(n), '-t', f'{d:.6f}',
                         '-c:v', 'libx264', '-crf', '14', '-preset', 'medium', '-pix_fmt', 'yuv420p',
                         '-c:a', 'pcm_s16le', '-ar', '48000', out], check=True)
         parts.append(out)
-        meta.append({**s, 'src_in': s['in'], 'src_out': s['out']})
+        meta.append({**s, 'src_in': s['in'], 'src_out': round(s['in'] + d, 4)})
     # the list holds bare file names (resolved next to concat.txt), so no drive letters or backslashes end up in it
     concat = os.path.join(work, 'concat.txt')
     with open(concat, 'w', encoding='utf-8', newline='\n') as fh:
