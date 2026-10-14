@@ -1,0 +1,1928 @@
+[
+{
+"seg": "hook0",
+"text": "kejap,",
+"t": 0.35,
+"e": 0.63
+},
+{
+"seg": "hook1",
+"text": "awak",
+"t": 0.91,
+"e": 0.97
+},
+{
+"seg": "hook1",
+"text": "ada",
+"t": 0.97,
+"e": 1.29
+},
+{
+"seg": "hook1",
+"text": "impian,",
+"t": 1.29,
+"e": 1.81
+},
+{
+"seg": "hook1",
+"text": "awak",
+"t": 2.15,
+"e": 2.33
+},
+{
+"seg": "hook1",
+"text": "ada",
+"t": 2.33,
+"e": 2.61
+},
+{
+"seg": "hook1",
+"text": "angan",
+"t": 2.61,
+"e": 2.87
+},
+{
+"seg": "hook1",
+"text": "-angan.",
+"t": 2.87,
+"e": 3.15
+},
+{
+"seg": "hook1",
+"text": "Kenapa",
+"t": 3.33,
+"e": 3.65
+},
+{
+"seg": "hook1",
+"text": "awak",
+"t": 3.65,
+"e": 3.79
+},
+{
+"seg": "hook1",
+"text": "tak",
+"t": 3.79,
+"e": 3.95
+},
+{
+"seg": "hook1",
+"text": "capai",
+"t": 3.95,
+"e": 4.29
+},
+{
+"seg": "hook1",
+"text": "lagi",
+"t": 4.29,
+"e": 4.55
+},
+{
+"seg": "hook1",
+"text": "impian",
+"t": 4.55,
+"e": 5.01
+},
+{
+"seg": "hook1",
+"text": "dan",
+"t": 5.01,
+"e": 5.29
+},
+{
+"seg": "hook1",
+"text": "angan",
+"t": 5.29,
+"e": 5.67
+},
+{
+"seg": "hook1",
+"text": "-angan",
+"t": 5.67,
+"e": 5.81
+},
+{
+"seg": "hook1",
+"text": "awak?",
+"t": 5.81,
+"e": 6.09
+},
+{
+"seg": "hook1",
+"text": "Sebenarnya,",
+"t": 7.23,
+"e": 7.79
+},
+{
+"seg": "hook1",
+"text": "saya",
+"t": 7.97,
+"e": 8.01
+},
+{
+"seg": "hook1",
+"text": "tahu,",
+"t": 8.01,
+"e": 8.39
+},
+{
+"seg": "hook1",
+"text": "awak",
+"t": 8.67,
+"e": 8.83
+},
+{
+"seg": "hook1",
+"text": "bukannya",
+"t": 8.83,
+"e": 9.23
+},
+{
+"seg": "hook1",
+"text": "tak",
+"t": 9.23,
+"e": 9.47
+},
+{
+"seg": "hook1",
+"text": "motivasi",
+"t": 9.47,
+"e": 10.09
+},
+{
+"seg": "hook1",
+"text": "tapi",
+"t": 10.09,
+"e": 10.41
+},
+{
+"seg": "hook1",
+"text": "awak",
+"t": 10.41,
+"e": 10.85
+},
+{
+"seg": "hook1",
+"text": "tak",
+"t": 10.85,
+"e": 11.09
+},
+{
+"seg": "hook1",
+"text": "tahu",
+"t": 11.09,
+"e": 11.51
+},
+{
+"seg": "hook1",
+"text": "apa",
+"t": 11.51,
+"e": 11.85
+},
+{
+"seg": "hook1",
+"text": "nak",
+"t": 11.85,
+"e": 12.03
+},
+{
+"seg": "hook1",
+"text": "buat",
+"t": 12.03,
+"e": 12.33
+},
+{
+"seg": "hook1",
+"text": "selanjutnya",
+"t": 12.33,
+"e": 12.69
+},
+{
+"seg": "hook1",
+"text": "untuk",
+"t": 12.69,
+"e": 12.93
+},
+{
+"seg": "hook1",
+"text": "mencapai",
+"t": 12.93,
+"e": 13.53
+},
+{
+"seg": "hook1",
+"text": "tujuan",
+"t": 13.53,
+"e": 14.37
+},
+{
+"seg": "hook1",
+"text": "awak.",
+"t": 14.37,
+"e": 14.41
+},
+{
+"seg": "hook1",
+"text": "Dan",
+"t": 14.91,
+"e": 15.07
+},
+{
+"seg": "hook1",
+"text": "itu",
+"t": 15.07,
+"e": 15.35
+},
+{
+"seg": "hook1",
+"text": "okey.",
+"t": 15.35,
+"e": 15.77
+},
+{
+"seg": "intro",
+"text": "Sebab",
+"t": 15.93,
+"e": 16.57
+},
+{
+"seg": "intro",
+"text": "dalam",
+"t": 16.57,
+"e": 16.81
+},
+{
+"seg": "intro",
+"text": "video",
+"t": 16.81,
+"e": 17.09
+},
+{
+"seg": "intro",
+"text": "ni,",
+"t": 17.09,
+"e": 17.35
+},
+{
+"seg": "intro",
+"text": "saya",
+"t": 17.43,
+"e": 17.59
+},
+{
+"seg": "intro",
+"text": "akan",
+"t": 17.59,
+"e": 17.79
+},
+{
+"seg": "intro",
+"text": "beritahu,",
+"t": 17.79,
+"e": 18.49
+},
+{
+"seg": "intro",
+"text": "what",
+"t": 18.77,
+"e": 18.77
+},
+{
+"seg": "intro",
+"text": "to",
+"t": 18.77,
+"e": 19.03
+},
+{
+"seg": "intro",
+"text": "do",
+"t": 19.03,
+"e": 19.21
+},
+{
+"seg": "intro",
+"text": "next",
+"t": 19.21,
+"e": 19.63
+},
+{
+"seg": "intro",
+"text": "to",
+"t": 19.63,
+"e": 19.99
+},
+{
+"seg": "intro",
+"text": "achieve",
+"t": 19.99,
+"e": 20.47
+},
+{
+"seg": "intro",
+"text": "your",
+"t": 20.47,
+"e": 20.93
+},
+{
+"seg": "intro",
+"text": "goal.",
+"t": 20.93,
+"e": 21.07
+},
+{
+"seg": "rm10k",
+"text": "Sebagai",
+"t": 21.18,
+"e": 21.74
+},
+{
+"seg": "rm10k",
+"text": "contoh",
+"t": 21.74,
+"e": 22.18
+},
+{
+"seg": "rm10k",
+"text": "kan,",
+"t": 22.18,
+"e": 22.46
+},
+{
+"seg": "rm10k",
+"text": "you",
+"t": 22.68,
+"e": 22.84
+},
+{
+"seg": "rm10k",
+"text": "nak",
+"t": 22.84,
+"e": 23.02
+},
+{
+"seg": "rm10k",
+"text": "dapat",
+"t": 23.02,
+"e": 23.4
+},
+{
+"seg": "rm10k",
+"text": "RM10",
+"t": 23.4,
+"e": 23.94
+},
+{
+"seg": "rm10k",
+"text": ",000",
+"t": 23.94,
+"e": 24.42
+},
+{
+"seg": "rm10k",
+"text": "sebulan",
+"t": 24.42,
+"e": 25.12
+},
+{
+"seg": "rm10k",
+"text": "dalam",
+"t": 25.12,
+"e": 25.64
+},
+{
+"seg": "rm10k",
+"text": "bisnis",
+"t": 25.64,
+"e": 26.26
+},
+{
+"seg": "rm10k",
+"text": "you.",
+"t": 26.26,
+"e": 26.38
+},
+{
+"seg": "planner",
+"text": "Itu",
+"t": 26.51,
+"e": 27.15
+},
+{
+"seg": "planner",
+"text": "adalah",
+"t": 27.15,
+"e": 27.73
+},
+{
+"seg": "planner",
+"text": "goal",
+"t": 27.73,
+"e": 27.97
+},
+{
+"seg": "planner",
+"text": "you.",
+"t": 27.97,
+"e": 28.29
+},
+{
+"seg": "planner",
+"text": "So",
+"t": 28.47,
+"e": 28.59
+},
+{
+"seg": "planner",
+"text": "next,",
+"t": 28.59,
+"e": 28.87
+},
+{
+"seg": "planner",
+"text": "apa",
+"t": 29.05,
+"e": 29.11
+},
+{
+"seg": "planner",
+"text": "you",
+"t": 29.11,
+"e": 29.27
+},
+{
+"seg": "planner",
+"text": "perlu",
+"t": 29.27,
+"e": 29.41
+},
+{
+"seg": "planner",
+"text": "buat",
+"t": 29.41,
+"e": 29.69
+},
+{
+"seg": "planner",
+"text": "adalah",
+"t": 29.69,
+"e": 30.09
+},
+{
+"seg": "planner",
+"text": "ambil",
+"t": 30.09,
+"e": 30.59
+},
+{
+"seg": "planner",
+"text": "planner",
+"t": 30.59,
+"e": 31.01
+},
+{
+"seg": "planner",
+"text": "you.",
+"t": 31.01,
+"e": 31.39
+},
+{
+"seg": "planner",
+"text": "And",
+"t": 32.01,
+"e": 32.31
+},
+{
+"seg": "planner",
+"text": "then",
+"t": 32.31,
+"e": 33.07
+},
+{
+"seg": "planner",
+"text": "ambil",
+"t": 33.07,
+"e": 33.39
+},
+{
+"seg": "planner",
+"text": "kertas",
+"t": 33.39,
+"e": 33.89
+},
+{
+"seg": "planner",
+"text": "ke",
+"t": 33.89,
+"e": 34.17
+},
+{
+"seg": "planner",
+"text": "apa",
+"t": 34.17,
+"e": 34.27
+},
+{
+"seg": "planner",
+"text": "kan.",
+"t": 34.27,
+"e": 34.77
+},
+{
+"seg": "planner",
+"text": "Tulis",
+"t": 34.95,
+"e": 35.55
+},
+{
+"seg": "planner",
+"text": "kat",
+"t": 35.55,
+"e": 35.81
+},
+{
+"seg": "planner",
+"text": "dalam",
+"t": 35.81,
+"e": 36.13
+},
+{
+"seg": "planner",
+"text": "planner",
+"t": 36.13,
+"e": 36.53
+},
+{
+"seg": "planner",
+"text": "you,",
+"t": 36.53,
+"e": 36.85
+},
+{
+"seg": "planner",
+"text": "goal",
+"t": 37.07,
+"e": 37.41
+},
+{
+"seg": "planner",
+"text": "you.",
+"t": 37.41,
+"e": 37.58
+},
+{
+"seg": "next",
+"text": "Apa",
+"t": 37.76,
+"e": 37.94
+},
+{
+"seg": "next",
+"text": "you",
+"t": 37.94,
+"e": 38.16
+},
+{
+"seg": "next",
+"text": "perlu",
+"t": 38.16,
+"e": 38.32
+},
+{
+"seg": "next",
+"text": "buat",
+"t": 38.32,
+"e": 38.76
+},
+{
+"seg": "next",
+"text": "adalah,",
+"t": 38.76,
+"e": 39.46
+},
+{
+"seg": "next",
+"text": "bukan",
+"t": 39.76,
+"e": 39.94
+},
+{
+"seg": "next",
+"text": "tengok",
+"t": 39.94,
+"e": 40.6
+},
+{
+"seg": "next",
+"text": "je",
+"t": 40.6,
+"e": 40.78
+},
+{
+"seg": "next",
+"text": "goal",
+"t": 40.78,
+"e": 41.06
+},
+{
+"seg": "next",
+"text": "tu",
+"t": 41.06,
+"e": 41.18
+},
+{
+"seg": "next",
+"text": "hari",
+"t": 41.18,
+"e": 41.42
+},
+{
+"seg": "next",
+"text": "-hari.",
+"t": 41.42,
+"e": 41.82
+},
+{
+"seg": "next",
+"text": "Kalau",
+"t": 42.42,
+"e": 42.58
+},
+{
+"seg": "next",
+"text": "tengok",
+"t": 42.58,
+"e": 42.98
+},
+{
+"seg": "next",
+"text": "je",
+"t": 42.98,
+"e": 43.12
+},
+{
+"seg": "next",
+"text": "dia",
+"t": 43.12,
+"e": 43.26
+},
+{
+"seg": "next",
+"text": "memang",
+"t": 43.26,
+"e": 43.52
+},
+{
+"seg": "next",
+"text": "tak",
+"t": 43.52,
+"e": 43.74
+},
+{
+"seg": "next",
+"text": "akan",
+"t": 43.74,
+"e": 44.1
+},
+{
+"seg": "next",
+"text": "bercalat.",
+"t": 44.1,
+"e": 44.84
+},
+{
+"seg": "next",
+"text": "You",
+"t": 44.84,
+"e": 45.44
+},
+{
+"seg": "next",
+"text": "kena",
+"t": 45.44,
+"e": 45.78
+},
+{
+"seg": "next",
+"text": "tahu",
+"t": 45.78,
+"e": 46.24
+},
+{
+"seg": "next",
+"text": "exactly",
+"t": 46.24,
+"e": 47.4
+},
+{
+"seg": "next",
+"text": "what",
+"t": 47.4,
+"e": 48.12
+},
+{
+"seg": "next",
+"text": "to",
+"t": 48.12,
+"e": 48.38
+},
+{
+"seg": "next",
+"text": "do",
+"t": 48.38,
+"e": 48.66
+},
+{
+"seg": "next",
+"text": "next.",
+"t": 48.66,
+"e": 48.92
+},
+{
+"seg": "breakdown0",
+"text": "So,",
+"t": 48.93,
+"e": 49.37
+},
+{
+"seg": "breakdown0",
+"text": "apa",
+"t": 49.67,
+"e": 49.67
+},
+{
+"seg": "breakdown0",
+"text": "yang",
+"t": 49.67,
+"e": 49.73
+},
+{
+"seg": "breakdown0",
+"text": "awak",
+"t": 49.73,
+"e": 49.83
+},
+{
+"seg": "breakdown0",
+"text": "perlu",
+"t": 49.83,
+"e": 50.03
+},
+{
+"seg": "breakdown0",
+"text": "buat",
+"t": 50.03,
+"e": 50.21
+},
+{
+"seg": "breakdown0",
+"text": "adalah",
+"t": 50.21,
+"e": 50.58
+},
+{
+"seg": "breakdown1",
+"text": "break",
+"t": 50.62,
+"e": 51.12
+},
+{
+"seg": "breakdown1",
+"text": "down",
+"t": 51.12,
+"e": 51.76
+},
+{
+"seg": "breakdown1",
+"text": "your",
+"t": 51.76,
+"e": 52.24
+},
+{
+"seg": "breakdown1",
+"text": "goal.",
+"t": 52.24,
+"e": 52.42
+},
+{
+"seg": "breakdown1",
+"text": "Tadi",
+"t": 52.52,
+"e": 52.72
+},
+{
+"seg": "breakdown1",
+"text": "awak",
+"t": 52.72,
+"e": 52.8
+},
+{
+"seg": "breakdown1",
+"text": "cakap",
+"t": 52.8,
+"e": 53.06
+},
+{
+"seg": "breakdown1",
+"text": "yang",
+"t": 53.06,
+"e": 53.14
+},
+{
+"seg": "breakdown1",
+"text": "awak",
+"t": 53.14,
+"e": 53.22
+},
+{
+"seg": "breakdown1",
+"text": "nak",
+"t": 53.22,
+"e": 53.42
+},
+{
+"seg": "breakdown1",
+"text": "achieve",
+"t": 53.42,
+"e": 53.6
+},
+{
+"seg": "breakdown1",
+"text": "10k",
+"t": 53.6,
+"e": 54.48
+},
+{
+"seg": "breakdown1",
+"text": "sebulan.",
+"t": 54.48,
+"e": 55.08
+},
+{
+"seg": "breakdown1",
+"text": "So,",
+"t": 55.28,
+"e": 55.36
+},
+{
+"seg": "breakdown1",
+"text": "macam",
+"t": 55.48,
+"e": 55.56
+},
+{
+"seg": "breakdown1",
+"text": "mana",
+"t": 55.56,
+"e": 55.68
+},
+{
+"seg": "breakdown1",
+"text": "awak",
+"t": 55.68,
+"e": 55.8
+},
+{
+"seg": "breakdown1",
+"text": "nak",
+"t": 55.8,
+"e": 56.0
+},
+{
+"seg": "breakdown1",
+"text": "achieve",
+"t": 56.0,
+"e": 56.18
+},
+{
+"seg": "breakdown1",
+"text": "that",
+"t": 56.18,
+"e": 56.38
+},
+{
+"seg": "breakdown1",
+"text": "10k?",
+"t": 56.38,
+"e": 57.04
+},
+{
+"seg": "breakdown1",
+"text": "Berapa",
+"t": 57.54,
+"e": 58.06
+},
+{
+"seg": "breakdown1",
+"text": "total",
+"t": 58.06,
+"e": 58.62
+},
+{
+"seg": "breakdown1",
+"text": "produk",
+"t": 58.62,
+"e": 59.12
+},
+{
+"seg": "breakdown1",
+"text": "yang",
+"t": 59.12,
+"e": 59.54
+},
+{
+"seg": "breakdown1",
+"text": "awak",
+"t": 59.54,
+"e": 59.9
+},
+{
+"seg": "breakdown1",
+"text": "perlu",
+"t": 59.9,
+"e": 60.12
+},
+{
+"seg": "breakdown1",
+"text": "jual",
+"t": 60.12,
+"e": 60.58
+},
+{
+"seg": "breakdown1",
+"text": "dalam",
+"t": 60.58,
+"e": 60.8
+},
+{
+"seg": "breakdown1",
+"text": "masa",
+"t": 60.8,
+"e": 61.04
+},
+{
+"seg": "breakdown1",
+"text": "sebulan",
+"t": 61.04,
+"e": 61.88
+},
+{
+"seg": "breakdown1",
+"text": "untuk",
+"t": 61.88,
+"e": 62.2
+},
+{
+"seg": "breakdown1",
+"text": "achieve",
+"t": 62.2,
+"e": 62.72
+},
+{
+"seg": "breakdown1",
+"text": "that",
+"t": 62.72,
+"e": 63.26
+},
+{
+"seg": "breakdown1",
+"text": "10k?",
+"t": 63.26,
+"e": 64.26
+},
+{
+"seg": "breakdown1",
+"text": "Lepas",
+"t": 64.86,
+"e": 65.12
+},
+{
+"seg": "breakdown1",
+"text": "itu,",
+"t": 65.12,
+"e": 65.24
+},
+{
+"seg": "breakdown1",
+"text": "berapa",
+"t": 65.48,
+"e": 65.62
+},
+{
+"seg": "breakdown1",
+"text": "harga",
+"t": 65.62,
+"e": 66.08
+},
+{
+"seg": "breakdown1",
+"text": "produk",
+"t": 66.08,
+"e": 66.38
+},
+{
+"seg": "breakdown1",
+"text": "tersebut?",
+"t": 66.38,
+"e": 66.86
+},
+{
+"seg": "breakdown1",
+"text": "And",
+"t": 67.18,
+"e": 67.2
+},
+{
+"seg": "breakdown1",
+"text": "then",
+"t": 67.2,
+"e": 67.36
+},
+{
+"seg": "breakdown1",
+"text": "marketing,",
+"t": 67.36,
+"e": 67.82
+},
+{
+"seg": "breakdown1",
+"text": "apa",
+"t": 68.1,
+"e": 68.18
+},
+{
+"seg": "breakdown1",
+"text": "yang",
+"t": 68.18,
+"e": 68.36
+},
+{
+"seg": "breakdown1",
+"text": "awak",
+"t": 68.36,
+"e": 68.6
+},
+{
+"seg": "breakdown1",
+"text": "nak",
+"t": 68.6,
+"e": 68.74
+},
+{
+"seg": "breakdown1",
+"text": "buat?",
+"t": 68.74,
+"e": 69.0
+},
+{
+"seg": "baby",
+"text": "So,",
+"t": 69.2,
+"e": 69.2
+},
+{
+"seg": "baby",
+"text": "that's",
+"t": 69.28,
+"e": 69.52
+},
+{
+"seg": "baby",
+"text": "your",
+"t": 69.52,
+"e": 69.7
+},
+{
+"seg": "baby",
+"text": "big",
+"t": 69.7,
+"e": 69.98
+},
+{
+"seg": "baby",
+"text": "step.",
+"t": 69.98,
+"e": 70.24
+},
+{
+"seg": "baby",
+"text": "Kemudian,",
+"t": 70.42,
+"e": 70.78
+},
+{
+"seg": "baby",
+"text": "you",
+"t": 70.78,
+"e": 70.92
+},
+{
+"seg": "baby",
+"text": "boleh",
+"t": 70.92,
+"e": 71.12
+},
+{
+"seg": "baby",
+"text": "pecahkan",
+"t": 71.12,
+"e": 71.8
+},
+{
+"seg": "baby",
+"text": "lagi",
+"t": 71.8,
+"e": 72.1
+},
+{
+"seg": "baby",
+"text": "kepada",
+"t": 72.1,
+"e": 72.6
+},
+{
+"seg": "baby",
+"text": "baby",
+"t": 72.6,
+"e": 73.24
+},
+{
+"seg": "baby",
+"text": "step.",
+"t": 73.24,
+"e": 73.6
+},
+{
+"seg": "baby",
+"text": "Marketing",
+"t": 74.0,
+"e": 74.3
+},
+{
+"seg": "baby",
+"text": "apa?",
+"t": 74.3,
+"e": 74.74
+},
+{
+"seg": "baby",
+"text": "Mungkin,",
+"t": 74.74,
+"e": 75.56
+},
+{
+"seg": "baby",
+"text": "task",
+"t": 75.8,
+"e": 75.9
+},
+{
+"seg": "baby",
+"text": "yang",
+"t": 75.9,
+"e": 76.1
+},
+{
+"seg": "baby",
+"text": "pertama",
+"t": 76.1,
+"e": 76.36
+},
+{
+"seg": "baby",
+"text": "adalah,",
+"t": 76.36,
+"e": 76.66
+},
+{
+"seg": "baby",
+"text": "decide",
+"t": 76.86,
+"e": 77.14
+},
+{
+"seg": "baby",
+"text": "nak",
+"t": 77.14,
+"e": 77.36
+},
+{
+"seg": "baby",
+"text": "guna",
+"t": 77.36,
+"e": 77.6
+},
+{
+"seg": "baby",
+"text": "marketing",
+"t": 77.6,
+"e": 78.06
+},
+{
+"seg": "baby",
+"text": "apa.",
+"t": 78.06,
+"e": 78.6
+},
+{
+"seg": "baby",
+"text": "Task",
+"t": 78.86,
+"e": 79.4
+},
+{
+"seg": "baby",
+"text": "yang",
+"t": 79.4,
+"e": 79.6
+},
+{
+"seg": "baby",
+"text": "kedua,",
+"t": 79.6,
+"e": 80.0
+},
+{
+"seg": "baby",
+"text": "buat",
+"t": 80.38,
+"e": 80.7
+},
+{
+"seg": "baby",
+"text": "video.",
+"t": 80.7,
+"e": 81.26
+},
+{
+"seg": "easier0",
+"text": "awak",
+"t": 82.05,
+"e": 82.23
+},
+{
+"seg": "easier0",
+"text": "dah",
+"t": 82.23,
+"e": 82.47
+},
+{
+"seg": "easier0",
+"text": "tahu",
+"t": 82.47,
+"e": 82.95
+},
+{
+"seg": "easier0",
+"text": "what",
+"t": 82.95,
+"e": 83.33
+},
+{
+"seg": "easier0",
+"text": "is",
+"t": 83.33,
+"e": 83.57
+},
+{
+"seg": "easier0",
+"text": "your",
+"t": 83.57,
+"e": 83.91
+},
+{
+"seg": "easier0",
+"text": "next",
+"t": 83.91,
+"e": 84.31
+},
+{
+"seg": "easier0",
+"text": "action",
+"t": 84.31,
+"e": 84.93
+},
+{
+"seg": "easier0",
+"text": "towards",
+"t": 84.93,
+"e": 85.41
+},
+{
+"seg": "easier0",
+"text": "your",
+"t": 85.41,
+"e": 85.87
+},
+{
+"seg": "easier0",
+"text": "goal,",
+"t": 85.87,
+"e": 86.25
+},
+{
+"seg": "easier1",
+"text": "it",
+"t": 86.59,
+"e": 86.59
+},
+{
+"seg": "easier1",
+"text": "becomes",
+"t": 86.59,
+"e": 87.15
+},
+{
+"seg": "easier1",
+"text": "a",
+"t": 87.15,
+"e": 87.49
+},
+{
+"seg": "easier1",
+"text": "bit",
+"t": 87.49,
+"e": 87.87
+},
+{
+"seg": "easier1",
+"text": "more",
+"t": 87.87,
+"e": 88.19
+},
+{
+"seg": "easier1",
+"text": "easier",
+"t": 88.19,
+"e": 88.73
+},
+{
+"seg": "easier1",
+"text": "untuk",
+"t": 88.73,
+"e": 89.21
+},
+{
+"seg": "easier1",
+"text": "you",
+"t": 89.21,
+"e": 89.59
+},
+{
+"seg": "easier1",
+"text": "achieve",
+"t": 89.59,
+"e": 90.07
+},
+{
+"seg": "easier1",
+"text": "that",
+"t": 90.07,
+"e": 90.51
+},
+{
+"seg": "easier1",
+"text": "goal.",
+"t": 90.51,
+"e": 90.87
+},
+{
+"seg": "easier1",
+"text": "Sebab",
+"t": 91.25,
+"e": 91.37
+},
+{
+"seg": "easier1",
+"text": "itu",
+"t": 91.37,
+"e": 91.55
+},
+{
+"seg": "easier1",
+"text": "penting",
+"t": 91.55,
+"e": 92.11
+},
+{
+"seg": "easier1",
+"text": "untuk",
+"t": 92.11,
+"e": 92.37
+},
+{
+"seg": "easier1",
+"text": "you",
+"t": 92.37,
+"e": 92.69
+},
+{
+"seg": "easier1",
+"text": "break",
+"t": 92.69,
+"e": 93.15
+},
+{
+"seg": "easier1",
+"text": "it",
+"t": 93.15,
+"e": 93.53
+},
+{
+"seg": "easier1",
+"text": "down.",
+"t": 93.53,
+"e": 93.85
+},
+{
+"seg": "honest0",
+"text": "To",
+"t": 93.9,
+"e": 94.38
+},
+{
+"seg": "honest0",
+"text": "be",
+"t": 94.38,
+"e": 94.64
+},
+{
+"seg": "honest0",
+"text": "honest",
+"t": 94.64,
+"e": 94.92
+},
+{
+"seg": "honest0",
+"text": "with",
+"t": 94.92,
+"e": 95.12
+},
+{
+"seg": "honest0",
+"text": "you",
+"t": 95.12,
+"e": 95.42
+},
+{
+"seg": "honest0",
+"text": "guys,",
+"t": 95.42,
+"e": 95.84
+},
+{
+"seg": "honest1",
+"text": "am",
+"t": 96.73,
+"e": 100.02
+},
+{
+"seg": "honest1",
+"text": "so",
+"t": 100.02,
+"e": 100.76
+},
+{
+"seg": "honest1",
+"text": "bad",
+"t": 100.76,
+"e": 101.26
+},
+{
+"seg": "honest1",
+"text": "at",
+"t": 101.26,
+"e": 102.74
+},
+{
+"seg": "honest1",
+"text": "breaking",
+"t": 102.74,
+"e": 103.26
+},
+{
+"seg": "honest1",
+"text": "down",
+"t": 103.26,
+"e": 103.62
+},
+{
+"seg": "honest1",
+"text": "my",
+"t": 103.62,
+"e": 104.04
+},
+{
+"seg": "honest1",
+"text": "goal",
+"t": 104.04,
+"e": 104.1
+},
+{
+"seg": "honest1",
+"text": "before.",
+"t": 104.1,
+"e": 104.6
+},
+{
+"seg": "honest2",
+"text": "So,",
+"t": 104.82,
+"e": 104.86
+},
+{
+"seg": "honest2",
+"text": "kalau",
+"t": 105.02,
+"e": 105.08
+},
+{
+"seg": "honest2",
+"text": "you",
+"t": 105.08,
+"e": 105.26
+},
+{
+"seg": "honest2",
+"text": "are",
+"t": 105.26,
+"e": 105.34
+},
+{
+"seg": "honest2",
+"text": "the",
+"t": 105.34,
+"e": 105.56
+},
+{
+"seg": "honest2",
+"text": "goal",
+"t": 105.56,
+"e": 105.86
+},
+{
+"seg": "honest2",
+"text": "and",
+"t": 105.86,
+"e": 106.38
+},
+{
+"seg": "honest2",
+"text": "you",
+"t": 106.38,
+"e": 107.16
+},
+{
+"seg": "honest2",
+"text": "tak",
+"t": 107.16,
+"e": 107.36
+},
+{
+"seg": "honest2",
+"text": "dapat",
+"t": 107.36,
+"e": 107.68
+},
+{
+"seg": "honest2",
+"text": "nak",
+"t": 107.68,
+"e": 107.98
+},
+{
+"seg": "honest2",
+"text": "achieve",
+"t": 107.98,
+"e": 108.22
+},
+{
+"seg": "honest2",
+"text": "your",
+"t": 108.22,
+"e": 108.6
+},
+{
+"seg": "honest2",
+"text": "goal",
+"t": 108.6,
+"e": 108.78
+},
+{
+"seg": "honest2",
+"text": "lagi,",
+"t": 108.78,
+"e": 109.02
+},
+{
+"seg": "honest2",
+"text": "you",
+"t": 109.14,
+"e": 109.16
+},
+{
+"seg": "honest2",
+"text": "tak",
+"t": 109.16,
+"e": 109.34
+},
+{
+"seg": "honest2",
+"text": "tahu",
+"t": 109.34,
+"e": 109.42
+},
+{
+"seg": "honest2",
+"text": "kenapa",
+"t": 109.42,
+"e": 109.7
+},
+{
+"seg": "honest2",
+"text": "goal",
+"t": 109.7,
+"e": 110.0
+},
+{
+"seg": "honest2",
+"text": "you",
+"t": 110.0,
+"e": 110.12
+},
+{
+"seg": "honest2",
+"text": "tak",
+"t": 110.12,
+"e": 110.28
+},
+{
+"seg": "honest2",
+"text": "bergerak",
+"t": 110.28,
+"e": 110.66
+},
+{
+"seg": "honest2",
+"text": "pun",
+"t": 110.66,
+"e": 111.04
+},
+{
+"seg": "honest2",
+"text": "sampai",
+"t": 111.04,
+"e": 112.24
+},
+{
+"seg": "honest2",
+"text": "you",
+"t": 112.24,
+"e": 112.92
+},
+{
+"seg": "honest2",
+"text": "rasa",
+"t": 112.92,
+"e": 113.2
+},
+{
+"seg": "honest2",
+"text": "macam",
+"t": 113.2,
+"e": 113.7
+},
+{
+"seg": "honest2",
+"text": "malas",
+"t": 113.7,
+"e": 114.08
+},
+{
+"seg": "honest2",
+"text": "lah,",
+"t": 114.08,
+"e": 114.38
+},
+{
+"seg": "honest2",
+"text": "macam",
+"t": 114.44,
+"e": 114.66
+},
+{
+"seg": "honest2",
+"text": "tu",
+"t": 114.66,
+"e": 114.86
+},
+{
+"seg": "honest2",
+"text": "sekali.",
+"t": 114.86,
+"e": 115.22
+},
+{
+"seg": "progress0",
+"text": "Actually,",
+"t": 115.48,
+"e": 116.08
+},
+{
+"seg": "progress0",
+"text": "jangan",
+"t": 116.48,
+"e": 116.68
+},
+{
+"seg": "progress0",
+"text": "padam",
+"t": 116.68,
+"e": 117.1
+},
+{
+"seg": "progress0",
+"text": "lagi",
+"t": 117.1,
+"e": 117.44
+},
+{
+"seg": "progress0",
+"text": "goal",
+"t": 117.44,
+"e": 117.7
+},
+{
+"seg": "progress0",
+"text": "you",
+"t": 117.7,
+"e": 118.0
+},
+{
+"seg": "progress0",
+"text": "tu.",
+"t": 118.0,
+"e": 118.22
+},
+{
+"seg": "progress0",
+"text": "You",
+"t": 118.22,
+"e": 118.82
+},
+{
+"seg": "progress0",
+"text": "just",
+"t": 118.82,
+"e": 119.46
+},
+{
+"seg": "progress0",
+"text": "need",
+"t": 119.46,
+"e": 119.74
+},
+{
+"seg": "progress0",
+"text": "to",
+"t": 119.74,
+"e": 119.98
+},
+{
+"seg": "progress0",
+"text": "figure",
+"t": 119.98,
+"e": 120.28
+},
+{
+"seg": "progress0",
+"text": "out",
+"t": 120.28,
+"e": 120.76
+},
+{
+"seg": "progress0",
+"text": "what",
+"t": 120.76,
+"e": 121.04
+},
+{
+"seg": "progress0",
+"text": "are",
+"t": 121.04,
+"e": 121.32
+},
+{
+"seg": "progress0",
+"text": "the",
+"t": 121.32,
+"e": 121.44
+},
+{
+"seg": "progress0",
+"text": "next",
+"t": 121.44,
+"e": 121.78
+},
+{
+"seg": "progress0",
+"text": "actions",
+"t": 121.78,
+"e": 122.5
+},
+{
+"seg": "progress1",
+"text": "untuk",
+"t": 122.5,
+"e": 122.91
+},
+{
+"seg": "progress1",
+"text": "you",
+"t": 122.91,
+"e": 123.32
+},
+{
+"seg": "progress2",
+"text": "move",
+"t": 123.54,
+"e": 124.04
+},
+{
+"seg": "progress2",
+"text": "or",
+"t": 124.04,
+"e": 124.62
+},
+{
+"seg": "progress2",
+"text": "progress",
+"t": 124.62,
+"e": 125.12
+},
+{
+"seg": "progress2",
+"text": "towards",
+"t": 125.12,
+"e": 125.82
+},
+{
+"seg": "progress2",
+"text": "that",
+"t": 125.82,
+"e": 126.16
+},
+{
+"seg": "progress2",
+"text": "goal.",
+"t": 126.16,
+"e": 126.4
+},
+{
+"seg": "progress2",
+"text": "Okay,",
+"t": 126.78,
+"e": 126.82
+},
+{
+"seg": "progress2",
+"text": "remember,",
+"t": 127.14,
+"e": 127.6
+},
+{
+"seg": "progress2",
+"text": "small",
+"t": 127.8,
+"e": 128.04
+},
+{
+"seg": "progress2",
+"text": "progress",
+"t": 128.04,
+"e": 128.58
+},
+{
+"seg": "progress2",
+"text": "is",
+"t": 128.58,
+"e": 129.02
+},
+{
+"seg": "progress2",
+"text": "still",
+"t": 129.02,
+"e": 129.22
+},
+{
+"seg": "progress2",
+"text": "a",
+"t": 129.22,
+"e": 129.5
+},
+{
+"seg": "progress2",
+"text": "progress.",
+"t": 129.5,
+"e": 129.85
+}
+]

@@ -1,0 +1,57 @@
+===== c1  VID_20261014_103748_154.mp4
+[  0.00-  3.76] Okay, good job. You are the MPN, you are the anger anger.
+[  4.04-  6.68] Can I please tell you that I am the MPN that anger anger you?
+[  8.08- 10.16] It's not that I thought you would be motivated.
+[ 10.96- 14.96] You thought how what to do next to achieve your goals.
+[ 15.58- 16.46] And that's okay.
+words: Okay,@0.00 good@0.80 job.@0.84 You@1.64 are@1.68 the@1.86 MPN,@2.04 you@2.84 are@3.02 the@3.24 anger@3.40 anger.@3.54 Can@4.04 I@4.16 please@4.26 tell@4.42 you@4.72 that@4.98 I@4.98 am@5.36 the@5.36 MPN@5.36 that@5.78 anger@5.90 anger@6.18 you?@6.46 It's@8.08 not@8.10 that@8.20 I@8.42 thought@8.68 you@8.90 would@9.46 be@9.70 motivated.@9.70 You@10.96 thought@11.44 how@11.76 what@12.14 to@12.54 do@12.82 next@13.02 to@13.32 achieve@13.58 your@14.06 goals.@14.44 And@15.58 that's@15.78 okay.@16.12
+speech map: S1.01 E1.50 S6.64 E7.01 S16.69 E17.15
+===== c2  VID_20261014_103817_155.mp4
+[  0.00-  5.46] If you like this video, I can tell you what to do next to achieve your goal.
+[  6.74-  7.62] Okay, let's do it again.
+[  8.06- 11.82] If you like this video, please like, share and subscribe to my channel.
+[ 23.04- 29.98] If you like this video, please like and subscribe to my channel.
+[ 30.98- 33.44] So, next, I will show you how to achieve your goal.
+[ 33.68- 37.08] Okay, and then, I will pass it up again.
+[ 39.06- 43.46] So, now, I will show you what to do next.
+[ 48.12- 55.42] You can tell exactly what to do next.
+[ 55.42- 59.32] After, I will show you how to achieve your goal.
+[ 62.06- 65.42] So, I will show you how to achieve your goal.
+words: If@0.00 you@0.50 like@0.66 this@0.66 video,@0.76 I@1.32 can@1.60 tell@1.78 you@2.10 what@2.34 to@2.72 do@3.02 next@3.24 to@3.54 achieve@3.86 your@4.42 goal.@4.82 Okay,@6.74 let's@6.96 do@7.24 it@7.24 again.@7.26 If@8.06 you@8.20 like@8.22 this@8.48 video,@8.94 please@9.32 like,@9.70 share@10.04 and@10.04 subscribe@10.44 to@11.18 my@11.82 channel.@11.82 If@23.04 you@23.76 like@24.48 this@24.92 video,@25.36 please@26.24 like@27.02 and@29.38 subscribe@29.38 to@29.50 my@29.50 channel.@29.98 So,@30.72 next,@31.12 I@31.48 will@31.50 show@31.66 you@31.82 how@31.82 to@32.34 achieve@33.04 your@33.04 goal.@33.44 Okay,@33.68 and@34.66 then,@34.76 I@35.72 will@35.74 pass@35.88 it@36.26 up@36.58 again.@36.74 So,@39.06 now,@41.10 I@41.62 will@41.72 show@41.88 you@42.10 what@42.20 to@42.72 do@42.90 next.@43.08 You@48.12 can@48.76 tell@48.98 exactly@52.38 what@53.30 to@54.38 do@54.74 next.@54.92 After,@55.42 I@56.82 will@56.84 show@57.04 you@57.30 how@58.26 to@58.56 achieve@58.80 your@59.14 goal.@59.32 So,@62.06 I@63.32 will@63.40 show@63.58 you@63.86 how@64.12 to@64.86 achieve@65.30 your@65.42 goal.@65.42
+speech map: S5.13 E6.24 S11.88 E24.02 S40.13 E40.49 S42.15 E42.56 S43.44 E44.11 S55.42 E55.87 S62.80 E63.21 S65.56 E66.20 S67.49 E68.61 S68.66 E69.02 S69.03 E70.72
+===== c3  VID_20261014_104054_158.mp4
+[  0.00-  3.64] And now we are going to do Breakdown Yoga.
+[  4.08-  6.34] We are going to achieve that 10K experience.
+[  6.52-  7.70] You can achieve that.
+[  8.36- 11.32] Starting with the product you do,
+[ 11.92- 15.44] we are going to achieve that 10K experience.
+[ 16.24- 18.08] We are going to try the kinda one step and we will start.
+[ 18.44- 22.92] And we are going to start by making a big step.
+[ 23.20- 24.24] We are going to make a big step.
+[ 24.84- 25.44] You are going to make a big goal.
+[ 29.58- 30.30] the big step
+[ 30.30- 32.08] you would add your big step
+[ 35.62- 39.12] which is not figure out proper genius product
+[ 39.12- 42.98] you would add a big step
+[ 46.98- 49.64] now you would add a big step
+[ 51.16- 53.64] then you would add a big step
+[ 53.64- 57.36] you would add your big step
+[ 57.36- 63.96] so thats your big step
+[ 63.96- 67.28] you would add your baby step
+[ 67.28- 72.24] Marketing Apple, if you want to learn more about this type of marketing app,
+[ 73.02- 74.98] you can do a great video.
+[ 81.48- 86.20] So, if you want to learn what is your next action towards your goal,
+[ 86.86- 91.30] it becomes a bit easier until you achieve that goal.
+[ 91.88- 94.32] So, you break it down.
+[ 94.32- 96.10] To be honest with you guys,
+[ 96.10-100.94] I, to be honest with you guys,
+[101.32-106.26] I am so bad, so, so bad at breaking down my goal before.
+[106.82-110.78] So, Cara, you had a goal and you thought that you had achieved your goal.
+[111.12-112.60] You thought that you were going to achieve your goal.
+[113.06-116.16] You thought that you were going to achieve your goal.
+[116.54-119.92] Actually, if you want to achieve your goal,
+[120.34-124.92] you just need to figure out what are the next actions
+[124.92-129.74] until you move or progress towards that goal.
+[129.84-132.84] Remember, small progress is still a progress.
+words: And@0.00 now@0.56 we@0.62 are@0.76 going@0.98 to@0.98 do@1.48 Breakdown@2.14 Yoga.@2.88 We@4.08 are@4.08 going@4.32 to@4.32 achieve@4.90 that@4.96 10K@5.46 experience.@5.76 You@6.52 can@6.80 achieve@6.84 that.@7.48 Starting@8.36 with@8.92 the@9.44 product@9.88 you@10.20 do,@10.76 we@11.92 are@12.12 going@12.24 to@12.24 achieve@13.48 that@13.90 10K@14.42 experience.@15.32 We@16.24 are@16.42 going@16.64 to@16.64 try@16.64 the@16.76 kinda@17.08 one@17.22 step@17.22 and@17.80 we@18.04 will@18.04 start.@18.08 And@18.44 we@18.56 are@18.68 going@18.82 to@19.08 start@19.52 by@19.52 making@19.64 a@22.18 big@22.18 step.@22.32 We@23.20 are@23.30 going@23.46 to@23.56 make@23.56 a@23.70 big@23.72 step.@23.82 You@24.84 are@24.84 going@24.84 to@25.12 make@25.16 a@25.16 big@25.16 goal.@25.16 the@29.58 big@30.30 step@30.30 you@30.30 would@30.30 add@30.40 your@30.76 big@31.14 step@31.60 which@35.62 is@36.34 not@37.06 figure@37.28 out@37.54 proper@37.90 genius@38.26 product@38.62 you@39.12 would@40.34 add@40.54 a@40.62 big@40.76 step@40.96 now@46.98 you@47.70 would@48.36 add@48.54 a@48.72 big@48.92 step@49.20 then@51.16 you@51.88 would@52.54 add@52.82 a@52.94 big@53.10 step@53.30 you@53.64 would@53.90 add@54.04 your@54.28 big@55.00 step@55.26 so@57.36 thats@57.58 your@59.68 big@60.10 step@60.10 you@63.96 would@64.32 add@64.78 your@65.00 baby@65.64 step@66.14 Marketing@67.28 Apple,@68.02 if@68.68 you@69.04 want@69.74 to@69.74 learn@69.88 more@69.88 about@70.28 this@70.28 type@70.60 of@70.94 marketing@71.04 app,@71.56 you@73.02 can@73.02 do@73.34 a@73.62 great@74.36 video.@74.38 So,@81.28 if@81.80 you@81.88 want@82.16 to@82.36 learn@82.36 what@82.36 is@83.32 your@83.54 next@83.74 action@84.14 towards@84.80 your@85.32 goal,@85.86 it@86.86 becomes@87.10 a@87.56 bit@87.90 easier@88.14 until@88.92 you@89.66 achieve@90.02 that@90.48 goal.@90.88 So,@91.88 you@91.96 break@92.34 it@92.34 down.@93.82 To@94.32 be@94.96 honest@95.08 with@95.32 you@95.64 guys,@95.80 I,@96.10 to@98.08 be@98.60 honest@98.78 with@99.10 you@100.58 guys,@100.78 I@101.32 am@101.38 so@101.66 bad,@102.30 so,@103.14 so@103.52 bad@103.72 at@104.06 breaking@104.42 down@104.78 my@105.18 goal@105.42 before.@105.76 So,@106.82 Cara,@107.00 you@107.22 had@107.22 a@107.34 goal@107.50 and@107.76 you@108.28 thought@108.72 that@109.28 you@109.52 had@109.82 achieved@109.82 your@110.20 goal.@110.56 You@111.12 thought@111.26 that@111.28 you@111.60 were@111.96 going@111.96 to@111.96 achieve@112.20 your@112.20 goal.@112.44 You@113.06 thought@113.58 that@114.34 you@114.52 were@114.96 going@115.06 to@115.26 achieve@116.10 your@116.10 goal.@116.10 Actually,@116.54 if@118.50 you@118.84 want@118.90 to@119.18 achieve@119.52 your@119.52 goal,@119.76 you@120.34 just@120.34 need@121.76 to@122.08 figure@122.34 out@122.56 what@123.02 are@123.38 the@123.64 next@123.80 actions@124.06 until@124.92 you@125.58 move@126.06 or@126.94 progress@127.52 towards@128.16 that@128.90 goal.@129.22 Remember,@129.84 small@130.84 progress@131.12 is@131.54 still@132.04 a@132.30 progress.@132.52
+speech map: S1.68 E2.09 S15.34 E15.78 S27.31 E27.91 S39.33 E40.24 S41.28 E47.28 S50.63 E51.70 S76.13 E81.46 S86.62 E87.00 S97.24 E98.53 S99.36 E99.77 S108.82 E109.17 S118.31 E118.72 S120.67 E121.04 S125.08 E125.45 S126.11 E126.58 S127.03 E127.40 S128.28 E128.66 S133.20 E133.74

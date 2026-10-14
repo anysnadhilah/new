@@ -1,0 +1,15 @@
+# media and generated outputs stay local (hundreds of MB)
+*.mp4
+*.webm
+*.wav
+*.mp3
+*.png
+*.jpg
+index.html
+node_modules/
+*/work/prev/
+*/work/alpha/
+*/snapshots/
+*/renders/
+*/assets/fonts/
+*/assets/sfx/
