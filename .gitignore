@@ -1,1 +1,6 @@
-reel-edits/
+reel-edits/**/assets/
+reel-edits/**/renders/
+reel-edits/**/work/
+reel-edits/**/snapshots/
+reel-edits/**/sources.json
+reel-edits/**/.transcode-cache/
