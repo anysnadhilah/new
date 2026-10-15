@@ -148,6 +148,7 @@ class NoteWall(Effect):
     """Notes pop up on the wall behind you, one after another. Options: notes[] (text) or images[]; every."""
     name = "note-wall"
     needs_matte = True
+    reserves = "top"
     headline = False
 
     def __init__(self, spec, ctx):
@@ -156,13 +157,14 @@ class NoteWall(Effect):
         texts = spec.get("notes") or spec.get("headlines") or ["note one", "note two", "note three"]
         imgs = [user_image(ctx, p) for p in spec.get("images", [])]
         self.cards = [self._card(x, i, r) for i, x in enumerate(texts)] + [self._img_card(im, r) for im in imgs]
-        n = len(self.cards)
         cols = 3
         self.spots = []
-        for i in range(n):
+        for i, card in enumerate(self.cards):
             col, row = i % cols, i // cols
-            x = 190 + col * 350 + r.uniform(-50, 50)
-            y = SAFE["top"] + 120 + row * 230 + r.uniform(-40, 40)
+            hw = card.width / 2
+            x = W / 2 + (col - 1) * 330 + r.uniform(-30, 30)
+            x = min(max(x, SAFE["left"] + hw), SAFE["right"] - hw)
+            y = SAFE["top"] + 110 + row * 210 + r.uniform(-30, 30)
             self.spots.append((x, min(y, 1250), r.uniform(-7, 7)))
         self.every = float(spec.get("every", 0.22 if self.headline else 0.35))
 
@@ -215,6 +217,7 @@ class ChartGrow(Effect):
     points[] (0..1 heights)."""
     name = "chart-grow"
     needs_matte = True
+    reserves = "top"
 
     def __init__(self, spec, ctx):
         super().__init__(spec, ctx)
@@ -222,7 +225,9 @@ class ChartGrow(Effect):
         self.points = spec.get("points", [0.05, 0.12, 0.1, 0.25, 0.38, 0.62, 0.95])
         self.label = spec.get("label", "growth ↗")
         self.x0, self.x1 = 100, W - 100
-        self.y0, self.y1 = SAFE["top"] + 90, 1150
+        _, _, top, _ = self.face(self.start)
+        self.y0 = SAFE["top"] + 90
+        self.y1 = min(1150, max(self.y0 + 330, top + 160))   # keep most of the chart above the head
         self.grid = self._grid()
         self.tag = self._tag()
         self.cache = {}

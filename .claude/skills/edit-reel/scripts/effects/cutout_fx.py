@@ -67,6 +67,7 @@ class PaperCutout(Effect):
     cut-out letters). Options: text (cut-out letters, e.g. "100%"), seed."""
     name = "paper-cutout"
     needs_matte = True
+    reserves = "top"
     ease_in = 0.15
     ease_out = 0.15
 
@@ -136,7 +137,7 @@ class PaperCutout(Effect):
             if k > 0:
                 img = xform(l, scale=k)
                 frame.paste(img, (int(x), int(SAFE["top"] + 40)), img)
-            x += l.width - 8
+            x += l.width + 6
 
 
 # ---------------------------------------------------------------- 14. doodle outline
@@ -183,11 +184,20 @@ class DoodleOutline(Effect):
             if cv2.contourArea(c) < 400:
                 continue
             c = cv2.approxPolyDP(c, 1.2, True)[:, 0, :].astype(np.float32) * 4
+            c = c[: int(len(c) * reveal)]
+            # no line where the body leaves the frame: split the contour at the frame edges
+            inside = (c[:, 0] > 10) & (c[:, 0] < W - 10) & (c[:, 1] > 10) & (c[:, 1] < H - 10)
             c += r.normal(0, 2.2, c.shape)
-            n = int(len(c) * reveal)
-            if n > 2:
-                pts = [tuple(p) for p in c[:n]] + ([tuple(c[0])] if reveal >= 1 else [])
-                d.line(pts, fill=rgba(self.color, int(255 * e)), width=7, joint="curve")
+            run = []
+            for p, ok in zip(c, inside):
+                if ok:
+                    run.append(tuple(p))
+                elif run:
+                    if len(run) > 2:
+                        d.line(run, fill=rgba(self.color, int(255 * e)), width=7, joint="curve")
+                    run = []
+            if len(run) > 2:
+                d.line(run, fill=rgba(self.color, int(255 * e)), width=7, joint="curve")
         cx, cy, top, chin = self.face(t)
         spots = [(cx - 300, top + 20, 120), (cx + 300, top - 30, 110), (cx + 330, chin + 60, 90), (cx - 330, chin + 90, 90)]
         for i, (kind, (x, y, s)) in enumerate(zip(self.doodles, spots)):
