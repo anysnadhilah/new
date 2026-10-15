@@ -16,7 +16,7 @@ from pathlib import Path
 SK = Path(__file__).resolve().parent.parent
 VENV = SK / ".venv"
 FONTS = SK / "assets" / "fonts"
-PACKAGES = ["faster-whisper", "opencv-python-headless<5", "pillow", "numpy", "gdown", "yt-dlp", "instaloader"]
+PACKAGES = ["faster-whisper", "opencv-python-headless<5", "pillow", "numpy", "gdown", "yt-dlp", "instaloader", "onnxruntime"]
 
 # file name -> Google Fonts css2 family spec (all SIL Open Font License)
 FONT_SPECS = {
@@ -62,7 +62,7 @@ def main():
         if r.returncode != 0:
             status("venv", False, "Linux: sudo apt install python3-venv")
             sys.exit(1)
-    check = "import faster_whisper, cv2, PIL, numpy, gdown, yt_dlp, instaloader"
+    check = "import faster_whisper, cv2, PIL, numpy, gdown, yt_dlp, instaloader, onnxruntime"
     if subprocess.run([str(py), "-c", check], capture_output=True).returncode != 0:
         print("installing Python packages (first run takes a minute)...", flush=True)
         subprocess.run([str(py), "-m", "pip", "install", "-q", "--upgrade", "pip"], capture_output=True)

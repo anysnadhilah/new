@@ -23,6 +23,7 @@ class Context:
         self.captions = plan.get("captions", [])
         self.hook = plan.get("hook")
         self.stickers = plan.get("stickers", [])
+        self.effects = plan.get("effects", [])
         self.zone_pref = plan.get("zone", "auto")
         if self.zone_pref == "auto":
             self.zone_pref = self._auto_zone()
@@ -127,6 +128,8 @@ class Style:
         self.rng = np.random.default_rng(seed)
         self.static = None
         self.caption_box = None
+        self.hide_captions = False
+        self.reserved = None
         self.layouts = [self.layout(i, c) for i, c in enumerate(ctx.captions)]
 
     # ------------------------------------------------------------ style hooks
@@ -225,13 +228,21 @@ class Style:
         hook = self.ctx.hook
         in_hook = bool(hook) and hook["start"] <= t < hook["end"]
         for cap, lay in zip(self.ctx.captions, self.layouts):
-            if not (cap["start"] <= t < cap["end"]):
+            if not (cap["start"] <= t < cap["end"]) or self.hide_captions:
                 continue
             if in_hook:
                 continue        # the hook replaces captions while it is on screen
-            if lay["y"] is None:
-                lay["y"] = self.ctx.block_y(cap["start"] + 0.01, lay["h"] + 40)
-            cx, cy = W / 2, lay["y"]
+            if self.reserved:
+                # an effect owns one zone right now: use the other, or stay hidden if it does not fit
+                y = self.ctx.block_y(cap["start"] + 0.01, lay["h"] + 40,
+                                     prefer="bottom" if self.reserved == "top" else "top")
+                if (y < H / 2) == (self.reserved == "top"):
+                    continue
+                cx, cy = W / 2, y
+            else:
+                if lay["y"] is None:
+                    lay["y"] = self.ctx.block_y(cap["start"] + 0.01, lay["h"] + 40)
+                cx, cy = W / 2, lay["y"]
             self.caption_box = (cy, lay["h"], cap["end"])
             k_out = prog(t, cap["end"] - self.out_dur, self.out_dur)
             self.behind(canvas, t, cap, lay, cx, cy, k_out)

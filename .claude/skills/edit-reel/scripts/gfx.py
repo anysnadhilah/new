@@ -46,8 +46,8 @@ def lerp(a, b, x):
 def rgba(hex_or_tuple, alpha=255):
     if isinstance(hex_or_tuple, tuple):
         return hex_or_tuple if len(hex_or_tuple) == 4 else (*hex_or_tuple, alpha)
-    h = hex_or_tuple.lstrip("#")
-    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4)) + (alpha,)
+    from PIL import ImageColor
+    return ImageColor.getrgb(hex_or_tuple)[:3] + (alpha,)
 
 
 # ------------------------------------------------------------------ text

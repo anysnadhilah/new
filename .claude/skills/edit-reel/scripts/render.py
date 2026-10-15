@@ -18,6 +18,7 @@ from PIL import Image, ImageDraw
 
 from common import FPS, H, SFX, SR, W, die, load_json, project_dir
 from gfx import font
+from effects import Matte, any_hides_captions, compose, load_effects, reserved_zone
 from styles.base import Context, blank, safe_guides
 
 STYLES = {"whimsical": "styles.whimsical", "it-girl": "styles.it_girl", "scrapbook": "styles.scrapbook"}
@@ -72,22 +73,29 @@ def full(proj, style, ctx, safe, draft):
                             "-crf", "21" if draft else "17", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(silent)],
                            stdin=subprocess.PIPE, stderr=subprocess.PIPE)
     size = W * H * 3
+    effects = load_effects({"effects": ctx.effects}, ctx=ctx)
+    matte = Matte(work)
     t0 = time.time()
     for f in range(ctx.frames):
         raw = dec.stdout.read(size)
         if len(raw) < size:
             die(f"a-roll ended early at frame {f} of {ctx.frames}: {dec.stderr.read().decode()[-800:]}")
+        t = f / FPS
+        frame = None
+        if any(e.active(t) for e in effects):
+            frame = compose(Image.frombytes("RGB", (W, H), raw), t, effects, matte)
+        style.hide_captions = any_hides_captions(effects, t)
+        style.reserved = reserved_zone(effects, t)
         layer = blank()
-        style.draw(layer, f / FPS)
+        style.draw(layer, t)
         if safe:
             safe_guides(layer)
         box = layer.getbbox()
         if box:
-            frame = Image.frombytes("RGB", (W, H), raw)
+            frame = frame or Image.frombytes("RGB", (W, H), raw)
             part = layer.crop(box)
             frame.paste(part, box[:2], part)
-            raw = frame.tobytes()
-        enc.stdin.write(raw)
+        enc.stdin.write(frame.tobytes() if frame is not None else raw)
         if f % (FPS * 5) == 0 and f:
             print(f"  {f / FPS:5.1f}s / {ctx.duration:.1f}s  ({time.time() - t0:.0f}s elapsed)", flush=True)
     enc.stdin.close()
@@ -96,7 +104,7 @@ def full(proj, style, ctx, safe, draft):
     if enc.wait() != 0:
         die(f"encoding failed: {enc.stderr.read().decode()[-1500:]}")
     audio = (f"[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,aresample={SR}[vo];[2:a]aformat=channel_layouts=stereo[fx];"
-             f"[vo][fx]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.89[a]")
+             f"[vo][fx]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.84:level=0:attack=2:release=60[a]")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(silent), "-i", str(work / "aroll.mkv"), "-i", str(sfx_path),
                     "-filter_complex", audio, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
                     "-shortest", "-movflags", "+faststart", str(out)], check=True)
@@ -109,12 +117,16 @@ def full(proj, style, ctx, safe, draft):
 
 def snapshots(proj, style, ctx, times, safe):
     work = proj / "work"
+    effects = load_effects({"effects": ctx.effects}, ctx=ctx)
+    matte = Matte(work)
     thumbs = []
     for t in times:
         frame = work / "snap_frame.png"
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.3f}", "-i", str(work / "aroll.mkv"),
                         "-filter_complex", style.grade(), "-map", "[bg]", "-frames:v", "1", str(frame)], check=True)
-        base = Image.open(frame).convert("RGBA")
+        base = compose(Image.open(frame).convert("RGB"), t, effects, matte).convert("RGBA")
+        style.hide_captions = any_hides_captions(effects, t)
+        style.reserved = reserved_zone(effects, t)
         canvas = blank()
         style.draw(canvas, t)
         safe_guides(canvas) if safe else None

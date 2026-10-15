@@ -1,6 +1,6 @@
 ---
 name: edit-reel
-description: "Edits raw vertical talking-head clips into a finished Instagram reel in one of three signature styles: it girl (clean editorial serif captions, chapter titles), whimsical (warm glow, chunky two-tone words, twinkling asterisks, pill labels) or scrapbook (collage mixed-font headlines with shiny 3D gem stickers, notes and taped photos). Takes clips from a folder or a Google Drive link, picks the best take of every line, cuts dead air, frames the face, writes word-timed animated captions that never cover the face, adds motion graphics and subtle sound effects, then QA-checks every cut. Trigger with /edit-reel or phrases like 'edit my reel', 'edit these clips', 'make a reel from this drive link', 'use the scrapbook style'."
+description: "Edits raw vertical talking-head clips into a finished Instagram reel in one of three signature styles: it girl (clean editorial serif captions, chapter titles), whimsical (warm glow, chunky two-tone words, twinkling asterisks, pill labels) or scrapbook (collage mixed-font headlines with shiny 3D gem stickers, notes and taped photos). Takes clips from a folder or a Google Drive link, picks the best take of every line, cuts dead air, frames the face, writes word-timed animated captions that never cover the face, adds motion graphics and subtle sound effects, adds any of 17 video effects (punch zoom, zoom-through cut, checklist, floating phone, pull-back reveal, text behind your head, glass titles, dolly zoom, new background, paper cutout, doodle outline, orbit, chart grow, note and headline walls...), then QA-checks every cut. Trigger with /edit-reel or phrases like 'edit my reel', 'edit these clips', 'make a reel from this drive link', 'use the scrapbook style'."
 ---
 
 # /edit-reel
@@ -11,8 +11,9 @@ plain words, and each round is a quick re-render.
 `SK` = this skill's folder (the one holding this SKILL.md), as a full path.
 `PY` = `SK/.venv/bin/python` (the skill's own Python, created by setup). Run every script with `PY`.
 
-Before building, read `references/styles.md` (what each style looks like and its knobs) and
-`references/editing.md` (how to pick takes, fix captions, write hooks, place stickers).
+Before building, read `references/styles.md` (what each style looks like and its knobs),
+`references/editing.md` (how to pick takes, fix captions, write hooks, place stickers) and
+`references/effects.md` (the 17 motion-graphic / video effects and when to use them).
 
 ## Step 0: Setup (every run, a few seconds after the first time)
 
@@ -88,13 +89,22 @@ This drafts `plan.json`. Now edit it like an editor (details in `references/edit
   section of a list video; whimsical → `pill`s for numbers, steps and names; scrapbook → 2-4 `gem`s, `note`s and
   `photo`s on top of the automatic gem dazzle.
 
+## Step 5b: Effects
+
+Pick 2-6 effects from `references/effects.md` that serve the story (or the ones the user asks for by name) and add
+them to `plan.json` → `effects`, timed to the words they illustrate. Never two at once. If any is marked cutout:
+```
+PY SK/scripts/cutout.py <project>          # run in the background; prints progress; only effect frames
+```
+Re-run it whenever effect times change (it skips work that is already done).
+
 ## Step 6: Look before rendering
 
 ```
 PY SK/scripts/render.py <project> --at 0.5,2.0,<10-14 moments across the reel> --safe
 ```
-Read `work/snap.jpg`. Check: no text on the face, everything inside the red safe lines, punch words read,
-nothing crowded. Fix `plan.json` (shorter captions, other emph, `"zone": "top"` or `"bottom"`) or the EDL, repeat.
+Read `work/snap.jpg`. Include the middle of every effect. Check: no text or graphic on the face, everything
+inside the red safe lines, punch words read, nothing crowded, cutout edges clean. Fix `plan.json` (shorter captions, other emph, `"zone": "top"` or `"bottom"`) or the EDL, repeat.
 
 ## Step 7: Render and QA
 
