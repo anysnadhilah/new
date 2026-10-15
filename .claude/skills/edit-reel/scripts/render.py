@@ -96,7 +96,7 @@ def full(proj, style, ctx, safe, draft):
     if enc.wait() != 0:
         die(f"encoding failed: {enc.stderr.read().decode()[-1500:]}")
     audio = (f"[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,aresample={SR}[vo];[2:a]aformat=channel_layouts=stereo[fx];"
-             f"[vo][fx]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.93[a]")
+             f"[vo][fx]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.89[a]")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(silent), "-i", str(work / "aroll.mkv"), "-i", str(sfx_path),
                     "-filter_complex", audio, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
                     "-shortest", "-movflags", "+faststart", str(out)], check=True)
