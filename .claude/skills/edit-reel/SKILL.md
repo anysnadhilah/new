@@ -1,6 +1,6 @@
 ---
 name: edit-reel
-description: "Edits raw vertical talking-head clips into a finished Instagram reel in one of three signature styles: whimsical (pastel, sparkly, bubbly), it girl (chic cream film look, serif punch words) or scrapbook (torn paper, tape, ransom letters, doodles). Takes clips from a folder or a Google Drive link, picks the best take of every line, cuts dead air, frames the face, writes word-timed animated captions that never cover the face, adds motion graphics and subtle sound effects, then QA-checks every cut. Trigger with /edit-reel or phrases like 'edit my reel', 'edit these clips', 'make a reel from this drive link', 'use the scrapbook style'."
+description: "Edits raw vertical talking-head clips into a finished Instagram reel in one of three signature styles: it girl (clean editorial serif captions, chapter titles), whimsical (warm glow, chunky two-tone words, twinkling asterisks, pill labels) or scrapbook (collage mixed-font headlines with shiny 3D gem stickers, notes and taped photos). Takes clips from a folder or a Google Drive link, picks the best take of every line, cuts dead air, frames the face, writes word-timed animated captions that never cover the face, adds motion graphics and subtle sound effects, then QA-checks every cut. Trigger with /edit-reel or phrases like 'edit my reel', 'edit these clips', 'make a reel from this drive link', 'use the scrapbook style'."
 ---
 
 # /edit-reel
@@ -40,6 +40,10 @@ Before building, read `references/styles.md` (what each style looks like and its
 - Style: whatever the user asked for (cool girl / clean girl / aesthetic → `it-girl`; cute / dreamy / magical →
   `whimsical`; crafty / journal / collage → `scrapbook`), else `defaultStyle`.
 - Tell the user right away what you are doing and roughly when the first draft lands (Step 8 has timings).
+- Reference links ("make it look like this reel"): `PY SK/scripts/refs.py <project> <links...>` downloads them and
+  writes `refs/ref<N>-sheet.jpg`. Look at the sheets, say in plain words what you see (colour, fonts, text placement,
+  graphics, pacing), map it onto the closest style and its knobs, and only then build. Take the feel, never copy
+  someone's exact design, logo or text. A failed Instagram link → ask for a Drive copy.
 
 ## Step 2: Ingest
 
@@ -64,7 +68,7 @@ Post the EDL to the user as a short table (line, clip, time) and keep going; do 
 ## Step 4: Assemble
 
 ```
-PY SK/scripts/assemble.py <project> --push <style push>     # it-girl 0.035, others 0
+PY SK/scripts/assemble.py <project> --push <style push>     # it-girl 0.025, others 0
 ```
 Makes `work/aroll.mkv` (1080x1920, 30 fps) and `timeline.json` (segments, words in reel time, face boxes).
 About 3-4 s per second of reel on a laptop CPU for 4K HEVC phone footage; faster for 1080p.
@@ -78,8 +82,11 @@ This drafts `plan.json`. Now edit it like an editor (details in `references/edit
 - Fix every misheard word so captions say exactly what was said, in the speaker's language and spelling.
   Never invent words. No em dashes.
 - Set `emph` (the punch word) on roughly every 2nd-3rd caption, on the word that carries the meaning.
-- Write a `hook` for the first 2-3 s: a short scroll-stopping line (often the opening question) + optional label.
-- Add 2-5 `stickers` at meaningful moments (style-specific types in `references/styles.md`).
+- Write a `hook` for the first 2-3 s: a short scroll-stopping line (often the opening question) + optional
+  `label` and `sub`.
+- Add stickers at meaningful moments (types per style in `references/styles.md`): it girl → a `chapter` per
+  section of a list video; whimsical → `pill`s for numbers, steps and names; scrapbook → 2-4 `gem`s, `note`s and
+  `photo`s on top of the automatic gem dazzle.
 
 ## Step 6: Look before rendering
 

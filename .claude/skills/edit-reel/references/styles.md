@@ -2,42 +2,58 @@
 
 All graphics are drawn by code (no stock art, no licensed samples). Fonts are Google Fonts (SIL Open Font License),
 downloaded by setup. Each style lives in `scripts/styles/<name>.py`; the knobs are the constants at the top.
-
-## whimsical (`styles/whimsical.py`)
-Dreamy, magical, soft.
-- Grade: lifted, slightly pink/blue, gentle bloom (screen-blended blur) + soft pink edge haze.
-- Captions: Fredoka, white, thick pastel outline (pink, lilac, sky, mint, cycling per caption). Each word
-  bounces in on its spoken frame (overshoot + tilt), then floats gently.
-- Punch word: Pacifico script in the caption's pastel, white outline; three little hearts float up from it.
-- Always on: twinkling sparkles around each caption, bubbles drifting up the side margins.
-- Cuts: soft white flash + sparkle burst.
-- Hook: bubbly letters drop in one by one, script label above, sparkles around.
-- Stickers: `heart`, `star`, `sparkle`.
-- Sound: twinkle on cuts, pop on punch words and stickers.
-- Assemble push: 0.
+The hook (`plan.json` → `hook`) takes `text`, optional `label` (small kicker) and optional `sub` (small line under).
+Hooks shrink automatically to fit the free space around the head.
 
 ## it-girl (`styles/it_girl.py`)
-Chic, confident, expensive. Use for "cool girl", "clean girl", "aesthetic", "luxury".
-- Grade: warm creamy film (lifted blacks, rolled-off highlights, lower saturation) + vignette.
-- Captions: Jost, cream, lowercase, calm. Words fade up out of a soft blur as they are spoken.
-- Punch word: Bodoni Moda italic, large, letters rise from an invisible baseline; a hairline draws itself under it.
-- Always on: a thin cream frame line fades in at the start. Slow push-in on every shot (assemble `--push 0.035`).
-- Cuts: a warm light leak sweeps across.
-- Hook: tracked-caps label between two sparkles + big italic serif title.
-- Stickers: `sparkle`, `label` (tracked caps, needs `text`).
-- Sound: soft whoosh on cuts, tick on punch words.
+Clean, chic, editorial. Use for "it girl", "cool girl", "clean girl", "aesthetic", "luxury".
+- Grade: natural and bright, a touch of warmth. No frame, no light leaks, clean cuts: the restraint is the look.
+- Captions: Tinos (classic Times-like serif), white, tight tracking, soft shadow. A whole phrase fades in at once.
+- Punch word (`emph`): same serif set big on its own line, so the key line dominates ("you / don't have / to be a").
+- Hook: italic serif `label` above, big serif line, optional small `sub` line under.
+- Stickers:
+  - `chapter` + `text`: bold butter-yellow caps title, e.g. "1. plan your week" (great for list videos; give it
+    the whole section as `dur`).
+  - `italic` + `text`: white italic serif label, e.g. a method or product name.
+- Sound: almost none (tick on stickers). Assemble push: 0.025.
+
+## whimsical (`styles/whimsical.py`)
+Cosy, dreamy, playful.
+- Grade: warm cream with a soft bloom (fairy-light glow).
+- Captions: Figtree ExtraBold, lowercase, tight tracking, stacked tight. Line 1 cream, line 2 butter yellow.
+  Words pop in on their spoken frame and float gently.
+- Punch word: butter yellow, bigger, own line.
+- Always on: thin white asterisk sparkles twinkle and turn beside each caption.
+- Hook: big stacked two-tone headline, `label` becomes a yellow pill under it, asterisks around.
+- Stickers:
+  - `pill` + `text` (+ optional `value` shown bold on the right, like "revenue  $21,389"): white rounded chip.
+  - `pill-yellow` + `text`: butter-yellow chip.
+  - `aside` + `text`: small "(text in brackets)" note.
+  - `asterisk` / `star`: a big twinkling sparkle.
+- Cuts: a very soft warm flash. Sound: pop on punch words and stickers, twinkle on the hook.
 
 ## scrapbook (`styles/scrapbook.py`)
-Crafty, playful, personal.
-- Grade: warm, a touch more contrast, mild vignette. Torn kraft + paper edges at the very top and bottom
-  (inside the Instagram UI area, so they frame the preview without hiding anything).
-- Captions: Special Elite typewriter text on torn paper strips with tape, strips slap down, words type on.
-- Punch word: ransom-note cut-out letters (mixed fonts and paper colours), popping in one by one;
-  a marker underline, circle or arrow draws itself.
-- Cuts: every third cut a kraft paper sheet wipes across; the others get a camera-shutter flash.
-- Hook: big ransom-letter title + handwritten label on a taped note.
-- Stickers: `star`, `heart`, `smiley`, `note` (handwritten on yellow paper, needs `text`).
-- Sound: paper slap on strips, tick per ransom letter, whoosh on wipes, shutter on flashes.
+A collage journal page come to life.
+- Grade: warm, a little extra contrast and saturation, light vignette.
+- Captions mix type like a magazine collage: plain words alternate per caption between pink serif
+  (Playfair Display) and yellow italic serif with a brown outline (Fraunces). The punch word is chunky rounded white
+  (Nunito Black) with a hot-pink outline and glow.
+- Dazzle: shiny 3D gems pop in around every caption and glint (chrome/gold stars, jelly flowers, rhinestone heart and
+  flower, iridescent sequins, holographic heart, disco ball, chrome sparkle); small gems and sequins sit in the
+  margins the whole time. Gems never sit on the face.
+- Hook: yellow italic `label`, chunky pink-glow headline, pink serif `sub`, with a shower of gems around it.
+- Stickers:
+  - `gem` + `kind` (one of: chrome-star, gold-star, jelly-star, jelly-flower-pink, jelly-flower-peach,
+    jelly-flower-lilac, rhinestone-heart, rhinestone-flower, sequin, holo-heart, disco, chrome-sparkle), optional
+    `size` (default 150).
+  - `star`, `heart`: shortcuts for chrome-star and rhinestone-heart.
+  - `note` + `text`: handwritten words on a torn yellow note.
+  - `photo` + `file` (path inside the project, e.g. `photos/book.jpg`), optional `w`: a taped print. Ask the user for
+    photos that fit the story (places, products, screenshots) and drop them in `<project>/photos/`.
+- Cuts: camera-shutter flash. Sound: shutter on cuts, soft twinkle per caption, pop on punch words and stickers.
+
+## Preview the gems
+`PY SK/scripts/gems.py out.jpg` renders every gem on one sheet.
 
 ## Adding a fourth style
 Copy the closest style file, rename the class and `STYLE = ...`, change fonts/colours/motion, and register it in

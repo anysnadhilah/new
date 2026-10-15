@@ -16,18 +16,19 @@ from pathlib import Path
 SK = Path(__file__).resolve().parent.parent
 VENV = SK / ".venv"
 FONTS = SK / "assets" / "fonts"
-PACKAGES = ["faster-whisper", "opencv-python-headless<5", "pillow", "numpy", "gdown"]
+PACKAGES = ["faster-whisper", "opencv-python-headless<5", "pillow", "numpy", "gdown", "yt-dlp", "instaloader"]
 
 # file name -> Google Fonts css2 family spec (all SIL Open Font License)
 FONT_SPECS = {
-    "Fredoka-SemiBold.ttf": "Fredoka:wght@600",
-    "Pacifico-Regular.ttf": "Pacifico",
-    "BodoniModa-MediumItalic.ttf": "Bodoni+Moda:ital,wght@1,500",
     "Jost-Medium.ttf": "Jost:wght@500",
-    "SpecialElite-Regular.ttf": "Special+Elite",
-    "PermanentMarker-Regular.ttf": "Permanent+Marker",
-    "ArchivoBlack-Regular.ttf": "Archivo+Black",
     "ShadowsIntoLight-Regular.ttf": "Shadows+Into+Light",
+    "Tinos-Regular.ttf": "Tinos",
+    "Tinos-Italic.ttf": "Tinos:ital@1",
+    "Figtree-ExtraBold.ttf": "Figtree:wght@800",
+    "Figtree-Medium.ttf": "Figtree:wght@500",
+    "Fraunces-SemiBoldItalic.ttf": "Fraunces:ital,wght@1,600",
+    "PlayfairDisplay-SemiBold.ttf": "Playfair+Display:wght@600",
+    "Nunito-Black.ttf": "Nunito:wght@900",
 }
 
 ok = True
@@ -61,7 +62,7 @@ def main():
         if r.returncode != 0:
             status("venv", False, "Linux: sudo apt install python3-venv")
             sys.exit(1)
-    check = "import faster_whisper, cv2, PIL, numpy, gdown"
+    check = "import faster_whisper, cv2, PIL, numpy, gdown, yt_dlp, instaloader"
     if subprocess.run([str(py), "-c", check], capture_output=True).returncode != 0:
         print("installing Python packages (first run takes a minute)...", flush=True)
         subprocess.run([str(py), "-m", "pip", "install", "-q", "--upgrade", "pip"], capture_output=True)

@@ -30,9 +30,10 @@ captions while it shows. 2-5 words, a question or bold claim from the video itse
 The label is a tiny kicker ("real talk", "pov", "my method"). Set `"hook": null` to skip.
 
 ## Stickers
-`{"type": "heart", "at": 12.4, "dur": 1.6}` plus optional `"x"`, `"y"` (pixels) and `"text"`.
-Place 2-5 per reel on moments that deserve a beat: the problem ("overwhelmed" → heart), a tip, the method name
-(`note`/`label` with its name). Without x/y they go to the free side of the face near the top.
+`{"type": "...", "at": 12.4, "dur": 1.6, ...}` plus optional `"x"`, `"y"` (pixels). Types differ per style, see
+`references/styles.md`. Without x/y they go to free space away from the caption on screen and the face.
+Use them for structure and payoff: a chapter title per list item, a pill with a number or step, a gem on an
+emotional beat, a note or photo with the method's name. Don't stack more than one sticker at a time.
 
 ## Reading notes from the user
 - "the captions are too fast/slow" → regroup words (more or fewer per group).

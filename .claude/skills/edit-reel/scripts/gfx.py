@@ -351,3 +351,41 @@ def radial(w, h, color, inner=0.0, outer=1.0, alpha=255, invert=False):
     arr = np.zeros((h, w, 4), np.uint8)
     arr[..., 0], arr[..., 1], arr[..., 2], arr[..., 3] = c[0], c[1], c[2], a
     return Image.fromarray(arr, "RGBA")
+
+
+def asterisk(size, color="#FFFFFF", arms=6, width=0.2, glow_blur=None):
+    """Hand-made looking asterisk with rounded arms (the whimsical sparkle)."""
+    pad = size // 3
+
+    def draw(d, k):
+        c = (size / 2 + pad) * k
+        r = size / 2 * k
+        w = max(2, int(size * width * k))
+        for i in range(arms):
+            a = math.pi * i / arms + 0.2
+            x0, y0 = c - r * math.cos(a), c - r * math.sin(a)
+            x1, y1 = c + r * math.cos(a), c + r * math.sin(a)
+            d.line((x0, y0, x1, y1), fill=rgba(color), width=w)
+            for x, y in ((x0, y0), (x1, y1)):
+                d.ellipse((x - w / 2, y - w / 2, x + w / 2, y + w / 2), fill=rgba(color))
+    img = supersample(size + 2 * pad, size + 2 * pad, draw)
+    return glow(img, glow_blur or max(2, size // 8), 1)
+
+
+def pill(text, value=None, fill="#FFFFFF", ink="#1E1E1E", size=40, font_name="Figtree-Medium.ttf",
+         value_font="Figtree-ExtraBold.ttf", min_w=0):
+    """Rounded label chip, optionally 'label ........ value' like a stat card."""
+    t = trim(text_img(text, font_name, size, ink, pad=2))
+    v = trim(text_img(value, value_font, size, ink, pad=2)) if value else None
+    h = int(size * 1.9)
+    gap = int(size * 2.2) if v else 0
+    w = max(min_w, t.width + (v.width + gap if v else 0) + int(size * 1.3))
+    card = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+
+    def draw(d, k):
+        d.rounded_rectangle((0, 0, (w - 1) * k, (h - 1) * k), radius=h * k / 2, fill=rgba(fill))
+    card = supersample(w, h, draw)
+    card.alpha_composite(t, (int(size * 0.65), (h - t.height) // 2))
+    if v:
+        card.alpha_composite(v, (w - v.width - int(size * 0.65), (h - v.height) // 2))
+    return drop_shadow(card, 0, 4, 8, (40, 25, 15, 70))

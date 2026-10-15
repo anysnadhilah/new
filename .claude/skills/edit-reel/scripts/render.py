@@ -143,7 +143,7 @@ def main():
     proj = project_dir(a.project)
     plan = load_json(proj / "plan.json")
     tl = load_json(proj / "timeline.json")
-    ctx = Context(tl, plan)
+    ctx = Context(tl, plan, proj)
     style = load_style(a.style or plan.get("style", "it-girl"), ctx)
     if a.at:
         snapshots(proj, style, ctx, [float(x) for x in a.at.split(",")], a.safe)

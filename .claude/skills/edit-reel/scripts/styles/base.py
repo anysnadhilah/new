@@ -13,7 +13,8 @@ from gfx import place, prog
 
 
 class Context:
-    def __init__(self, timeline, plan):
+    def __init__(self, timeline, plan, project=None):
+        self.project = project
         self.fps = FPS
         self.duration = timeline["duration"]
         self.frames = timeline["frames"]
@@ -43,11 +44,11 @@ class Context:
 
     @staticmethod
     def face_core(seg):
-        """Eyes-to-chin box only: text may overlap hair or hijab, never this."""
+        """Forehead-to-chin box (glasses included): text may overlap hair or hijab, never this."""
         f = seg.get("face")
         if not f:
             return None
-        return ((f["cx"] - f["w"] * 0.5) * W, (f["cy"] - f["h"] * 0.55) * H,
+        return ((f["cx"] - f["w"] * 0.5) * W, (f["cy"] - f["h"] * 0.78) * H,
                 (f["cx"] + f["w"] * 0.5) * W, (f["cy"] + f["h"] * 0.6) * H)
 
     def zones(self, seg, tight=False):
@@ -86,6 +87,22 @@ class Context:
         y = hi - h / 2 if name == "top" else lo + h / 2
         return min(max(y, SAFE["top"] + h / 2), SAFE["bottom"] - h / 2)
 
+    def hits_face(self, t, x, y, r):
+        """True if a circle of radius r at (x, y) touches the head at time t."""
+        box = self.face_px(self.seg_at(t))
+        if box is None:
+            return False
+        return box[0] - r < x < box[2] + r and box[1] - r < y < box[3] + r
+
+    def room(self, t):
+        """Tallest free zone (clear of the face itself) at time t, in pixels."""
+        z = self.zones(self.seg_at(t), True)
+        return max(hi - lo for lo, hi in z.values())
+
+    def fit(self, t, h):
+        """Scale factor that makes a block of height h fit the free room (never above 1)."""
+        return max(0.55, min(1.0, (self.room(t) - 30) / max(h, 1)))
+
     def free_x(self, t, y, w):
         """Horizontal centre for something w wide at height y that keeps clear of the face."""
         box = self.face_px(self.seg_at(t))
@@ -109,6 +126,7 @@ class Style:
         self.ctx = ctx
         self.rng = np.random.default_rng(seed)
         self.static = None
+        self.caption_box = None
         self.layouts = [self.layout(i, c) for i, c in enumerate(ctx.captions)]
 
     # ------------------------------------------------------------ style hooks
@@ -187,6 +205,19 @@ class Style:
         return {"toks": toks, "w": width, "h": total_h, "lines": boxes, "y": None, "ci": ci}
 
     # ------------------------------------------------------------ frame
+    def clear_y(self, t, h):
+        """Vertical centre for a label of height h: the free zone away from the caption on screen, else stacked
+        just above (or below) that caption, never on the face."""
+        box = self.caption_box if self.caption_box and self.caption_box[2] > t else None
+        if box is None:
+            return self.ctx.block_y(t, h + 20)
+        cy, ch, _ = box
+        y = self.ctx.block_y(t, h + 20, prefer="bottom" if cy < H / 2 else "top")
+        if abs(y - cy) < (h + ch) / 2 + 30:
+            above = cy - ch / 2 - 40 - h / 2
+            y = above if above - h / 2 > SAFE["top"] else cy + ch / 2 + 40 + h / 2
+        return min(max(y, SAFE["top"] + h / 2), SAFE["bottom"] - h / 2)
+
     def draw(self, canvas, t):
         if self.static is not None:
             canvas.alpha_composite(self.static)
@@ -201,6 +232,7 @@ class Style:
             if lay["y"] is None:
                 lay["y"] = self.ctx.block_y(cap["start"] + 0.01, lay["h"] + 40)
             cx, cy = W / 2, lay["y"]
+            self.caption_box = (cy, lay["h"], cap["end"])
             k_out = prog(t, cap["end"] - self.out_dur, self.out_dur)
             self.behind(canvas, t, cap, lay, cx, cy, k_out)
             for tk in lay["toks"]:
