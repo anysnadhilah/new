@@ -1,0 +1,12 @@
+Copyright (c) 2026 [OWNER NAME]. All rights reserved.
+
+This skill ("edit reel") is licensed, not sold. A purchase grants one person a personal, non-transferable license
+to install and use it for their own content, including commercial content they publish. You may not copy,
+resell, sublicense, share or publish the skill or any modified version of it.
+
+Videos you make with the skill are yours.
+
+THE SKILL IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+Third-party components keep their own licenses: fonts (SIL Open Font License), faster-whisper (MIT),
+OpenCV (Apache 2.0), ffmpeg (LGPL/GPL, installed separately by the user).

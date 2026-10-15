@@ -1,0 +1,6 @@
+.venv/
+.platform.json
+config.json
+assets/fonts/*.ttf
+assets/sfx/*.wav
+__pycache__/
