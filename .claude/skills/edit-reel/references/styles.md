@@ -33,24 +33,41 @@ Cosy, dreamy, playful.
 - Cuts: a very soft warm flash. Sound: pop on punch words and stickers, twinkle on the hook.
 
 ## scrapbook (`styles/scrapbook.py`)
-A collage journal page come to life.
-- Grade: warm, a little extra contrast and saturation, light vignette.
-- Captions mix type like a magazine collage: plain words alternate per caption between pink serif
-  (Playfair Display) and yellow italic serif with a brown outline (Fraunces). The punch word is chunky rounded white
-  (Nunito Black) with a hot-pink outline and glow.
-- Dazzle: shiny 3D gems pop in around every caption and glint (chrome/gold stars, jelly flowers, rhinestone heart and
-  flower, iridescent sequins, holographic heart, disco ball, chrome sparkle); small gems and sequins sit in the
-  margins the whole time. Gems never sit on the face.
-- Hook: yellow italic `label`, chunky pink-glow headline, pink serif `sub`, with a shower of gems around it.
+A journal page that talks (studied from engaging creator reels; our own build). The structure carries it: **one
+pinned title per idea**, everything else stays quiet.
+- Grade: soft, slightly warm and pastel.
+- **Section titles** (plan.json `sections`, plus the `hook` as the first one) are pinned at the top for the whole
+  section: a handwritten cream kicker (Sacramento, writes itself on) over chunky lavender words (Fredoka Bold, plum
+  edge) and an optional pink serif line (Instrument Serif). The words fly together from scattered spots with a
+  sparkle burst in about half a second, then stay perfectly still. Two small sparkles and one 3D gem stay beside it.
+  Titles may come down over hair or hijab to the brows, never onto the eyes; they shrink (to 62% at most) when the
+  face is close to the top.
+- Hook: the kicker writes on at once; the title words fly in one by one **on the words as they are spoken**; three
+  gems pop in around the speaker.
+- Captions: small, quiet white sans subtitles low on the frame (about 78% down, below the chin), the whole phrase at
+  once. The `emph` word turns butter yellow; no size jumps.
 - Stickers:
+  - `aside` + `text` ("line one|line two"): a handwritten-feel serif side remark on the shoulder (e.g. "I've read
+    almost|100 books so far!"), `side` right|left. The caption under it drops to the lowest line.
   - `gem` + `kind` (one of: chrome-star, gold-star, jelly-star, jelly-flower-pink, jelly-flower-peach,
     jelly-flower-lilac, rhinestone-heart, rhinestone-flower, sequin, holo-heart, disco, chrome-sparkle), optional
-    `size` (default 150).
+    `size` (default 150). May sit over hair/hijab, never the face.
   - `star`, `heart`: shortcuts for chrome-star and rhinestone-heart.
   - `note` + `text`: handwritten words on a torn yellow note.
   - `photo` + `file` (path inside the project, e.g. `photos/book.jpg`), optional `w`: a taped print. Ask the user for
     photos that fit the story (places, products, screenshots) and drop them in `<project>/photos/`.
-- Cuts: camera-shutter flash. Sound: shutter on cuts, soft twinkle per caption, pop on punch words and stickers.
+- Effects: keep to the ones that do not fight the pinned title (punch-zoom, dolly-zoom, zoom-through, cover-title,
+  glass-title, doodle-outline, paper-cutout). Effects that hide captions hide the title too.
+- Sound: a magic-glow shimmer on every new title (the hook first) and nothing on ordinary captions; on "bold" also
+  a swish per sticker and a pencil scribble for asides and kickers. A music bed (the user's own `music.mp3` in the
+  project) suits this style well.
+
+### Writing sections
+Split the script into ideas of 4 s or more (problem, each step / tip / item, the turn, the takeaway, the name of the
+method). For each: `kicker` = the small spoken-style lead in ("step #1:", "agenda item #2:", "the problem:", "so i
+call it"), `title` = the point in 2-5 words, lowercase, in the speaker's language (spell English words in English),
+`sub` only when a second short line adds something ("lapang? buat lebih"). A section starts on the first word of its
+idea and ends where the next begins; sections never overlap. 6-10 sections in a 60 s reel.
 
 ## Preview the gems
 `PY SK/scripts/gems.py out.jpg` renders every gem on one sheet.

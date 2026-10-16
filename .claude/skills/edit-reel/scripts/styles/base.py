@@ -173,7 +173,16 @@ class Style:
         pass
 
     def sfx(self):
+        """(time, sound, gain) or (time, sound, gain, priority); see effects/sound.py for priorities."""
         return []
+
+    def caption_y(self, cap, lay):
+        """Vertical centre of a caption block (once per caption)."""
+        return self.ctx.block_y(cap["start"] + 0.01, lay["h"] + 40, prefer=self.caption_prefer(cap))
+
+    def caption_prefer(self, cap):
+        """Zone ("top" / "bottom") this caption should try first; None = the reel's roomier zone."""
+        return None
 
     # ------------------------------------------------------------ layout
     def layout(self, ci, cap):
@@ -251,7 +260,7 @@ class Style:
                 cx, cy = W / 2, y
             else:
                 if lay["y"] is None:
-                    lay["y"] = self.ctx.block_y(cap["start"] + 0.01, lay["h"] + 40)
+                    lay["y"] = self.caption_y(cap, lay)
                 cx, cy = W / 2, lay["y"]
             self.caption_box = (cy, lay["h"], cap["end"])
             k_out = prog(t, cap["end"] - self.out_dur, self.out_dur)

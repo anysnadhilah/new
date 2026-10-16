@@ -76,7 +76,7 @@ def main():
     # ---- graphics drops / changes
     effects = plan.get("effects", [])
     stickers = plan.get("stickers", [])
-    drop_fx, drop_st = set(), set()
+    drop_fx, drop_st, drop_sec = set(), set(), set()
     for k, d in decisions.items():
         status, note = d.get("status"), (d.get("note") or "").strip()
         if k == "hook":
@@ -85,6 +85,13 @@ def main():
                 done.append("hook removed")
             elif status == "change":
                 todo.append({"what": "hook", "current": plan.get("hook"), "note": note})
+        elif k.startswith("section-"):
+            i = int(k.split("-")[1])
+            sections = plan.get("sections", [])
+            if status == "drop" and i < len(sections):
+                drop_sec.add(i)
+            elif status == "change" and i < len(sections):
+                todo.append({"what": f"section title {i}", "current": sections[i], "note": note})
         elif k.startswith("sticker-"):
             i = int(k.split("-")[1])
             if status == "drop":
@@ -103,6 +110,10 @@ def main():
         done.append(f"sticker removed: {stickers[i].get('type')} at {stickers[i]['at']}s")
     plan["effects"] = [e for i, e in enumerate(effects) if i not in drop_fx]
     plan["stickers"] = [s for i, s in enumerate(stickers) if i not in drop_st]
+    if drop_sec:
+        secs = plan.get("sections", [])
+        done += [f'section title removed: "{secs[i]["title"]}"' for i in sorted(drop_sec)]
+        plan["sections"] = [x for i, x in enumerate(secs) if i not in drop_sec]
 
     # ---- cut drops: remove the take and pull everything after it earlier
     segs = tl["segments"]
@@ -133,12 +144,13 @@ def main():
             if c["words"]:
                 kept.append(c)
         plan["captions"] = kept
-        for coll, keys in ((plan.get("effects", []), ("start", "end", "at")), (plan.get("stickers", []), ("at",))):
+        for coll, keys in ((plan.get("effects", []), ("start", "end", "at")), (plan.get("stickers", []), ("at",)),
+                           (plan.get("sections", []) or [], ("start", "end"))):
             survivors = []
             for item in coll:
                 moved = {k: shift(item[k]) for k in keys if k in item}
                 if any(v is None for v in moved.values()):
-                    done.append(f"{item.get('type')} at {item.get('start', item.get('at'))}s removed with its take")
+                    done.append(f"{item.get('type') or item.get('title')} at {item.get('start', item.get('at'))}s removed with its take")
                     continue
                 item.update(moved)
                 survivors.append(item)

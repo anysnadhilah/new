@@ -29,6 +29,9 @@ FONT_SPECS = {
     "Fraunces-SemiBoldItalic.ttf": "Fraunces:ital,wght@1,600",
     "PlayfairDisplay-SemiBold.ttf": "Playfair+Display:wght@600",
     "Nunito-Black.ttf": "Nunito:wght@900",
+    "Fredoka-Bold.ttf": "Fredoka:wght@700",
+    "Sacramento-Regular.ttf": "Sacramento",
+    "InstrumentSerif-Regular.ttf": "Instrument+Serif",
 }
 
 ok = True

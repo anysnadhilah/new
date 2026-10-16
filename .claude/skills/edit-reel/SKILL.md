@@ -1,6 +1,6 @@
 ---
 name: edit-reel
-description: "Edits any video (talking head, vlog, landscape or vertical, with or without speech, from a file, Google Drive, Dropbox, YouTube or a direct link) into a finished Instagram reel in one of three signature styles: it girl (clean editorial serif captions, chapter titles), whimsical (warm glow, chunky two-tone words, twinkling asterisks, pill labels) or scrapbook (collage mixed-font headlines with shiny 3D gem stickers, notes and taped photos). Takes clips from a folder or a Google Drive link, picks the best take of every line, cuts dead air, frames the face, writes word-timed animated captions that never cover the face, places motion graphics automatically at a chosen amount (light / medium / max), adds sound effects (off / subtle / normal / bold), uses any of 17 video effects (punch zoom, zoom-through cut, checklist, floating phone, pull-back reveal, text behind your head, glass titles, dolly zoom, new background, paper cutout, doodle outline, orbit, chart grow, note and headline walls...), then QA-checks every cut. Trigger with /edit-reel or phrases like 'edit my reel', 'edit these clips', 'make a reel from this drive link', 'use the scrapbook style', 'check my studio'."
+description: "Edits any video (talking head, vlog, landscape or vertical, with or without speech, from a file, Google Drive, Dropbox, YouTube or a direct link) into a finished Instagram reel in one of three signature styles: it girl (clean editorial serif captions, chapter titles), whimsical (warm glow, chunky two-tone words, twinkling asterisks, pill labels) or scrapbook (a pinned mixed-font title per idea with sparkle bursts, shiny 3D gems, handwritten asides and quiet subtitles). Takes clips from a folder or a Google Drive link, picks the best take of every line, cuts dead air, frames the face, writes word-timed animated captions that never cover the face, places motion graphics automatically at a chosen amount (light / medium / max), adds sound effects (off / subtle / normal / bold), uses any of 17 video effects (punch zoom, zoom-through cut, checklist, floating phone, pull-back reveal, text behind your head, glass titles, dolly zoom, new background, paper cutout, doodle outline, orbit, chart grow, note and headline walls...), then QA-checks every cut. Trigger with /edit-reel or phrases like 'edit my reel', 'edit these clips', 'make a reel from this drive link', 'use the scrapbook style', 'check my studio'."
 ---
 
 # /edit-reel
@@ -108,8 +108,9 @@ This drafts `plan.json`. Now edit it like an editor (details in `references/edit
 - Write a `hook` for the first 2-3 s: a short scroll-stopping line (often the opening question) + optional
   `label` and `sub`.
 - Add stickers at meaningful moments (types per style in `references/styles.md`): it girl → a `chapter` per
-  section of a list video; whimsical → `pill`s for numbers, steps and names; scrapbook → 2-4 `gem`s, `note`s and
-  `photo`s on top of the automatic gem dazzle.
+  section of a list video; whimsical → `pill`s for numbers, steps and names; scrapbook → write `sections` (one pinned title per
+  idea, see "Writing sections" in `references/styles.md`; this is what makes the style), then 2-4 `gem`s,
+  `aside`s and `photo`s.
 
 ## Step 5b: Motion graphics and sound
 
@@ -124,10 +125,14 @@ rewrite texts so they read well (checklist items, phone messages, titles in the 
 that does not fit the story, and add the effects the user named. light ≈ a few key moments; medium ≈ a graphic
 every few seconds; max ≈ something on almost every line ("tons").
 
-Sound: set plan.json `"sfx"` to `off`, `subtle`, `normal` (default) or `bold`. Every effect, sticker, hook and cut has
-its own matched sounds (16 synthesised, royalty-free: pop, twinkle, whoosh, swoosh, swish, slap, tick, shutter,
-riser, impact, ding, notify, typing, rustle, chime, boop). To use the user's own sound for any of them, put
-`<project>/sfx/<name>.wav` (or .mp3) in place: it wins over the built-in one.
+Sound: set plan.json `"sfx"` to `off`, `subtle`, `normal` (default) or `bold`. Sound marks moments, it is not
+decoration: a sound director keeps only the intro, section titles, bullet points, key transitions and punchlines,
+spaced apart (a 60 s reel gets roughly 5-10 sounds on normal). 18 synthesised, royalty-free sounds: glow (magic
+shimmer for titles), write (pencil), pop, twinkle, whoosh, swoosh, swish, slap, tick, shutter, riser, impact, ding,
+notify, typing, rustle, chime, boop. To use the user's own sound for any of them, put `<project>/sfx/<name>.wav`
+(or .mp3) in place: it wins over the built-in one.
+Music: if the user gives a track they own or licensed, save it as `<project>/music.mp3`; it plays softly under the
+voice (ducked while they talk) at plan.json `"music_level"` (default 0.1). Never download music from the internet.
 
 If any effect is marked cutout in `references/effects.md` (autofx.py prints which):
 ```

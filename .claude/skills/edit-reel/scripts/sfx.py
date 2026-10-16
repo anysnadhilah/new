@@ -160,7 +160,31 @@ def swoosh():
     return band * np.sin(np.pi * x / x[-1]) ** 1.5 * 1.4
 
 
-SOUNDS = {"pop": pop, "twinkle": twinkle, "whoosh": whoosh, "slap": slap, "tick": tick, "shutter": shutter,
+def glow():
+    """Magic glow: a soft cluster of high bell pings rising over a shimmer (title entrances)."""
+    x = t(1.5)
+    s = np.zeros_like(x)
+    notes = [1568.0, 1760.0, 2093.0, 2349.3, 2637.0, 3136.0, 3520.0, 4186.0]
+    r = np.random.default_rng(7)
+    for i, f in enumerate(notes):
+        st = int((0.035 * i + r.uniform(0, 0.02)) * SR)
+        seg = x[: len(x) - st]
+        bell = np.sin(2 * np.pi * f * seg) + 0.25 * np.sin(2 * np.pi * f * 2.01 * seg)
+        s[st:] += bell * env(len(seg), 0.003, 3.2 + i * 0.25) * (0.55 - 0.03 * i)
+    air = highpass(rng.standard_normal(len(x)), 6000) * np.sin(np.pi * np.clip(x / 0.9, 0, 1)) ** 2 * 0.05
+    return (s + air) * np.minimum(1, (x[-1] - x) / 0.3)
+
+
+def write():
+    """Pencil on paper: short scratchy strokes (handwritten text appearing)."""
+    x = t(0.55)
+    n = highpass(rng.standard_normal(len(x)), 2500)
+    n = lowpass(n, 7000)
+    strokes = (np.sin(2 * np.pi * 9 * x) > -0.2) * (0.6 + 0.4 * np.sin(2 * np.pi * 23 * x))
+    return n * strokes * np.sin(np.pi * x / x[-1]) ** 0.6 * 0.8
+
+
+SOUNDS = {"glow": glow, "write": write, "pop": pop, "twinkle": twinkle, "whoosh": whoosh, "slap": slap, "tick": tick, "shutter": shutter,
           "riser": riser, "impact": impact, "ding": ding, "notify": notify, "typing": typing, "rustle": rustle,
           "swish": swish, "chime": chime, "boop": boop, "swoosh": swoosh}
 

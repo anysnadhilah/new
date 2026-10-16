@@ -78,6 +78,9 @@ def main():
         h = plan["hook"]
         graphics.append({"id": "hook", "kind": "Hook title", "title": h["text"], "start": h["start"], "end": h["end"],
                          "detail": " · ".join(x for x in (h.get("label"), h.get("sub")) if x)})
+    for i, sec in enumerate(plan.get("sections", []) or []):
+        graphics.append({"id": f"section-{i}", "kind": "Section title", "title": sec["title"], "start": sec["start"],
+                         "end": sec["end"], "detail": " · ".join(x for x in (sec.get("kicker"), sec.get("sub")) if x)})
     for i, st in enumerate(plan.get("stickers", [])):
         graphics.append({"id": f"sticker-{i}", "kind": f"Sticker · {st.get('type', '')}", "start": st["at"],
                          "end": st["at"] + st.get("dur", 1.5), "title": st.get("text") or st.get("kind") or st.get("type", ""),

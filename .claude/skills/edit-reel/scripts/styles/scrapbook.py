@@ -1,72 +1,96 @@
-"""SCRAPBOOK: a collage journal page come to life, kept calm. One friendly caption treatment (rounded white with
-a thin pink edge), the punch word as a pink-glow headline with a single shiny 3D gem beside it, a collage-type
-hook that appears line by line with the voice, taped photos and notes as stickers. Nothing blinks or wobbles."""
+"""SCRAPBOOK: a journal page that talks. The reel is split into sections; each one gets a pinned title at the top
+(a handwritten kicker over chunky lavender words, sometimes a pink serif line) that flies together with a sparkle
+burst and a magic-glow sound, then stays perfectly still while the speaker explains it. Captions are small and
+quiet near the bottom; shiny 3D gems, taped photos, notes and handwritten asides collect around the speaker.
+
+plan.json:
+  "hook":     {"text", "label" (kicker), "sub", "start", "end"}   the first title, revealed word by word with the voice
+  "sections": [{"start", "end", "kicker", "title", "sub"}]         one pinned title per idea (4 s or longer)
+  "stickers": gem | star | heart | note | photo | aside ("text": a handwritten side remark beside the head)
+"""
 from pathlib import Path
 
 import numpy as np
 from PIL import Image
 
-from common import SAFE, W
+from common import H, SAFE, W
 from gems import KINDS, gem
-from gfx import drop_shadow, lerp, out_back, out_cubic, place, prog, tape, text_img, torn_paper, xform
+from gfx import drop_shadow, lerp, out_back, out_cubic, place, prog, sparkle, tape, text_img, torn_paper, xform
 from styles.base import Style
 
-PINK = "#F79ACB"
-HOT_PINK = "#EE5FA7"
+LAVENDER = "#F5C6F0"
+BUTTER = "#FFF0A0"
+CREAM = "#FFF8EC"
+PINK = "#F7A6D6"
+PLUM = "#4A2A47"
 YELLOW = "#F6E27A"
-BROWN = "#3A2618"
-WHITE = "#FFFFFF"
 INK = "#2A2420"
-ROUND = "Nunito-Black.ttf"
-PINK_SERIF = "PlayfairDisplay-SemiBold.ttf"
-ITALIC = "Fraunces-SemiBoldItalic.ttf"
+CHUNKY = "Fredoka-Bold.ttf"
+SCRIPT = "Sacramento-Regular.ttf"
+SERIF = "InstrumentSerif-Regular.ttf"
+SANS = "Figtree-Medium.ttf"
 HAND = "ShadowsIntoLight-Regular.ttf"
+SHADOW = (0, 4, 9, (40, 18, 38, 150))
+TITLE_TOP = 190          # titles may start here (Instagram's top bar ends above it)
+CAPTION_FLOOR = 1565     # captions end above Instagram's caption / username text
 
 
-def headline(text, size):
-    """Chunky rounded white with a pink outline and pink glow (punch words, the hook)."""
-    return text_img(text.lower(), ROUND, size, WHITE, stroke=max(4, size // 18), stroke_fill=HOT_PINK,
-                    tracking=-0.02, shadow=(0, 0, size // 7, (238, 95, 167, 200)))
+def chunky(text, size, fill=LAVENDER):
+    return text_img(text.lower(), CHUNKY, size, fill, stroke=max(3, size // 34), stroke_fill=PLUM, tracking=-0.035,
+                    shadow=SHADOW)
 
 
-def caption(text, size):
-    """Everyday caption words: the same rounded face, small, white with a thin pink edge and a soft shadow."""
-    return text_img(text, ROUND, size, WHITE, stroke=3, stroke_fill=HOT_PINK, tracking=-0.01,
-                    shadow=(0, 3, 8, (60, 10, 40, 150)))
+def script(text, size):
+    return text_img(text.lower(), SCRIPT, size, CREAM, stroke=3, stroke_fill=PLUM, shadow=SHADOW)
 
 
-def pink_serif(text, size):
-    return text_img(text, PINK_SERIF, size, PINK, stroke=2, stroke_fill="#B23A78", tracking=-0.03,
-                    shadow=(0, 3, 7, (60, 10, 40, 190)))
+def serif(text, size, fill=PINK):
+    return text_img(text.lower(), SERIF, size, fill, stroke=3, stroke_fill=PLUM, tracking=-0.03, shadow=SHADOW)
 
 
-def yellow_italic(text, size):
-    return text_img(text.lower(), ITALIC, size, YELLOW, stroke=max(3, size // 22), stroke_fill=BROWN,
-                    tracking=-0.01, shadow=(0, 3, 6, (40, 20, 10, 120)))
+def small(text, size, fill="#FFFFFF"):
+    return text_img(text.lower(), SANS, size, fill, tracking=0.0, shadow=(0, 2, 6, (0, 0, 0, 190)))
 
 
-GEM_ROTATION = ["rhinestone-heart", "chrome-star", "jelly-flower-pink", "gold-star", "holo-heart",
-                "jelly-flower-lilac", "chrome-sparkle", "disco", "rhinestone-flower", "jelly-star"]
+GEM_ROTATION = ["jelly-flower-pink", "chrome-star", "rhinestone-heart", "jelly-flower-lilac", "holo-heart",
+                "gold-star", "chrome-sparkle", "rhinestone-flower", "jelly-star", "disco"]
+
+
+def _h(im):
+    return im.height - 2 * im.info["pad"]
+
+
+def _w(im):
+    return im.width - 2 * im.info["pad"]
 
 
 class Scrapbook(Style):
     name = "scrapbook"
-    max_w = 860
-    line_gap = -6
-    word_gap = 0.26
-    out_dur = 0.14
+    max_w = 820
+    line_gap = 0
+    word_gap = 0.3
+    emph_own_line = False
+    out_dur = 0.1
     cut_window = (0.0, 0.0)
-    cut_punch = 0.035
+    cut_punch = 0.03
     push = 0.0
+    TITLE = 116          # chunky title size
+    ENTER = 0.5          # how long a title takes to fly together
+
+    def on_face(self, t, x, y, r):
+        """True if a circle touches the face itself (forehead to chin); hair and hijab are fine to cover."""
+        box = self.ctx.face_core(self.ctx.seg_at(t))
+        return bool(box) and box[0] - r < x < box[2] + r and box[1] - r < y < box[3] + r
 
     def __init__(self, ctx):
         self.gem_cache = {}
         super().__init__(ctx)
         self.cache = {}
+        self.titles = self._titles()
 
     def grade(self):
-        return ("[0:v]eq=contrast=1.03:saturation=1.03:gamma=1.01,"
-                "colorbalance=rs=0.025:gs=0.005:bs=-0.015:rh=0.015,vignette=angle=PI/7[bg]")
+        return ("[0:v]eq=contrast=1.02:saturation=1.04:gamma=1.02,"
+                "colorbalance=rs=0.02:gs=0.0:bs=0.01:rh=0.015:bh=0.01[bg]")
 
     def gem_img(self, kind, size):
         key = (kind, int(size))
@@ -74,97 +98,192 @@ class Scrapbook(Style):
             self.gem_cache[key] = gem(kind, size, seed=len(self.gem_cache))
         return self.gem_cache[key]
 
-    # ---------------------------------------------------------------- captions: calm, one treatment
+    # ---------------------------------------------------------------- captions: small and quiet, the phrase at once
     def word_img(self, text, emph, ci):
-        if emph:
-            return headline(text.strip(",.!?"), 120)
-        return caption(text.lower(), 70)
+        return small(text, 46, BUTTER if emph else "#FFFFFF")
 
     def animate(self, tk, t, cap, k_out):
-        start = self.word_visible_at(tk)
-        if t < start:
-            return None, 0, 0
-        p = prog(t, start, 0.18 if not tk["emph"] else 0.28)
-        sc = lerp(0.92 if not tk["emph"] else 0.8, 1, out_back(p, 1.6) if tk["emph"] else out_cubic(p))
-        return xform(tk["img"], scale=sc * (1 - 0.05 * k_out), alpha=min(1, p * 3) * (1 - k_out)), 0, (1 - out_cubic(p)) * 8
+        p = prog(t, cap["start"], 0.12)
+        return xform(tk["img"], alpha=p * (1 - k_out)), 0, (1 - out_cubic(p)) * 6
 
-    def front(self, canvas, t, cap, lay, cx, cy, k_out):
-        """One gem beside the punch word, appearing with it. Still, no bobbing."""
-        emph = [tk for tk in lay["toks"] if tk["emph"]]
-        if not emph:
-            return
-        tk = emph[0]
-        ci = lay["ci"]
-        side = 1 if ci % 2 else -1
-        s = 112
-        x = cx + tk["x"] + side * (tk["w"] / 2 + s * 0.55)
-        y = cy + tk["y"] - tk["h"] * 0.25
-        x = min(max(x, SAFE["left"] + s / 2), SAFE["right"] - s / 2)
-        if self.ctx.hits_face(t, x, y, s / 2):
-            return
-        p = out_back(prog(t, tk["s"] + 0.08, 0.3), 1.8)
+    def caption_y(self, cap, lay):
+        """Low and steady like a subtitle (about 78% down the frame, under Instagram's own text line), below the
+        chin; the top only when the current title had to sit at the bottom."""
+        tt = self.title_at(cap["start"] + 0.01)
+        if tt is not None and (tt.get("layout") or self._build(tt))["zone"] == "bottom":
+            return self.ctx.block_y(cap["start"] + 0.01, lay["h"] + 40, prefer="top")
+        if any(st.get("type") == "aside" and st["at"] < cap["end"] and st["at"] + st.get("dur", 1.8) > cap["start"]
+               for st in self.ctx.stickers):
+            return CAPTION_FLOOR - lay["h"] / 2          # leave room above for the handwritten aside
+        box = self.ctx.face_core(self.ctx.seg_at(cap["start"] + 0.01))
+        chin = box[3] if box else 0
+        return min(max(1490, chin + 30 + lay["h"] / 2), CAPTION_FLOOR - lay["h"] / 2)
+
+    # ---------------------------------------------------------------- titles
+    def _titles(self):
+        """The hook and every section become a title: lines of (kind, word images, word start times)."""
+        out = []
+        hook = self.ctx.hook
+        if hook:
+            out.append({"start": hook["start"], "end": hook["end"], "kicker": hook.get("label"), "title": hook["text"],
+                        "sub": hook.get("sub"), "times": self.hook_word_times(hook), "hook": True})
+        for s in self.ctx.plan.get("sections", []) or []:
+            if hook and s["start"] < hook["end"] - 0.05:
+                continue
+            out.append({**s, "times": None, "hook": False})
+        for i, tt in enumerate(out):
+            tt["i"] = i
+        return out
+
+    def _build(self, tt):
+        """Lay the title out once: rows of words with sizes, a fit scale for the free room and its height."""
+        rows = []
+        if tt.get("kicker"):
+            rows.append(("kicker", [script(tt["kicker"], 92)], [None]))
+        words = tt["title"].split()
+        times = tt["times"] or [tt["start"] + 0.05 * i for i in range(len(words))]
+        imgs = [chunky(w, self.TITLE) for w in words]
+        for text, first in self.hook_lines(tt["title"], lambda s: _w(chunky(s, self.TITLE)) > 900):
+            n = len(text.split())
+            rows.append(("title", imgs[first:first + n], times[first:first + n]))
+        if tt.get("sub"):
+            rows.append(("sub", [serif(tt["sub"], 92)], [None]))
+        heights = [max(_h(im) for im in ims) * (0.62 if kind == "kicker" else 0.9) for kind, ims, _ in rows]
+        total = sum(heights)
+        # the title stays for the whole section: fit it above the face in every take it spans
+        k = 1.0
+        segs = [s for s in self.ctx.segments if s["start"] < tt["end"] and s["end"] > tt["start"]] or [self.ctx.seg_at(tt["start"])]
+        # like the references, a title may come down over the hair or hijab to the brows, never onto the eyes
+        top_room = min(((s["face"]["cy"] - 0.5 * s["face"]["h"]) * H if s.get("face") else 700) for s in segs) \
+            - TITLE_TOP
+        zone = "top"
+        if top_room < total * 0.5:
+            zone = "bottom"
+            room = min(SAFE["bottom"] - self.ctx.zones(s, True)["bottom"][0] for s in segs) - 10
+            k = max(0.62, min(1.0, room / total))
+            y0 = SAFE["bottom"] - total * k
+        else:
+            k = max(0.62, min(1.0, top_room / total))
+            y0 = TITLE_TOP
+        rng = np.random.default_rng(tt["i"] + 3)
+        tt["layout"] = {"rows": rows, "heights": heights, "k": k, "y0": y0, "h": total * k, "zone": zone,
+                        "scatter": [(rng.uniform(-170, 170), rng.uniform(-140, 60), rng.uniform(-28, 28))
+                                    for _ in range(len(words) + 2)],
+                        "burst": [(rng.uniform(-0.55, 0.55), rng.uniform(-0.2, 1.1), rng.uniform(26, 54), rng.uniform(0, 0.25))
+                                  for _ in range(9)]}
+        return tt["layout"]
+
+    def title_at(self, t):
+        for tt in self.titles:
+            if tt["start"] <= t < tt["end"]:
+                return tt
+        return None
+
+    def draw_title(self, canvas, t, tt):
+        lay = tt.get("layout") or self._build(tt)
+        k = lay["k"]
+        k_out = prog(t, tt["end"] - 0.16, 0.16)
+        y = lay["y0"]
+        wi = 0
+        last_in = tt["start"]
+        for (kind, ims, times), h in zip(lay["rows"], lay["heights"]):
+            cy = y + h * k / 2
+            if kind == "kicker":
+                # handwritten: written on from left to right
+                im = ims[0]
+                p = prog(t, tt["start"], 0.45)
+                if p > 0:
+                    shown = im.crop((0, 0, max(1, int(im.width * min(1, p * 1.05))), im.height))
+                    full = Image.new("RGBA", im.size, (0, 0, 0, 0))
+                    full.alpha_composite(shown)
+                    full.info["pad"] = im.info["pad"]
+                    place(canvas, xform(full, scale=k, alpha=1 - k_out), W / 2, cy)
+            elif kind == "sub":
+                start = (max(x for x in lay["rows"][-2][2] if x is not None) if tt["hook"] else tt["start"]) + 0.35
+                p = out_cubic(prog(t, start, 0.3))
+                last_in = max(last_in, start)
+                if p > 0:
+                    place(canvas, xform(ims[0], scale=k, alpha=p * (1 - k_out)), W / 2, cy + (1 - p) * 14)
+            else:
+                gap = 0.26 * self.TITLE * k
+                widths = [_w(im) * k for im in ims]
+                x = W / 2 - (sum(widths) + gap * (len(ims) - 1)) / 2
+                for im, w, at in zip(ims, widths, times):
+                    dx, dy, rot = lay["scatter"][wi % len(lay["scatter"])]
+                    p = prog(t, at, 0.42)
+                    last_in = max(last_in, at)
+                    if p > 0:               # each word flies in from a scattered spot and settles, then stays still
+                        e = out_back(p, 1.5)
+                        place(canvas, xform(im, scale=k * lerp(0.35, 1, e) * (1 - 0.04 * k_out), rot=rot * (1 - out_cubic(p)),
+                                            alpha=min(1, p * 2.5) * (1 - k_out)),
+                              x + w / 2 + dx * (1 - out_cubic(p)), cy + dy * (1 - out_cubic(p)))
+                    x += w + gap
+                    wi += 1
+            y += h * k
+        self._decorate(canvas, t, tt, lay, last_in, k_out)
+
+    def _decorate(self, canvas, t, tt, lay, last_in, k_out):
+        """Sparkle burst while the title lands, then two small still sparkles and one gem that stay with it."""
+        top, h = lay["y0"], lay["h"]
+        for j, (fx, fy, s, delay) in enumerate(lay["burst"]):
+            local = t - tt["start"] - delay
+            if 0 <= local < 0.9:
+                p = np.sin(np.pi * local / 0.9)
+                x = W / 2 + fx * 900
+                yy = top + fy * h
+                if not self.ctx.hits_face(t, x, yy, s / 2):
+                    place(canvas, xform(self._sparkle(int(s)), scale=p, alpha=p * (1 - k_out)), x, yy)
+        p = out_back(prog(t, last_in + 0.2, 0.32), 1.8)
         if p <= 0:
             return
-        img = self.gem_img(GEM_ROTATION[ci % len(GEM_ROTATION)], s)
-        place(canvas, xform(img, scale=p * (1 - 0.3 * k_out), rot=side * -10, alpha=1 - k_out), x, y)
+        for j, (fx, fy) in enumerate(((-0.43, 0.18), (0.44, 0.72))):
+            x, yy = W / 2 + fx * 900, top + fy * h
+            if not self.ctx.hits_face(t, x, yy, 20):
+                place(canvas, xform(self._sparkle(34 - 8 * j), scale=p, alpha=1 - k_out), x, yy)
+        g = self.gem_img(GEM_ROTATION[tt["i"] % len(GEM_ROTATION)], 118)
+        side = -1 if tt["i"] % 2 == 0 else 1
+        x = min(max(W / 2 + side * 420, SAFE["left"] + 60), SAFE["right"] - 60)
+        yy = top + h * (0.3 if lay["zone"] == "top" else 0.7)
+        if not self.on_face(t, x, yy, 50):
+            place(canvas, xform(g, scale=p * (1 - 0.3 * k_out), rot=side * -12, alpha=1 - k_out), x, yy)
 
-    # ---------------------------------------------------------------- hook: collage type, word by word with the voice
+    def _sparkle(self, size):
+        key = ("sparkle", size)
+        if key not in self.cache:
+            self.cache[key] = sparkle(size, "#FFFFFF", glow_blur=max(2, size // 8))
+        return self.cache[key]
+
     def draw_hook(self, canvas, t, hook):
-        if "_hook" not in self.__dict__:
-            times = self.hook_word_times(hook)
-            words = hook["text"].split()
-            imgs = [headline(w, 116) for w in words]
-            gap = 26
-            rows = []                                   # each row: list of (word index, image)
-            for text, first in self.hook_lines(hook["text"], lambda s: headline(s, 116).width > 920):
-                n = len(text.split())
-                rows.append([(i, imgs[i]) for i in range(first, first + n)])
-            label = yellow_italic(hook["label"], 72) if hook.get("label") else None
-            sub = pink_serif(hook["sub"], 64) if hook.get("sub") else None
-            pad = imgs[0].info["pad"]
-            row_h = max(im.height for im in imgs) - 2 * pad
-            heights = ([label.height - 2 * label.info["pad"]] if label else []) + [row_h] * len(rows) + \
-                      ([sub.height - 2 * sub.info["pad"]] if sub else [])
-            k = self.ctx.fit(hook["start"], sum(h + 22 for h in heights))
-            total = sum(h * k + 22 * k for h in heights)
-            self._hook = {"rows": rows, "times": times, "label": label, "sub": sub, "row_h": row_h * k, "k": k,
-                          "pad": pad, "gap": gap, "h": total, "y": self.ctx.block_y(hook["start"], total + 40)}
-        hk = self._hook
-        k, k_out = hk["k"], prog(t, hook["end"] - 0.18, 0.18)
-        y = hk["y"] - hk["h"] / 2
-        if hk["label"] is not None:
-            lh = (hk["label"].height - 2 * hk["label"].info["pad"]) * k
-            p = out_cubic(prog(t, hook["start"], 0.3))
-            place(canvas, xform(hk["label"], scale=k, alpha=p * (1 - k_out)), W / 2, y + lh / 2)
-            y += lh + 22 * k
-        for row in hk["rows"]:
-            widths = [(im.width - 2 * hk["pad"]) * k for _, im in row]
-            x = W / 2 - (sum(widths) + hk["gap"] * k * (len(row) - 1)) / 2
-            for (i, im), w in zip(row, widths):
-                p = prog(t, hk["times"][i], 0.26)
-                if p > 0:                               # each word pops in on its own spoken moment
-                    place(canvas, xform(im, scale=k * lerp(0.6, 1, out_back(p, 1.8)) * (1 - 0.05 * k_out),
-                                        alpha=min(1, p * 3) * (1 - k_out)), x + w / 2, y + hk["row_h"] / 2)
-                x += w + hk["gap"] * k
-            y += hk["row_h"] + 22 * k
-        last = max(hk["times"])
-        if hk["sub"] is not None:
-            p = out_cubic(prog(t, min(hook["end"] - 0.5, last + 0.35), 0.3))
-            sh = (hk["sub"].height - 2 * hk["sub"].info["pad"]) * k
-            place(canvas, xform(hk["sub"], scale=k, alpha=p * (1 - k_out)), W / 2, y + sh / 2 + (1 - p) * 10)
-        # two gems frame the finished hook
-        p = out_back(prog(t, last + 0.15, 0.3), 1.8)
-        if p > 0:
-            for j, side in enumerate((-1, 1)):
-                x = W / 2 + side * min(440, W / 2 - 90)
-                gy = hk["y"] - hk["h"] * 0.3 + j * hk["h"] * 0.5
-                if not self.ctx.hits_face(t, x, gy, 60):
-                    place(canvas, xform(self.gem_img(GEM_ROTATION[j], 104), scale=p, rot=side * -12, alpha=1 - k_out), x, gy)
+        pass                     # the hook is drawn as the first title (see draw)
+
+    def ambient(self, canvas, t):
+        """Draw the title under everything else so captions and stickers sit on top of it."""
+        tt = self.title_at(t)
+        if tt is None or self.hide_captions:
+            return
+        lay = tt.get("layout") or self._build(tt)
+        if self.reserved and self.reserved == lay["zone"]:
+            return
+        self.draw_title(canvas, t, tt)
+        if tt["hook"]:
+            self._intro_gems(canvas, t, tt)
+
+    def _intro_gems(self, canvas, t, tt):
+        """The intro collage: three gems pop in one after another around the speaker once the title is said."""
+        base = tt["start"] + 0.5
+        spots = ((-0.4, 0.47, 140), (0.4, 0.55, 128), (-0.36, 0.66, 104))
+        k_out = prog(t, tt["end"] - 0.16, 0.16)
+        for j, (fx, fy, s) in enumerate(spots):
+            p = out_back(prog(t, base + 0.35 * j, 0.3), 2.0)
+            x, y = W / 2 + fx * W, fy * 1920
+            if p > 0 and not self.on_face(t, x, y, s / 2.4):
+                img = self.gem_img(GEM_ROTATION[(j + 2) % len(GEM_ROTATION)], s)
+                place(canvas, xform(img, scale=p * (1 - 0.3 * k_out), rot=(-1) ** j * 10, alpha=1 - k_out), x, y)
 
     # ---------------------------------------------------------------- stickers
     def draw_sticker(self, canvas, t, st):
         """gem (with "kind", see gems.KINDS), star, heart, note ("text" on a taped yellow note),
-        photo ("file" relative to the project, shown as a taped print)."""
+        photo ("file" relative to the project, shown as a taped print), aside ("text", a handwritten side remark)."""
         kind = st.get("type", "gem")
         key = (kind, st.get("kind"), st.get("text"), st.get("file"))
         if key not in self.cache:
@@ -174,20 +293,35 @@ class Scrapbook(Style):
                 note = torn_paper(txt.width + 46, txt.height + 26, r, YELLOW)
                 note.alpha_composite(txt, ((note.width - txt.width) // 2, (note.height - txt.height) // 2))
                 self.cache[key] = note
+            elif kind == "aside":
+                lines = [serif(x, 60, CREAM) for x in st.get("text", "").split("|")]
+                out = Image.new("RGBA", (max(im.width for im in lines), sum(_h(im) for im in lines) + 2 * lines[0].info["pad"]),
+                                (0, 0, 0, 0))
+                y = 0
+                for im in lines:
+                    out.alpha_composite(im, ((out.width - im.width) // 2, y))
+                    y += _h(im)
+                self.cache[key] = out
             elif kind == "photo":
                 self.cache[key] = self._photo(st)
             else:
-                k = st.get("kind") or {"star": "chrome-star", "heart": "rhinestone-heart"}.get(kind, "gold-star")
-                self.cache[key] = self.gem_img(k if k in KINDS else "gold-star", st.get("size", 150))
+                g = st.get("kind") or {"star": "chrome-star", "heart": "rhinestone-heart"}.get(kind, "gold-star")
+                self.cache[key] = self.gem_img(g if g in KINDS else "gold-star", st.get("size", 150))
         img = self.cache[key]
         local = t - st["at"]
         dur = st.get("dur", 1.8)
         p = out_back(prog(local, 0, 0.32), 2.0) * (1 - out_cubic(prog(local, dur - 0.15, 0.15)))
-        if "_xy" not in st:                             # decided once, clear of the caption showing at that moment
-            y = st.get("y") or self.clear_y(st["at"], img.height)
-            st["_xy"] = (st.get("x") or self.ctx.free_x(st["at"], y, img.width)[-1], y)
+        if "_xy" not in st:                             # decided once, beside the speaker and clear of the words
+            if kind == "aside":
+                # on the shoulder, just above the (lowered) caption, to one side
+                y = st.get("y") or CAPTION_FLOOR - 70 - img.height / 2
+                st["_xy"] = (st.get("x") or (SAFE["right_low"] - img.width / 2 if st.get("side", "right") == "right"
+                                             else SAFE["left"] + img.width / 2), y)
+            else:
+                y = st.get("y") or self.clear_y(st["at"], img.height)
+                st["_xy"] = (st.get("x") or self.ctx.free_x(st["at"], y, img.width)[-1], y)
         x, y = st["_xy"]
-        place(canvas, xform(img, scale=p, rot=st.get("rot", -5)), x, y)          # still: no wobble
+        place(canvas, xform(img, scale=p, rot=st.get("rot", -6 if kind == "aside" else -5)), x, y)
 
     def _photo(self, st):
         path = Path(self.ctx.project) / st["file"] if getattr(self.ctx, "project", None) else Path(st["file"])
@@ -203,17 +337,18 @@ class Scrapbook(Style):
         out.alpha_composite(tp, ((out.width - tp.width) // 2, 0))
         return drop_shadow(out, 0, 6, 8, (30, 20, 10, 110))
 
-    # ---------------------------------------------------------------- sound: the hook and the bullet stickers only
+    # ---------------------------------------------------------------- sound: a magic glow for every title
     def sfx(self):
+        """(time, sound, gain, priority): titles are the moments; the rest only plays on "bold"."""
         ev = []
-        if self.ctx.hook:
-            ev.append((self.ctx.hook["start"] + 0.1, "twinkle", 0.14))
-        ev += [(st["at"], "pop", 0.14) for st in self.ctx.stickers]
+        for tt in self.titles:
+            ev.append((tt["start"], "glow", 0.2, 3 if tt["hook"] else 2))
+            if tt.get("kicker"):
+                ev.append((tt["start"] + 0.05, "write", 0.08, 0))
+        for st in self.ctx.stickers:
+            kind = st.get("type", "gem")
+            ev.append((st["at"], "write" if kind in ("aside", "note") else "swish", 0.1, 1))
         return ev
-
-
-def _n(s):
-    return "".join(ch for ch in s.lower() if ch.isalnum())
 
 
 STYLE = Scrapbook

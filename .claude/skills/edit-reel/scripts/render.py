@@ -4,6 +4,8 @@
     render.py <project> --at 1.2,4.5,9    # quick stills with the style applied -> work/snap.jpg
 
 Full renders go to renders/<project>-vN.mp4 (full quality) and renders/<project>-vN-phone.mp4 (720p).
+Background music: put the user's own track at <project>/music.mp3 (or .m4a / .wav); it is looped, faded and ducked
+under the voice at plan.json "music_level" (default 0.1, 0 = off).
 --safe draws the red Reels safe-area guide; --draft encodes faster at slightly lower quality.
 """
 import argparse
@@ -60,8 +62,11 @@ def sound_events(style, ctx, plan):
     hook = plan.get("hook")
     stickers = {round(st["at"], 2): st.get("type") for st in plan.get("stickers", [])}
     events = []
-    for at, name, gain in style.sfx():
-        if hook and abs(at - hook["start"]) < 0.6:
+    for ev in style.sfx():
+        at, name, gain = ev[:3]
+        if len(ev) > 3:
+            pri = ev[3]
+        elif hook and abs(at - hook["start"]) < 0.6:
             pri = 3
         elif stickers.get(round(at, 2)) in BULLET_STICKERS:
             pri = 2
@@ -148,10 +153,24 @@ def full(proj, style, ctx, safe, draft):
     dec.wait()
     if enc.wait() != 0:
         die(f"encoding failed: {enc.stderr.read().decode()[-1500:]}")
-    audio = (f"[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,aresample={SR}[vo];[2:a]aformat=channel_layouts=stereo[fx];"
-             f"[vo][fx]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.84:level=0:attack=2:release=60[a]")
+    music = next((m for ext in (".mp3", ".m4a", ".wav") for m in [proj / f"music{ext}"] if m.exists()), None)
+    level = ctx.plan.get("music_level", 0.1)
+    if music and level:
+        # a soft bed under the voice: looped to length, faded at both ends, ducked while she talks
+        audio = (f"[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,aresample={SR},asplit=2[vo][key];"
+                 f"[3:a]aresample={SR},aformat=channel_layouts=stereo,volume={level},"
+                 f"afade=t=in:d=1,afade=t=out:st={max(0, ctx.duration - 1.5):.2f}:d=1.5[m];"
+                 f"[m][key]sidechaincompress=threshold=0.05:ratio=4:attack=20:release=400[bed];"
+                 f"[2:a]aformat=channel_layouts=stereo[fx];"
+                 f"[vo][fx][bed]amix=inputs=3:normalize=0:duration=first,"
+                 f"alimiter=limit=0.84:level=0:attack=2:release=60[a]")
+        extra = ["-stream_loop", "-1", "-i", str(music)]
+    else:
+        audio = (f"[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,aresample={SR}[vo];[2:a]aformat=channel_layouts=stereo[fx];"
+                 f"[vo][fx]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.84:level=0:attack=2:release=60[a]")
+        extra = []
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(silent), "-i", str(work / "aroll.mkv"), "-i", str(sfx_path),
-                    "-filter_complex", audio, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
+                    *extra, "-filter_complex", audio, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
                     "-shortest", "-movflags", "+faststart", str(out)], check=True)
     phone = out.with_name(out.stem + "-phone.mp4")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(out), "-vf", "scale=720:1280", "-c:v", "libx264",
