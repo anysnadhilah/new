@@ -1,8 +1,9 @@
 # edit reel
 
-**A Claude Code skill that turns raw talking-head clips into a finished Instagram reel, in one of three signature
-styles.** You drop your clips (or a Google Drive link), Claude does the editing, you watch the draft on your phone
-and give notes in plain words.
+**A Claude Code skill that turns any video into a finished Instagram reel, in one of three signature styles.**
+Paste a link on your Reel Studio page (Google Drive, Dropbox, YouTube, a direct link) or drop files, pick the look,
+how much motion graphics and how much sound you want, and Claude does the editing. You review each draft on a page
+with Keep / Change / Drop buttons.
 
 | Style | Vibe |
 |---|---|
@@ -19,7 +20,10 @@ What it does for you:
 - 17 video effects: punch zoom, zoom-through cut, checklist, floating phone, phone frame, pull-back reveal, app split,
   note wall, headline wall, chart grow, orbit, new background, paper cutout, doodle outline, dolly zoom, cover title
   and glass title (text behind your head)
-- Subtle sound effects (synthesised, royalty-free) and loudness levelled for Instagram
+- Motion graphics placed automatically from what you say (or on the music's beat): light, medium or max
+- Sound effects matched to every graphic and transition (16 sounds, synthesised, royalty-free), off / subtle /
+  normal / bold, or swap in your own; loudness levelled for Instagram
+- Works with any video: vertical or landscape, with or without a face, with or without speech
 - Checks every cut and the audio before it hands you the video
 - A review page for every draft: play it, press Keep / Change / Drop on each take, graphic and effect, retype misheard
   captions, switch the look and pin notes to exact moments. Claude reads your choices and makes the next draft.
@@ -42,6 +46,9 @@ The first run sets everything up (about 2 minutes) and asks you a few questions 
 you speak in your videos). After that, just say what you want:
 
 > /edit-reel my clips are in this drive folder: https://drive.google.com/... use the scrapbook style
+
+The first run also gives you your **Reel Studio** page: paste links there any time (or share it with your team),
+then tell Claude `check my studio`.
 
 ## Tips for great results
 - Film vertical (9:16), face roughly in the middle, some space above or below your head for the words.

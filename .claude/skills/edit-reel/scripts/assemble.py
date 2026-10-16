@@ -7,6 +7,8 @@ Reads edl.json:
   zoom 1.0 = full frame, 1.4 = punch in; cx/cy = centre of the crop (0-1 of the source frame), left out =
   frame the face automatically (face centred, eyes-to-chin around 40% from the top);
   push = slow push-in across the segment (0.04 = 4%); the --push value is the default.
+  fit = "crop" (fill the 9:16 frame) or "blur" (whole picture, centred over a blurred copy of itself).
+  Default: crop, except wide footage with no face in it, which gets blur. Any size, shape and frame rate works.
 
 Writes work/aroll.mkv and timeline.json (segments with exact frames, words in reel time, face boxes).
 """
@@ -40,7 +42,14 @@ def auto_frame(seg, info, samples):
         if zoom > cap:
             print(f"  {seg.get('id')}: zoom {zoom} -> {cap} (keeps room around the face; zoom_lock to override)")
             seg["zoom"] = zoom = cap
+    if "fit" not in seg:
+        wide = info["width"] / info["height"] > 0.8
+        seg["fit"] = "blur" if wide and not inside else "crop"
     if "cx" in seg and "cy" in seg:
+        return
+    if zoom <= 1.0 and inside and info["width"] / info["height"] > 0.6:
+        seg.setdefault("cx", round(statistics.median(f[1] for f in inside), 3))     # wide shot: follow the face
+        seg.setdefault("cy", 0.5)
         return
     if zoom <= 1.0 or not inside:
         seg.setdefault("cx", 0.5)
@@ -58,7 +67,15 @@ def encode(src, out, seg, info, nframes):
     push = float(seg.get("push", 0))
     dur = nframes / FPS
     vf = ["setpts=PTS-STARTPTS", f"fps={FPS}", f"crop={cw}:{ch}:{x}:{y}"]
-    if push > 0:
+    blur = seg.get("fit") == "blur"
+    if blur:
+        # the whole picture, centred over a soft, darker, blurred copy that fills the 9:16 frame
+        vf = [f"setpts=PTS-STARTPTS,fps={FPS},split[a][b];"
+              f"[a]scale={W // 4}:{H // 4}:force_original_aspect_ratio=increase,crop={W // 4}:{H // 4},boxblur=12:2,"
+              f"eq=brightness=-0.08:saturation=0.85,scale={W}:{H}[bg];"
+              f"[b]scale={W}:{H}:force_original_aspect_ratio=decrease:flags=lanczos[fg];"
+              f"[bg][fg]overlay=(W-w)/2:(H-h)/2"]
+    elif push > 0:
         # grow from 1080 to 1080*(1+push) wide over the segment, then crop the centre
         grow = f"(1+{push}*t/{dur:.4f})"
         vf += [f"scale=w='2*trunc({W}*{grow}/2)':h='2*trunc({H}*{grow}/2)':eval=frame:flags=bicubic",
@@ -66,10 +83,14 @@ def encode(src, out, seg, info, nframes):
     else:
         vf += [f"scale={W}:{H}:flags=lanczos"]
     vf += ["setsar=1", "format=yuv420p"]
+    if blur:
+        vf = [vf[0] + ",setsar=1,format=yuv420p"]
     af = (f"asetpts=PTS-STARTPTS,aresample={SR},atrim=0:{dur:.5f},apad=whole_dur={dur:.5f},"
           f"afade=t=in:d=0.012,afade=t=out:st={max(dur - 0.02, 0):.4f}:d=0.02")
-    cmd = ["ffmpeg", "-v", "error", "-y", "-hwaccel", "auto", "-ss", f"{seg['in']:.3f}", "-i", str(src), "-t", f"{dur + 0.2:.3f}",
-           "-map", "0:v:0", "-map", "0:a:0", "-vf", ",".join(vf), "-af", af, "-frames:v", str(nframes),
+    audio_in = [] if info["has_audio"] else ["-f", "lavfi", "-t", f"{dur + 0.2:.3f}", "-i", f"anullsrc=r={SR}:cl=stereo"]
+    cmd = ["ffmpeg", "-v", "error", "-y", "-hwaccel", "auto", "-ss", f"{seg['in']:.3f}", "-i", str(src), *audio_in,
+           "-t", f"{dur + 0.2:.3f}", "-map", "0:v:0", "-map", "0:a:0" if info["has_audio"] else "1:a:0",
+           "-filter_complex" if blur else "-vf", ",".join(vf), "-af", af, "-frames:v", str(nframes),
            "-c:v", "libx264", "-preset", "fast", "-crf", "16", "-g", str(FPS),
            "-c:a", "pcm_s16le", "-ac", "2", str(out)]
     p = subprocess.run(cmd, capture_output=True, text=True)
@@ -82,6 +103,11 @@ def face_in_frame(samples, seg, info):
     if not inside:
         return None
     fx, fy, fw, fh = (statistics.median(f[i] for f in inside) for i in range(1, 5))
+    if seg.get("fit") == "blur":
+        k = min(W / info["width"], H / info["height"])
+        ox, oy = (W - info["width"] * k) / 2, (H - info["height"] * k) / 2
+        return {"cx": round((fx * info["width"] * k + ox) / W, 4), "cy": round((fy * info["height"] * k + oy) / H, 4),
+                "w": round(fw * info["width"] * k / W, 4), "h": round(fh * info["height"] * k / H, 4)}
     x, y, cw, ch = crop_box(info, seg["zoom"], seg["cx"], seg["cy"])
     sw, sh = info["width"], info["height"]
     return {"cx": round((fx * sw - x) / cw, 4), "cy": round((fy * sh - y) / ch, 4),

@@ -15,6 +15,7 @@ from gfx import place, prog
 class Context:
     def __init__(self, timeline, plan, project=None):
         self.project = project
+        self.plan = plan
         self.fps = FPS
         self.duration = timeline["duration"]
         self.frames = timeline["frames"]
@@ -228,7 +229,7 @@ class Style:
         hook = self.ctx.hook
         in_hook = bool(hook) and hook["start"] <= t < hook["end"]
         for cap, lay in zip(self.ctx.captions, self.layouts):
-            if not (cap["start"] <= t < cap["end"]) or self.hide_captions:
+            if not (cap["start"] <= t < cap["end"]) or self.hide_captions or not self.ctx.plan.get("show_captions", True):
                 continue
             if in_hook:
                 continue        # the hook replaces captions while it is on screen

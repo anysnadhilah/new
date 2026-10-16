@@ -2,16 +2,27 @@
 
     fetch.py <project> <source> [<source> ...] [--newest N]
 
-A source is a video file, a folder of videos, or a Google Drive share link (file or folder,
-shared as "anyone with the link"). Local files are linked, never moved or changed.
-Drive files are downloaded into <project>/clips/.
+A source is a video file, a folder of videos, or a link:
+  - Google Drive file or folder (shared as "Anyone with the link")
+  - Dropbox share link
+  - a direct link to a video file (https://.../video.mp4)
+  - YouTube / Instagram / TikTok and other video pages (the user's own content), through yt-dlp
+Local files are linked, never moved or changed. Downloads go into <project>/clips/.
 """
 import argparse
 import os
+import re
+import shutil
+import subprocess
 import sys
+import time
+import urllib.parse
+import urllib.request
 from pathlib import Path
 
 from common import VIDEO_EXT, die, project_dir
+
+START = time.time() - 1
 
 
 def from_drive(url, dest):
@@ -25,6 +36,34 @@ def from_drive(url, dest):
     if not got:
         die("Google Drive download failed. Is the link shared as 'Anyone with the link'?")
     return [Path(g) for g in got]
+
+
+def from_url(url, dest):
+    """Plain download of a video file link (Dropbox, direct links)."""
+    name = Path(urllib.parse.urlparse(url).path).name or "video.mp4"
+    if Path(name).suffix.lower() not in VIDEO_EXT:
+        name += ".mp4"
+    target = dest / name
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=60) as r, open(target, "wb") as f:
+        shutil.copyfileobj(r, f)
+    if target.stat().st_size < 50_000:
+        target.unlink()
+        die(f"that link did not give a video file: {url}")
+    return [target]
+
+
+def from_page(url, dest):
+    """Video pages (YouTube, Instagram, TikTok...) through yt-dlp. Only for the user's own videos."""
+    out = dest / "%(title).60s-%(id)s.%(ext)s"
+    r = subprocess.run([str(Path(sys.executable).parent / "yt-dlp"), "-q", "--no-warnings", "--no-playlist",
+                        "-f", "bv*[height<=2160]+ba/b", "--merge-output-format", "mp4", "-o", str(out), url],
+                       capture_output=True, text=True)
+    files = [f for f in dest.iterdir() if f.suffix.lower() in VIDEO_EXT and f.stat().st_mtime > START]
+    if r.returncode != 0 or not files:
+        die(f"could not download {url} ({(r.stderr or '').strip()[-200:]}). Ask the user to share it through "
+            f"Google Drive instead.")
+    return files
 
 
 def link_local(path, dest, newest):
@@ -42,7 +81,6 @@ def link_local(path, dest, newest):
             try:
                 target.symlink_to(f)
             except OSError:
-                import shutil
                 shutil.copy2(f, target)
         out.append(target)
     return out
@@ -60,9 +98,14 @@ def main():
     got = []
     for s in a.sources:
         if s.startswith("http"):
-            if "drive.google.com" not in s:
-                die(f"only Google Drive links are supported: {s}")
-            got += from_drive(s, dest)
+            if "drive.google.com" in s:
+                got += from_drive(s, dest)
+            elif "dropbox.com" in s:
+                got += from_url(re.sub(r"([?&])dl=0", r"\1dl=1", s if "dl=" in s else s + ("&" if "?" in s else "?") + "dl=1"), dest)
+            elif Path(urllib.parse.urlparse(s).path).suffix.lower() in VIDEO_EXT:
+                got += from_url(s, dest)
+            else:
+                got += from_page(s, dest)
         else:
             got += link_local(s, dest, a.newest)
     videos = [g for g in got if g.suffix.lower() in VIDEO_EXT]

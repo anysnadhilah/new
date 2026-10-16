@@ -19,7 +19,7 @@ import argparse
 import re
 import sys
 
-from common import config, die, load_json, project_dir, save_json
+from common import config, load_json, project_dir, save_json
 
 STYLES = ("whimsical", "it-girl", "scrapbook")
 MAX_CHARS = {"whimsical": 20, "it-girl": 24, "scrapbook": 26}
@@ -33,7 +33,8 @@ could do does did have has had get got go going like then than there here what w
 some more most much many one two also too okay ok yeah um uh
 saya aku kita kami awak dia mereka yang dan atau tapi untuk dengan dalam pada ke dari ini itu tu ni ada
 adalah akan boleh nak buat lagi dah sudah je jer pun lah kan ke ka la macam so bila kalau lepas baru
-dulu semua benda sangat banyak tak tidak bukan apa mana berapa sebab jadi
+dulu semua benda sangat banyak tak tidak bukan apa mana berapa sebab jadi daripada kepada tentang hari
+same time thing things really actually just also something everything because
 """.split())
 
 
@@ -85,9 +86,9 @@ def main():
             if w["w"].strip():
                 words.append({**w, "seg": si})
     if not words:
-        die("timeline has no words; was the a-roll transcribed?")
+        print("no speech in this video: no captions (graphics can still be placed on the music's beats by autofx.py)")
 
-    groups = group_words(words, MAX_CHARS[a.style])
+    groups = group_words(words, MAX_CHARS[a.style]) if words else []
     starts = [round(max(g[0]["s"] - 0.06, 0), 3) for g in groups] + [tl["duration"]]
     caps = []
     for i, g in enumerate(groups):

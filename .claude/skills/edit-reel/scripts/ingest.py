@@ -8,6 +8,7 @@ Writes:
   work/sheet.jpg   three frames per clip, to see setups and framing
 """
 import argparse
+import re
 import subprocess
 import sys
 import time
@@ -26,11 +27,13 @@ def decode(src, work, cid, info):
 
     Frames come from keyframes only (phones write one about every second), which is many times faster
     than decoding every frame of 4K HEVC."""
-    if not info["has_audio"]:
-        die(f"{src.name} has no audio track")
     wav = work / f"{cid}.wav"
-    p = subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(src), "-vn", "-map", "0:a:0", "-ac", "1",
-                        "-ar", "16000", str(wav)], capture_output=True)
+    if info["has_audio"]:
+        p = subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(src), "-vn", "-map", "0:a:0", "-ac", "1",
+                            "-ar", "16000", str(wav)], capture_output=True)
+    else:                                   # silent video: a silent track keeps every later step the same
+        p = subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=16000:cl=mono",
+                            "-t", f"{info['duration']:.3f}", str(wav)], capture_output=True)
     if p.returncode != 0:
         die(f"ffmpeg could not read the audio of {src.name}: {p.stderr.decode()[-800:]}")
     cmd = ["ffmpeg", "-v", "error", "-skip_frame", "nokey", "-i", str(src), "-an", "-map", "0:v:0",
@@ -40,6 +43,11 @@ def decode(src, work, cid, info):
         die(f"ffmpeg could not decode {src.name}: {p.stderr.decode()[-800:]}")
     frames = np.frombuffer(p.stdout, np.uint8)
     frames = frames[: len(frames) // (SW * SH * 3) * SW * SH * 3].reshape(-1, SH, SW, 3)
+    if len(frames) < max(2, info["duration"] * SAMPLE_FPS * 0.5):
+        # few keyframes in this file: decode every frame instead (slower, always works)
+        p = subprocess.run([a for a in cmd if a not in ("-skip_frame", "nokey")], capture_output=True)
+        frames = np.frombuffer(p.stdout, np.uint8)
+        frames = frames[: len(frames) // (SW * SH * 3) * SW * SH * 3].reshape(-1, SH, SW, 3)
     return wav, frames
 
 
@@ -65,8 +73,14 @@ def transcribe(model, wav, language, prompt):
                                   initial_prompt=prompt or None, condition_on_previous_text=False)
     words, lines = [], []
     for s in segs:
+        # music, noise and silence make Whisper invent text: keep only what is really speech
+        if (s.no_speech_prob > 0.6 and s.avg_logprob < -0.7) or not re.search(r"\w{2,}", s.text):
+            continue
+        kept = [w for w in s.words or [] if re.search(r"[^\W_]", w.word) and w.probability > 0.15]
+        if not kept:
+            continue
         lines.append({"s": round(s.start, 2), "e": round(s.end, 2), "text": s.text.strip()})
-        for w in s.words or []:
+        for w in kept:
             words.append({"w": w.word.strip(), "s": round(w.start, 3), "e": round(w.end, 3)})
     return words, lines, info.language
 

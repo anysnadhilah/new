@@ -161,6 +161,18 @@ def main():
         done.append(f"look: {plan.get('style')} -> {look['style']}")
         plan["style"] = look["style"]
 
+    # ---- graphics amount and sound level
+    mix = meta.get("mix", {})
+    rerun_autofx = False
+    if mix.get("v") in (None, version):
+        if mix.get("sfx") and mix["sfx"] != plan.get("sfx", "normal"):
+            done.append(f"sound effects: {plan.get('sfx', 'normal')} -> {mix['sfx']}")
+            plan["sfx"] = mix["sfx"]
+        if mix.get("graphics") and mix["graphics"] != plan.get("graphics", "medium"):
+            done.append(f"motion graphics: {plan.get('graphics', 'medium')} -> {mix['graphics']} (run autofx.py)")
+            plan["graphics"] = mix["graphics"]
+            rerun_autofx = True
+
     # ---- notes
     for nid, n in notes.items():
         if not n.get("done"):
@@ -173,14 +185,16 @@ def main():
 
     save_json(proj / "plan.json", plan)
     save_json(proj / "edl.json", edl)
-    save_json(proj / "work" / "review_todo.json", {"cuts_changed": bool(dropped), "done": done, "todo": todo})
+    save_json(proj / "work" / "review_todo.json", {"cuts_changed": bool(dropped), "autofx": rerun_autofx,
+                                                    "done": done, "todo": todo})
     print("APPLIED:")
     for d in done or ["(nothing mechanical)"]:
         print("  -", d)
     print("TO DO BY HAND (edit edl.json / plan.json, then reply to each note):")
     for t in todo or [{"what": "(nothing)", "note": ""}]:
         print("  -", t["what"], (f"@ {t['at']}s" if t.get("at") is not None else ""), "->", t.get("note", ""))
-    print("NEXT:", "assemble.py, " if dropped else "", "cutout.py (if effects need it), render.py, check.py, review.py, publish")
+    print("NEXT:", "assemble.py, " if dropped else "", "autofx.py, " if rerun_autofx else "",
+          "cutout.py (if effects need it), render.py, check.py, review.py, publish")
 
 
 if __name__ == "__main__":

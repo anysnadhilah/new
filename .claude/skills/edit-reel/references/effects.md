@@ -58,6 +58,16 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
 17. **glass-title** (cutout): a big 3D chrome-glass word stands behind you, letters sliding up. `text`, `tint`
     ([r, g, b] 0-1). Hides captions.
 
+## Sound
+Every effect plays its own sounds automatically (`scripts/effects/sound.py`): e.g. punch-zoom = riser + impact,
+zoom-through = whoosh, checklist = pop + a ding per tick, phone-float = swish + a notification per message,
+walls = a pop per card, cover-title = impact + shutter, glass-title = chime + impact. plan.json `"sfx"` scales all of
+them: off | subtle | normal | bold.
+
+## Automatic placement
+`autofx.py --amount light|medium|max` places effects and stickers from the transcript (and music beats). Treat its
+output as a first pass: rewrite texts, remove what does not fit, add what the user asked for.
+
 ## Checking
 Snap the middle of every effect (`render.py --at`) and look: no text or card on the face, nothing outside the safe
 area, the cutout edge clean (hair/hijab). If a cutout edge looks rough, shorten the effect or pick one that does not

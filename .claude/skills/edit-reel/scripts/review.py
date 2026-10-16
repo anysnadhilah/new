@@ -13,7 +13,7 @@ import time
 
 from PIL import Image
 
-from common import SK, die, load_json, project_dir
+from common import SK, config, die, load_json, project_dir
 from render import load_style, stills
 from styles.base import Context
 
@@ -113,7 +113,9 @@ def main():
     preview(video, out / "preview.mp4")
     name = proj.name.replace("-", " ").replace("_", " ").title()
     data = {"name": name, "version": version, "style": plan.get("style", "it-girl"), "duration": tl["duration"],
-            "built": time.strftime("%d %b %H:%M"), "cuts": cuts, "graphics": graphics, "captions": captions}
+            "built": time.strftime("%d %b %H:%M"), "cuts": cuts, "graphics": graphics, "captions": captions,
+            "graphics_amount": plan.get("graphics", "medium"), "sfx": plan.get("sfx", "normal"),
+            "studio": config().get("studioUrl")}
     page = (SK / "assets" / "review" / "template.html").read_text()
     page = page.replace("__TITLE__", f"{name} Review")
     page = page.replace("__REVIEW_DATA__", json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))

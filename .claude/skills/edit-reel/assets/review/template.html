@@ -214,14 +214,15 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
   const STYLE_NAMES = { "it-girl": "it girl", whimsical: "whimsical", scrapbook: "scrapbook" };
 
   // ---------- state
-  const state = { tab: "cuts", decisions: {}, notes: [], look: null, ready: null, db: null, canWrite: true };
+  const state = { tab: "cuts", decisions: {}, notes: [], look: null, mix: null, ready: null, db: null, canWrite: true };
   try { state.tab = localStorage.getItem("reel-review-tab") || "cuts"; } catch (e) {}
 
   // ---------- header
   $("#name").textContent = D.name;
   const chips = $("#chips");
-  [[`draft ${D.version}`, "butter"], [`${D.duration.toFixed(1)} s`], [STYLE_NAMES[D.style] || D.style], [`${D.cuts.length} cuts`], [`${D.graphics.length} graphics`], [`built ${D.built}`]]
+  [[`draft ${D.version}`, "butter"], [`${D.duration.toFixed(1)} s`], [STYLE_NAMES[D.style] || D.style], [`${D.cuts.length} cuts`], [`${D.graphics.length} graphics`], [`sound ${D.sfx}`], [`built ${D.built}`]]
     .forEach(([t, c]) => chips.append(el("span", { class: "chip " + (c || ""), text: t })));
+  if (D.studio) chips.append(el("a", { class: "chip", href: D.studio, target: "_blank", rel: "noopener", text: "Reel Studio ↗" }));
 
   // ---------- player
   const video = $("#video"), track = $("#track"), clock = $("#clock");
@@ -335,10 +336,19 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
       const LOOKS = [["it-girl", "it girl", "Clean editorial: white serif captions, the key line big, butter-yellow chapter titles."],
         ["whimsical", "whimsical", "Warm glow, chunky cream and butter-yellow words, twinkling asterisks, pill labels."],
         ["scrapbook", "scrapbook", "Collage headlines in mixed fonts, shiny 3D gems, notes and taped photos."]];
+      const mix = { graphics: D.graphics_amount, sfx: D.sfx, ...(state.mix || {}) };
+      const seg = (key, opts) => el("div", { class: "decide", role: "group", "aria-label": key },
+        ...opts.map(([v, label]) => el("button", { type: "button", "data-v": "keep", "aria-pressed": String(mix[key] === v), disabled: state.canWrite ? null : "",
+          onclick: async () => { state.mix = { ...mix, [key]: v }; render(); if (state.db) try { await state.db.doc("meta/mix").set({ ...state.mix, v: D.version, at: new Date().toISOString() }); } catch (e) { failWrite(e); } } }, label)));
       return [el("p", { class: "panel-intro", text: "Switch the whole look for the next draft. Everything else stays." }),
         el("div", { class: "looks" }, LOOKS.map(([id, name, desc]) => el("button", { class: "look", type: "button", "aria-pressed": String(pick === id), disabled: state.canWrite ? null : "",
           onclick: async () => { state.look = id; render(); if (state.db) try { await state.db.doc("meta/look").set({ style: id, v: D.version, at: new Date().toISOString() }); } catch (e) { failWrite(e); } } },
-          el("strong", { text: name }), el("span", { text: desc }), id === D.style ? el("span", { class: "chip", text: "this draft" }) : null)))];
+          el("strong", { text: name }), el("span", { text: desc }), id === D.style ? el("span", { class: "chip", text: "this draft" }) : null))),
+        el("div", { class: "kind", text: "Motion graphics" }),
+        seg("graphics", [["light", "Light"], ["medium", "Medium"], ["max", "Max"]]),
+        el("p", { class: "panel-intro", text: "More or fewer automatic effects and stickers. Anything you kept or changed by hand stays." }),
+        el("div", { class: "kind", text: "Sound effects" }),
+        seg("sfx", [["off", "Off"], ["subtle", "Subtle"], ["normal", "Normal"], ["bold", "Bold"]])];
     },
     notes: () => {
       const list = [...state.notes].sort((a, b) => (a.t ?? 1e9) - (b.t ?? 1e9));
@@ -414,6 +424,7 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
       state.notes = snap.docs.map(d => ({ id: d.id, ...d.data() })); render();
     }, () => {});
     db.doc("meta/look").onSnapshot(s => { const b = s.exists ? s.data() : null; state.look = b && b.v === D.version ? b.style : null; render(); }, () => {});
+    db.doc("meta/mix").onSnapshot(s => { const b = s.exists ? s.data() : null; state.mix = b && b.v === D.version ? { graphics: b.graphics, sfx: b.sfx } : null; render(); }, () => {});
     db.doc("meta/status").onSnapshot(s => { state.ready = s.exists ? s.data() : null; render(); }, () => {});
   })();
 })();

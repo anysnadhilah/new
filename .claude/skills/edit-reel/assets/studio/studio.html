@@ -1,0 +1,241 @@
+<title>Reel Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Studio desk: the order form on the left, the queue of reels (with links to each review page) on the right. */
+:root {
+  --bg: #F5F3F7; --surface: #FFFFFF; --sunken: #ECE8F0; --ink: #261E2C; --muted: #6E6476; --line: #DCD5E2;
+  --accent: #A3285F; --accent-ink: #FFFFFF; --butter: #FFE24D; --butter-ink: #3A3000;
+  --ok: #2E8A57; --ok-bg: #E3F3EA; --wait: #B86E0B; --wait-bg: #FCEFD9; --busy: #3756C8; --busy-bg: #E4E9FB;
+  --shadow: 0 1px 2px rgba(38, 30, 44, .06), 0 6px 20px rgba(38, 30, 44, .06);
+  --display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16121A; --surface: #211B26; --sunken: #2A2330; --ink: #F2ECF5; --muted: #A99EB2; --line: #3A3141;
+    --accent: #F17DB2; --accent-ink: #24101A; --butter: #FFE24D; --butter-ink: #2E2600;
+    --ok: #5FCB8E; --ok-bg: #1C3327; --wait: #F0A845; --wait-bg: #3A2C14; --busy: #8FA6FF; --busy-bg: #1E2547;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16121A; --surface: #211B26; --sunken: #2A2330; --ink: #F2ECF5; --muted: #A99EB2; --line: #3A3141;
+  --accent: #F17DB2; --accent-ink: #24101A; --butter: #FFE24D; --butter-ink: #2E2600;
+  --ok: #5FCB8E; --ok-bg: #1C3327; --wait: #F0A845; --wait-bg: #3A2C14; --busy: #8FA6FF; --busy-bg: #1E2547;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 48px;
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1160px; margin: 0 auto; display: grid; gap: 22px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font: 600 11.5px var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 800 clamp(30px, 5vw, 46px)/1 var(--display); letter-spacing: -.025em; margin: 0; }
+.lede { color: var(--muted); max-width: 64ch; margin: 0; }
+.cols { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 24px; align-items: start; }
+@media (max-width: 860px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+
+.order { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: grid; gap: 18px; box-shadow: var(--shadow); }
+.order h2, .queue h2 { font: 800 21px var(--display); margin: 0; }
+fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+legend, label.lab { font-weight: 700; font-size: 14px; padding: 0; margin-bottom: 2px; }
+.hint { color: var(--muted); font-size: 13px; margin: 0; }
+textarea, input[type=text] { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--bg); resize: vertical; }
+textarea#links { font: 500 13px/1.6 var(--mono); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.opt { position: relative; }
+.opt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.opt span { display: grid; gap: 3px; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--bg); height: 100%; }
+.opt b { font: 800 16px var(--display); }
+.opt small { color: var(--muted); font-size: 12.5px; line-height: 1.35; }
+.opt input:checked + span { border: 2px solid var(--accent); padding: 9px 11px; background: var(--surface); }
+.opt input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; flex-wrap: wrap; width: fit-content; max-width: 100%; }
+.seg label { position: relative; }
+.seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.seg span { display: block; padding: 8px 14px; font-weight: 600; font-size: 14px; color: var(--muted); }
+.seg label + label span { border-left: 1px solid var(--line); }
+.seg input:checked + span { background: var(--butter); color: var(--butter-ink); }
+.seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: -2px; }
+.row { display: flex; gap: 18px; flex-wrap: wrap; }
+.row > fieldset { flex: 1 1 290px; align-content: start; }
+.seg { align-self: start; }
+.go { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.btn { border: 0; border-radius: 12px; padding: 12px 20px; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 16px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.msg { font-size: 14px; color: var(--muted); }
+.msg.err { color: var(--accent); }
+.banner { border-radius: 12px; padding: 10px 14px; background: var(--wait-bg); font-size: 14px; }
+
+.queue { display: grid; gap: 12px; }
+.ticket { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; }
+.ticket .top { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+.ticket h3 { font: 700 16px var(--body); margin: 0; overflow-wrap: anywhere; }
+.when { font: 500 12px var(--mono); color: var(--muted); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border-radius: 999px; padding: 2px 9px; font-size: 12.5px; background: var(--sunken); }
+.status { border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
+.status.new { background: var(--wait-bg); color: var(--wait); }
+.status.editing { background: var(--busy-bg); color: var(--busy); }
+.status.ready, .status.done { background: var(--ok-bg); color: var(--ok); }
+.status.problem { background: var(--wait-bg); color: var(--accent); }
+.links { font: 500 12px/1.5 var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+.reply { font-size: 14px; }
+.ticket a.open { font-weight: 700; color: var(--accent); }
+.empty { border: 1px dashed var(--line); border-radius: 16px; padding: 18px; color: var(--muted); font-size: 14px; }
+.steps { display: grid; gap: 6px; color: var(--muted); font-size: 14px; padding-left: 20px; margin: 0; }
+code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px; padding: 1px 6px; color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">edit reel</div>
+    <h1>Reel Studio</h1>
+    <p class="lede">Drop a video link, pick a look, choose how much motion graphics and sound you want. Claude cuts it, captions it, animates it and sends a review page back here.</p>
+  </header>
+  <div id="banner" class="banner" hidden></div>
+  <div class="cols">
+    <form class="order" id="order" novalidate>
+      <h2>New reel</h2>
+      <fieldset>
+        <label class="lab" for="links">Video links</label>
+        <textarea id="links" rows="3" placeholder="https://drive.google.com/drive/folders/…&#10;one link per line: Google Drive, Dropbox, YouTube, Instagram, TikTok or a direct .mp4"></textarea>
+        <p class="hint">Share Google Drive files and folders as "Anyone with the link". Several clips of the same video can go in one folder.</p>
+      </fieldset>
+      <fieldset>
+        <label class="lab" for="title">Name <span class="hint">(optional)</span></label>
+        <input id="title" type="text" placeholder="e.g. my weekly planning method" autocomplete="off">
+      </fieldset>
+      <fieldset>
+        <legend>Look</legend>
+        <div class="cards" id="styles"></div>
+      </fieldset>
+      <div class="row">
+        <fieldset><legend>Motion graphics</legend><div class="seg" id="graphics"></div><p class="hint" id="graphics-hint"></p></fieldset>
+        <fieldset><legend>Sound effects</legend><div class="seg" id="sfx"></div></fieldset>
+      </div>
+      <div class="row">
+        <fieldset><legend>Spoken language</legend><div class="seg" id="language"></div></fieldset>
+        <fieldset><legend>Captions</legend><div class="seg" id="captions"></div></fieldset>
+      </div>
+      <fieldset>
+        <label class="lab" for="notes">Anything Claude should know <span class="hint">(optional)</span></label>
+        <textarea id="notes" rows="3" placeholder="Topic, names or words to spell right, the call to action, what to cut, music or no music…"></textarea>
+      </fieldset>
+      <div class="go"><button class="btn" id="send" type="submit">Start this reel</button><span class="msg" id="msg"></span></div>
+    </form>
+
+    <section class="queue" aria-labelledby="queue-title">
+      <h2 id="queue-title">Your reels</h2>
+      <ol class="steps">
+        <li>Fill in the form and press Start.</li>
+        <li>Tell Claude <code>check my studio</code> in the chat (the owner's Claude picks up everyone's requests).</li>
+        <li>When a reel shows <b>ready</b>, open its review page, keep or change anything, and send it back.</li>
+      </ol>
+      <div id="list" class="queue"><div class="empty">No reels yet. Your first one will show up here with its status and a link to its review page.</div></div>
+    </section>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const el = (tag, attrs = {}, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") n.className = v; else if (k === "text") n.textContent = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else if (v != null) n.setAttribute(k, v);
+    }
+    kids.flat().forEach(c => c != null && n.append(c));
+    return n;
+  };
+  const STYLES = [["it-girl", "it girl", "Clean serif captions, the key line big, butter chapter titles."],
+    ["whimsical", "whimsical", "Warm glow, chunky two-tone words, twinkling asterisks, pills."],
+    ["scrapbook", "scrapbook", "Collage headlines, shiny 3D gems, notes and taped photos."],
+    ["surprise", "surprise me", "Claude picks the look that suits the video."]];
+  const GRAPHICS = [["light", "light", "a few, on the key moments"], ["medium", "medium", "a graphic every few seconds"], ["max", "max", "tons: something on almost every line"]];
+  const SFX = [["off", "off"], ["subtle", "subtle"], ["normal", "normal"], ["bold", "bold"]];
+  const LANG = [["auto", "auto"], ["en", "English"], ["ms", "Malay"], ["mixed", "mixed"]];
+  const CAPS = [["on", "on"], ["off", "off"]];
+
+  const radios = (box, name, opts, def) => box.replaceChildren(...opts.map(([v, label]) =>
+    el("label", {}, el("input", { type: "radio", name, value: v, id: `${name}-${v}`, ...(v === def ? { checked: "" } : {}) }), el("span", { text: label }))));
+  $("#styles").replaceChildren(...STYLES.map(([v, name, desc], i) => el("label", { class: "opt" },
+    el("input", { type: "radio", name: "style", value: v, id: "style-" + v, ...(i === 0 ? { checked: "" } : {}) }),
+    el("span", {}, el("b", { text: name }), el("small", { text: desc })))));
+  radios($("#graphics"), "graphics", GRAPHICS, "medium");
+  radios($("#sfx"), "sfx", SFX, "normal");
+  radios($("#language"), "language", LANG, "auto");
+  radios($("#captions"), "captions", CAPS, "on");
+  const hint = () => { const g = GRAPHICS.find(x => x[0] === pick("graphics")); $("#graphics-hint").textContent = g ? g[2] : ""; };
+  const pick = name => (document.querySelector(`input[name=${name}]:checked`) || {}).value;
+  document.querySelectorAll("input[name=graphics]").forEach(i => i.addEventListener("change", hint));
+  hint();
+
+  let db = null, canWrite = true;
+  const msg = (t, err) => { $("#msg").textContent = t; $("#msg").className = "msg" + (err ? " err" : ""); };
+  const banner = t => { $("#banner").textContent = t; $("#banner").hidden = !t; };
+  const LINK = /^https?:\/\/\S+$/i;
+
+  $("#order").addEventListener("submit", async e => {
+    e.preventDefault();
+    const links = $("#links").value.split(/\s+/).map(s => s.trim()).filter(Boolean);
+    if (!links.length) { msg("Paste at least one video link.", true); $("#links").focus(); return; }
+    const bad = links.find(l => !LINK.test(l));
+    if (bad) { msg(`"${bad.slice(0, 40)}" isn't a link. Each line should start with https://`, true); return; }
+    if (!db) { msg("Saving is off in this view. Open the studio in Claude while signed in.", true); return; }
+    $("#send").disabled = true; msg("Sending…");
+    const body = { links, title: $("#title").value.trim(), style: pick("style"), graphics: pick("graphics"), sfx: pick("sfx"),
+      language: pick("language"), captions: pick("captions"), notes: $("#notes").value.trim(), status: "new", at: new Date().toISOString() };
+    try {
+      await db.collection("requests").add(body);
+      $("#links").value = ""; $("#title").value = ""; $("#notes").value = "";
+      msg("Added. Now tell Claude: check my studio");
+    } catch (err) {
+      if (err && err.code === "invalid_argument") { canWrite = false; msg("This view can't add reels. Ask the owner to share the studio with you as Contributor.", true); }
+      else if (err && err.code === "quota_exceeded") msg("The studio is full. Ask the owner to clear old reels.", true);
+      else msg("Couldn't send just now. Check your connection and press Start again.", true);
+    } finally { $("#send").disabled = !canWrite; }
+  });
+
+  const STATUS_TEXT = { new: "waiting", editing: "editing", ready: "ready", done: "done", problem: "needs you" };
+  const when = iso => { try { return new Date(iso).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } };
+  function draw(docs) {
+    const list = $("#list");
+    if (!docs.length) { list.replaceChildren(el("div", { class: "empty", text: "No reels yet. Your first one will show up here with its status and a link to its review page." })); return; }
+    list.replaceChildren(...docs.map(d => {
+      const r = d.data() || {};
+      const st = r.status || "new";
+      const name = r.title || (r.links && r.links[0] ? r.links[0].replace(/^https?:\/\/(www\.)?/, "").slice(0, 48) : "Untitled reel");
+      return el("article", { class: "ticket" },
+        el("div", { class: "top" }, el("h3", { text: name }), el("span", { class: "status " + st, text: STATUS_TEXT[st] || st })),
+        el("div", { class: "chips" }, [r.style && (r.style === "surprise" ? "surprise look" : r.style.replace("-", " ")), r.graphics && r.graphics + " graphics",
+          r.sfx && "sound " + r.sfx, r.language && r.language !== "auto" && r.language].filter(Boolean).map(t => el("span", { class: "chip", text: t }))),
+        el("div", { class: "links", text: (r.links || []).join("  ·  ") }),
+        r.reply ? el("div", { class: "reply", text: "Claude: " + r.reply }) : null,
+        r.review_url ? el("a", { class: "open", href: r.review_url, target: "_blank", rel: "noopener" }, `Open review page${r.version ? " (" + r.version + ")" : ""} →`) : null,
+        el("div", { class: "when", text: "added " + when(r.at) }));
+    }));
+  }
+
+  (async () => {
+    db = await window.claude?.use?.("db");
+    if (!db) { banner("Saving is off in this view. Open the studio in Claude while signed in to start reels."); $("#send").disabled = true; return; }
+    db.collection("requests").orderBy("at", "desc").limit(50).onSnapshot(s => draw(s.docs),
+      e => banner("Live updates stopped (" + e.code + "). Reload the page to reconnect."));
+  })();
+})();
+</script>

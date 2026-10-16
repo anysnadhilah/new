@@ -19,6 +19,7 @@ from PIL import Image, ImageDraw
 from common import FPS, H, SFX, SR, W, die, load_json, project_dir
 from gfx import font
 from effects import Matte, any_hides_captions, compose, load_effects, reserved_zone
+from effects.sound import effect_sounds, level as sound_level
 from styles.base import Context, blank, safe_guides
 
 STYLES = {"whimsical": "styles.whimsical", "it-girl": "styles.it_girl", "scrapbook": "styles.scrapbook"}
@@ -30,18 +31,39 @@ def load_style(name, ctx):
     return importlib.import_module(STYLES[name]).STYLE(ctx)
 
 
-def sfx_track(style, duration, path):
+def load_sound(name, proj):
+    """A sound by name: the project's own file (<project>/sfx/<name>.wav|.mp3) wins over the built-in one."""
+    for ext in (".wav", ".mp3", ".m4a"):
+        own = proj / "sfx" / f"{name}{ext}"
+        if own.exists():
+            raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(own), "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"],
+                                 capture_output=True, check=True).stdout
+            return np.frombuffer(raw, "<i2").astype(np.float32) / 32768
+    with wave.open(str(SFX / f"{name}.wav")) as f:
+        return np.frombuffer(f.readframes(f.getnframes()), "<i2").astype(np.float32) / 32768
+
+
+def sound_events(style, ctx, plan):
+    """Style sounds (captions, stickers, hook, cuts) + effect sounds, scaled by the plan's sfx level."""
+    k = sound_level(plan)
+    events = list(style.sfx())
+    for e in load_effects({"effects": ctx.effects}, ctx=ctx):
+        events += effect_sounds(e)
+    return [(at, name, gain * k) for at, name, gain in events if k > 0]
+
+
+def sfx_track(events, duration, path, proj):
     n = int(duration * SR) + SR
     mix = np.zeros(n, np.float32)
     cache = {}
-    for at, name, gain in style.sfx():
+    for at, name, gain in events:
         if name not in cache:
-            with wave.open(str(SFX / f"{name}.wav")) as f:
-                cache[name] = np.frombuffer(f.readframes(f.getnframes()), "<i2").astype(np.float32) / 32768
+            cache[name] = load_sound(name, proj)
         s = cache[name]
         i = max(0, int(at * SR))
         j = min(n, i + len(s))
-        mix[i:j] += s[: j - i] * gain
+        if j > i:
+            mix[i:j] += s[: j - i] * gain
     mix = np.clip(mix[: int(duration * SR)], -1, 1)
     with wave.open(str(path), "wb") as f:
         f.setnchannels(1)
@@ -62,7 +84,7 @@ def full(proj, style, ctx, safe, draft):
     frame, a second ffmpeg encodes. Audio (voice + effects) is mixed and muxed in a final pass."""
     work = proj / "work"
     sfx_path = work / "sfx.wav"
-    sfx_track(style, ctx.duration, sfx_path)
+    sfx_track(sound_events(style, ctx, ctx.plan), ctx.duration, sfx_path, proj)
     out = next_version(proj)
     silent = work / "video_only.mp4"
     dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", str(work / "aroll.mkv"), "-filter_complex", style.grade(),
