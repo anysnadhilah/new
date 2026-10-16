@@ -22,20 +22,18 @@ from common import FPS, H, SFX, SR, W, die, load_json, project_dir
 from gfx import font
 from effects import Matte, any_hides_captions, compose, load_effects, reserved_zone
 from effects.base import zoom as zoom_frame
-from gfx import out_cubic, prog
 from effects.sound import effect_sounds
 from styles.base import Context, blank, safe_guides
 
 STYLES = {"whimsical": "styles.whimsical", "it-girl": "styles.it_girl", "scrapbook": "styles.scrapbook"}
 
 
-def punch(frame, style, ctx, t):
-    """Every cut lands with a small zoom that settles over a third of a second (energy without flashes)."""
-    k = getattr(style, "cut_punch", 0)
-    for c in ctx.cuts:
-        if 0 <= t - c < 0.32 and k:
-            return zoom_frame(frame, 1 + k * (1 - out_cubic(prog(t, c, 0.32))))
-    return frame
+def camera(frame, style, t, effects):
+    """The style's zoom rhythm (punch-ins, pushes, jump zooms). Effects that are on screen own the framing."""
+    if any(e.active(t) for e in effects):
+        return frame
+    z, cx, cy = style.frame_zoom(t)
+    return zoom_frame(frame, z, cx, cy) if abs(z - 1) > 1e-3 else frame
 
 
 def load_style(name, ctx):
@@ -130,8 +128,9 @@ def full(proj, style, ctx, safe, draft):
             die(f"a-roll ended early at frame {f} of {ctx.frames}: {dec.stderr.read().decode()[-800:]}")
         t = f / FPS
         frame = None
-        if style.cut_punch and any(0 <= t - c < 0.32 for c in ctx.cuts):
-            frame = punch(Image.frombytes("RGB", (W, H), raw), style, ctx, t)
+        z = style.frame_zoom(t)[0]
+        if abs(z - 1) > 1e-3 and not any(e.active(t) for e in effects):
+            frame = camera(Image.frombytes("RGB", (W, H), raw), style, t, effects)
         if any(e.active(t) for e in effects):
             frame = compose(frame or Image.frombytes("RGB", (W, H), raw), t, effects, matte)
         style.hide_captions = any_hides_captions(effects, t)
@@ -189,7 +188,7 @@ def stills(proj, style, ctx, times, safe=False):
         frame = work / "snap_frame.png"
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.3f}", "-i", str(work / "aroll.mkv"),
                         "-filter_complex", style.grade(), "-map", "[bg]", "-frames:v", "1", str(frame)], check=True)
-        base = compose(punch(Image.open(frame).convert("RGB"), style, ctx, t), t, effects, matte).convert("RGBA")
+        base = compose(camera(Image.open(frame).convert("RGB"), style, t, effects), t, effects, matte).convert("RGBA")
         style.hide_captions = any_hides_captions(effects, t)
         style.reserved = reserved_zone(effects, t)
         canvas = blank()

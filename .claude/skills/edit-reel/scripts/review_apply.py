@@ -148,7 +148,9 @@ def main():
                            (plan.get("sections", []) or [], ("start", "end"))):
             survivors = []
             for item in coll:
-                moved = {k: shift(item[k]) for k in keys if k in item}
+                moved = {k: shift(item[k]) for k in keys if k in item and not isinstance(item[k], list)}
+                if isinstance(item.get("at"), list):                 # checklist tick times
+                    moved["at"] = [x for x in (shift(a) for a in item["at"]) if x is not None]
                 if any(v is None for v in moved.values()):
                     done.append(f"{item.get('type') or item.get('title')} at {item.get('start', item.get('at'))}s removed with its take")
                     continue

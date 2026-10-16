@@ -86,8 +86,8 @@ def main():
                          "end": st["at"] + st.get("dur", 1.5), "title": st.get("text") or st.get("kind") or st.get("type", ""),
                          "detail": ""})
     for i, fx in enumerate(plan.get("effects", [])):
-        start = fx.get("start", fx.get("at", 0) - 0.22)
-        end = fx.get("end", fx.get("at", start) + 0.22)
+        start = fx["start"] if "start" in fx else fx.get("at", 0) - 0.22       # transitions sit on one cut ("at")
+        end = fx["end"] if "end" in fx else fx.get("at", start) + 0.22
         graphics.append({"id": f"fx-{i}-{fx['type']}", "kind": f"Effect · {FX_NAMES.get(fx['type'], fx['type'])}",
                          "title": (fx.get("text") or fx.get("title") or fx.get("label") or FX_NAMES.get(fx["type"], fx["type"])).replace("|", " / "),
                          "start": start, "end": end, "detail": fx_detail(fx)})

@@ -55,6 +55,8 @@ class Checklist(Effect):
         e = self.env(t)
         if e <= 0.01:
             return
+        if self.s.get("look", "notepad" if (getattr(self.ctx, "plan", None) or {}).get("style") == "scrapbook" else "") == "notepad":
+            return self._notepad(frame, t, e)
         y = self.ctx.block_y(self.start, self.h + 20, prefer="top")
         x0, y0 = int((W - self.w) / 2), int(y - self.h / 2 + (1 - e) * -40)
         region = frame.crop((x0, y0, x0 + self.w, y0 + self.h)).filter(ImageFilter.GaussianBlur(18))
@@ -80,6 +82,63 @@ class Checklist(Effect):
         card = rounded(card, 36)
         card.putalpha(card.getchannel("A").point(lambda v: int(v * e)))
         frame.paste(card, (x0, y0), card)
+
+
+    def _notepad(self, frame, t, e):
+        """Scrapbook look: a yellow lined notepad page held by a lilac clip; items written in chunky plum letters,
+        each one ticked with a pink check on its time."""
+        w, row = 820, 86
+        h = 170 + row * len(self.items)
+        if not hasattr(self, "_paper"):
+            pad = 40
+            img = Image.new("RGBA", (w + 2 * pad, h + 2 * pad + 40), (0, 0, 0, 0))
+            d = ImageDraw.Draw(img)
+            d.rounded_rectangle((pad, pad + 40, pad + w, pad + 40 + h), 18, fill=rgba("#FFF4B8"))
+            for i in range(int(h / 43)):
+                y = pad + 40 + 120 + i * 43
+                if y < pad + 40 + h - 20:
+                    d.line((pad + 24, y, pad + w - 24, y), fill=rgba("#B9CFF0"), width=2)
+            d.line((pad + 92, pad + 52, pad + 92, pad + 40 + h - 12), fill=rgba("#F4A0B5"), width=2)
+            cx = pad + w / 2                                      # the clip
+            d.rounded_rectangle((cx - 120, pad + 12, cx + 120, pad + 78), 22, fill=rgba("#B9A6F2"))
+            d.rounded_rectangle((cx - 60, pad - 18, cx + 60, pad + 30), 18, outline=rgba("#9C86E6"), width=12)
+            img = drop_shadow(img, 0, 10, 14, (40, 20, 40, 110))
+            title = text_img(self.s.get("title", "all you need to do").lower(), "Sacramento-Regular.ttf", 84,
+                             "#4A2A47")
+            img.alpha_composite(title, (int(img.width / 2 - title.width / 2), pad + 40 + 26))
+            self._paper = img
+            self._pad = pad
+        card = self._paper.copy()
+        d = ImageDraw.Draw(card)
+        pad = self._pad
+        for i, item in enumerate(self.items):
+            yy = pad + 40 + 150 + i * row
+            on = t >= self.at[i]
+            txt = text_img(item.lower(), "Fredoka-Bold.ttf", 46, "#4A2A47" if on else "#9A8597", tracking=-0.02)
+            card.alpha_composite(txt, (pad + 120, int(yy - txt.height / 2 + 12)))
+            cx, cy = pad + 56, yy + 14
+            d.ellipse((cx - 22, cy - 22, cx + 22, cy + 22), outline=rgba("#C9B6F5"), width=4)
+            k = prog(t, self.at[i], 0.25)
+            if k > 0:                                             # a pink check drawn in one stroke
+                pts = [(cx - 16, cy - 2), (cx - 4, cy + 14), (cx + 26, cy - 26)]
+                seg = (len(pts) - 1) * min(1, k)
+                path = pts[: int(seg) + 1]
+                if seg < len(pts) - 1:
+                    a, b = pts[int(seg)], pts[int(seg) + 1]
+                    f = seg - int(seg)
+                    path = path + [(a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f)]
+                d.line(path, fill=rgba("#EE5FA7"), width=9, joint="curve")
+        if not hasattr(self, "_fit"):
+            # sit above the brows in every take the list spans (like the section titles), never on the eyes
+            segs = [sg for sg in self.ctx.segments if sg["start"] < self.end and sg["end"] > self.start]
+            brow = min(((sg["face"]["cy"] - 0.5 * sg["face"]["h"]) * H if sg.get("face") else 800) for sg in segs)
+            room = brow - 175
+            k = max(0.55, min(0.86, room / (card.height - 2 * pad)))
+            self._fit = (k, 175 + (card.height - 2 * pad) * k / 2)
+        k, y = self._fit
+        p = out_back(prog(t, self.start, 0.4), 1.6)
+        img = xform(card, scale=k * lerp(0.7, 1, p), rot=-2 + 6 * (1 - p), alpha=e)
+        put(frame, img, W / 2, y + (1 - p) * -60)
 
 
 # ---------------------------------------------------------------- 8. floating phone (phone mockup)

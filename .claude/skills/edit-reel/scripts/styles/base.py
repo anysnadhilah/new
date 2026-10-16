@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image
 
 from common import FPS, H, SAFE, W
-from gfx import place, prog
+from gfx import out_cubic, place, prog
 
 
 class Context:
@@ -175,6 +175,15 @@ class Style:
     def sfx(self):
         """(time, sound, gain) or (time, sound, gain, priority); see effects/sound.py for priorities."""
         return []
+
+    def frame_zoom(self, t):
+        """Camera at time t as (zoom, centre x, centre y): by default a small punch-in that settles after a cut."""
+        k = self.cut_punch
+        if k:
+            for c in self.ctx.cuts:
+                if 0 <= t - c < 0.32:
+                    return 1 + k * (1 - out_cubic(prog(t, c, 0.32))), W / 2, H / 2
+        return 1.0, W / 2, H / 2
 
     def caption_y(self, cap, lay):
         """Vertical centre of a caption block (once per caption)."""

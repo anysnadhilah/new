@@ -15,7 +15,7 @@ from PIL import Image
 
 from common import H, SAFE, W
 from gems import KINDS, gem
-from gfx import drop_shadow, lerp, out_back, out_cubic, place, prog, sparkle, tape, text_img, torn_paper, xform
+from gfx import drop_shadow, in_out_sine, lerp, out_back, out_cubic, place, prog, sparkle, tape, text_img, torn_paper, xform
 from styles.base import Style
 
 LAVENDER = "#F5C6F0"
@@ -52,8 +52,12 @@ def small(text, size, fill="#FFFFFF"):
     return text_img(text.lower(), SANS, size, fill, tracking=0.0, shadow=(0, 2, 6, (0, 0, 0, 190)))
 
 
-GEM_ROTATION = ["jelly-flower-pink", "chrome-star", "rhinestone-heart", "jelly-flower-lilac", "holo-heart",
-                "gold-star", "chrome-sparkle", "rhinestone-flower", "jelly-star", "disco"]
+GEM_ROTATION = ["acrylic-star-pink", "acrylic-heart-lilac", "acrylic-star-blue", "acrylic-round-yellow",
+                "acrylic-heart-pink", "acrylic-star-lilac", "acrylic-round-blue", "acrylic-star-yellow",
+                "acrylic-heart-red", "acrylic-round-pink", "acrylic-star-green", "jelly-flower-pink"]
+CONFETTI = ["acrylic-round-pink", "acrylic-star-blue", "acrylic-round-yellow", "acrylic-heart-pink",
+            "acrylic-star-lilac", "acrylic-round-clear", "acrylic-round-blue", "acrylic-star-pink",
+            "acrylic-round-lilac", "acrylic-heart-red", "acrylic-round-green", "acrylic-star-yellow"]
 
 
 def _h(im):
@@ -166,7 +170,10 @@ class Scrapbook(Style):
             k = max(0.62, min(1.0, top_room / total))
             y0 = TITLE_TOP
         rng = np.random.default_rng(tt["i"] + 3)
-        tt["layout"] = {"rows": rows, "heights": heights, "k": k, "y0": y0, "h": total * k, "zone": zone,
+        widest = max(sum(_w(im) for im in ims) + 0.26 * self.TITLE * (len(ims) - 1) for _, ims, _ in rows) * k
+        spots = self._confetti_spots(tt["i"], widest, y0, total * k)
+        tt["layout"] = {"rows": rows, "heights": heights, "k": k, "y0": y0, "h": total * k, "zone": zone, "w": widest,
+                        "spots": spots,
                         "scatter": [(rng.uniform(-170, 170), rng.uniform(-140, 60), rng.uniform(-28, 28))
                                     for _ in range(len(words) + 2)],
                         "burst": [(rng.uniform(-0.55, 0.55), rng.uniform(-0.2, 1.1), rng.uniform(26, 54), rng.uniform(0, 0.25))
@@ -222,8 +229,22 @@ class Scrapbook(Style):
             y += h * k
         self._decorate(canvas, t, tt, lay, last_in, k_out)
 
+    def _confetti_spots(self, i, w, top, h):
+        """Where the acrylic gems settle around a title: both ends of it and a few above / below its corners."""
+        rng = np.random.default_rng(40 + i)
+        left, right = W / 2 - w / 2, W / 2 + w / 2
+        cands = [(left - 52, top + h * 0.35, 92), (right + 52, top + h * 0.6, 84), (left + w * 0.1, top + h + 26, 46),
+                 (right - w * 0.12, top - 14, 50), (left - 30, top + h * 0.95, 40), (right + 40, top + h * 0.05, 38),
+                 (W / 2 + w * 0.32, top + h + 30, 36)]
+        out = []
+        for j, (x, y, size) in enumerate(cands):
+            x = min(max(x, 70), W - 70)
+            out.append((x + rng.uniform(-14, 14), max(y + rng.uniform(-10, 10), 175), int(size * rng.uniform(0.9, 1.15)),
+                        CONFETTI[(i * 3 + j) % len(CONFETTI)], rng.uniform(-25, 25)))
+        return out
+
     def _decorate(self, canvas, t, tt, lay, last_in, k_out):
-        """Sparkle burst while the title lands, then two small still sparkles and one gem that stay with it."""
+        """While the title lands: a sparkle burst, and acrylic gems burst out from it and settle around it (still)."""
         top, h = lay["y0"], lay["h"]
         for j, (fx, fy, s, delay) in enumerate(lay["burst"]):
             local = t - tt["start"] - delay
@@ -231,21 +252,44 @@ class Scrapbook(Style):
                 p = np.sin(np.pi * local / 0.9)
                 x = W / 2 + fx * 900
                 yy = top + fy * h
-                if not self.ctx.hits_face(t, x, yy, s / 2):
+                if not self.on_face(t, x, yy, s / 2):
                     place(canvas, xform(self._sparkle(int(s)), scale=p, alpha=p * (1 - k_out)), x, yy)
-        p = out_back(prog(t, last_in + 0.2, 0.32), 1.8)
-        if p <= 0:
-            return
-        for j, (fx, fy) in enumerate(((-0.43, 0.18), (0.44, 0.72))):
-            x, yy = W / 2 + fx * 900, top + fy * h
-            if not self.ctx.hits_face(t, x, yy, 20):
-                place(canvas, xform(self._sparkle(34 - 8 * j), scale=p, alpha=1 - k_out), x, yy)
-        g = self.gem_img(GEM_ROTATION[tt["i"] % len(GEM_ROTATION)], 118)
-        side = -1 if tt["i"] % 2 == 0 else 1
-        x = min(max(W / 2 + side * 420, SAFE["left"] + 60), SAFE["right"] - 60)
-        yy = top + h * (0.3 if lay["zone"] == "top" else 0.7)
-        if not self.on_face(t, x, yy, 50):
-            place(canvas, xform(g, scale=p * (1 - 0.3 * k_out), rot=side * -12, alpha=1 - k_out), x, yy)
+        land = (last_in if tt["hook"] else tt["start"] + 0.12)
+        ox, oy = W / 2, top + h / 2
+        for j, (x, y, size, kind, rot) in enumerate(lay["spots"]):
+            p = prog(t, land + 0.05 * j, 0.42)
+            if p <= 0 or self.on_face(t, x, y, size / 2.2):
+                continue
+            e = out_back(p, 1.6)
+            px, py = lerp(ox, x, out_cubic(p)), lerp(oy, y, out_cubic(p)) - 60 * np.sin(np.pi * min(p, 1)) * (1 - p)
+            img = self.gem_img(kind, size)
+            place(canvas, xform(img, scale=lerp(0.2, 1, e) * (1 - 0.3 * k_out), rot=rot + 140 * (1 - out_cubic(p)),
+                                alpha=min(1, p * 3) * (1 - k_out)), px, py)
+
+    # ---------------------------------------------------------------- camera: the zoom rhythm (the visual hook)
+    def frame_zoom(self, t):
+        """Slow push-in through the hook; every new idea lands with a punch-in and alternates between a wider and
+        a closer framing, drifting closer while it is explained; a line with a key word jumps a little closer.
+        Always anchored on the eyes, so titles above the head stay clear."""
+        seg = self.ctx.seg_at(t)
+        f = seg.get("face")
+        cx, cy = ((f["cx"] * W, (f["cy"] - 0.2 * f["h"]) * H) if f else (W / 2, H * 0.4))
+        tt = self.title_at(t)
+        z = 1.0
+        if tt is not None and tt["hook"]:
+            z = 1 + 0.17 * in_out_sine(prog(t, tt["start"], tt["end"] - tt["start"]))
+            last = max(tt["times"] or [tt["start"]])
+            z += 0.05 * (1 - out_cubic(prog(t, last, 0.3))) * (t >= last)
+        elif tt is not None:
+            z = (1.0 if tt["i"] % 2 else 1.09) + 0.04 * prog(t, tt["start"], tt["end"] - tt["start"])
+            z += 0.06 * (1 - out_cubic(prog(t, tt["start"], 0.35)))
+            for cap in self.caps:
+                if cap.get("emph") and cap["start"] <= t < cap["end"]:
+                    z += 0.05
+                    break
+        else:
+            z = super().frame_zoom(t)[0]
+        return min(z, 1.25), cx, cy
 
     def _sparkle(self, size):
         key = ("sparkle", size)
@@ -277,7 +321,7 @@ class Scrapbook(Style):
             p = out_back(prog(t, base + 0.35 * j, 0.3), 2.0)
             x, y = W / 2 + fx * W, fy * 1920
             if p > 0 and not self.on_face(t, x, y, s / 2.4):
-                img = self.gem_img(GEM_ROTATION[(j + 2) % len(GEM_ROTATION)], s)
+                img = self.gem_img(("acrylic-star-pink", "acrylic-heart-lilac", "acrylic-round-blue")[j], s)
                 place(canvas, xform(img, scale=p * (1 - 0.3 * k_out), rot=(-1) ** j * 10, alpha=1 - k_out), x, y)
 
     # ---------------------------------------------------------------- stickers

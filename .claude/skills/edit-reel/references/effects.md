@@ -39,7 +39,8 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
 6. **dolly-zoom** (cutout): vertigo: the room zooms while you stay the same size. `amount` (0.35), `direction`
    (in|out).
 7. **checklist**: frosted dark card at the top; items tick off with a yellow check. `title`, `items[]`, `at[]`
-   (tick times; default spread out). Captions move to the bottom.
+   (tick times; default spread out), `look` ("notepad": yellow lined page with a clip and pink hand-drawn checks;
+   the default in scrapbook). Captions move to the bottom.
 8. **phone-float**: a phone floats in beside you with a screenshot (`image`) or a chat that writes itself
    (`messages[]`, alternating sides), `title`. Captions move to the top.
 9. **note-wall** (cutout): notes pop onto the wall behind you one by one. `notes[]` or `images[]`, `every` (0.35 s).
@@ -63,7 +64,7 @@ Sound marks moments, it is not decoration. Every effect proposes sounds (`script
 priority: 3 = the intro hook, 2 = bullet points (checklist ticks, chapter/pill stickers), key transitions and big
 punches (punch-zoom with words, cover/glass title, chart landing), 1 = other entrances, 0 = decoration (per-card or
 per-letter ticks). A sound director keeps only what the level allows and spaces the survivors apart:
-`"sfx"` off | subtle (priority 2+, 3 s apart) | normal (2+, 2 s apart, the default) | bold (1+, 1.2 s apart).
+`"sfx"` off | subtle (priority 2+, 3 s apart) | normal (2+, 1.5 s apart, the default) | bold (1+, 1 s apart).
 A 60 s reel on normal gets roughly 6-10 sounds, never one per second.
 
 ## Automatic placement

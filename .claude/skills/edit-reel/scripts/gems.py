@@ -208,9 +208,60 @@ def disco(size, seed=5):
     return _finish(v, m, size)
 
 
+def acrylic(pts, size, color, center=None, height=0.38, table=0.0):
+    """Cut acrylic craft gem: flat faces from the centre to each pair of outline points (a star becomes a pyramid,
+    a heart or circle a faceted dome), optional flat table on top; saturated see-through colour, bright facet
+    sparkles and a white glint."""
+    m = _mask(pts, size)
+    s = m.shape[0]
+    cx, cy = [v * K for v in (center or (size / 2, size / 2))]
+    vx = np.array([p[0] * K for p in pts])
+    vy = np.array([p[1] * K for p in pts])
+    va = np.arctan2(vy - cy, vx - cx)
+    order = np.argsort(va)
+    vx, vy, va = vx[order], vy[order], va[order]
+    yy, xx = np.mgrid[0:s, 0:s].astype(np.float32)
+    pa = np.arctan2(yy - cy, xx - cx)
+    i = (np.searchsorted(va, pa) - 1) % len(va)
+    j = (i + 1) % len(va)
+    R = np.hypot(vx - cx, vy - cy).max()
+    hz = R * height
+    # face through the apex (cx, cy, hz) and the two outline points: normal = (A - P1) x (P2 - P1)
+    ax_, ay_ = cx - vx[i], cy - vy[i]
+    bx_, by_ = vx[j] - vx[i], vy[j] - vy[i]
+    nx, ny, nz = ay_ * 0 - hz * by_, hz * bx_ - ax_ * 0, ax_ * by_ - ay_ * bx_
+    n = np.dstack([nx, ny, nz])
+    n = n * np.sign(n[..., 2:3] + 1e-9)
+    n = n / (np.linalg.norm(n, axis=2, keepdims=True) + 1e-9)
+    if table:
+        r = np.hypot(xx - cx, yy - cy) / R
+        flat = r < table
+        n[flat] = (0, 0, 1)
+    diffuse, spec = _shade(n)
+    base = np.array(rgba(color)[:3]) / 255
+    face_id = np.where(np.hypot(xx - cx, yy - cy) < table * R, -1, i) if table else i
+    sparkle = ((face_id * 0.6180339) % 1.0)[..., None]
+    v = base * (0.5 + 0.55 * diffuse[..., None] ** 1.3 + 0.25 * sparkle) + (1 - base) * 0.18 * sparkle
+    v += (spec ** 24)[..., None] * 0.95
+    edge = np.zeros(m.shape, np.float32)
+    edge[:, 1:] += (face_id[:, 1:] != face_id[:, :-1])
+    edge[1:, :] += (face_id[1:, :] != face_id[:-1, :])
+    v += cv2.GaussianBlur(np.clip(edge, 0, 1), (0, 0), 0.8)[..., None] * 0.22
+    rim = cv2.GaussianBlur(m, (0, 0), K * 2.0)
+    v = v * (0.72 + 0.28 * np.clip(rim * 1.6 - 0.3, 0, 1))[..., None]          # deeper colour at the edges
+    gx, gy = cx - R * 0.32, cy - R * 0.38                                        # one soft white glint
+    glint = np.exp(-(((xx - gx) / (R * 0.16)) ** 2 + ((yy - gy) / (R * 0.1)) ** 2))
+    v += glint[..., None] * 0.45
+    return _finish(v, m, size)
+
+
+ACRYLIC = {"pink": "#F2148C", "blue": "#2BB8E8", "lilac": "#A472E0", "yellow": "#F9C80E", "red": "#E8231F",
+           "green": "#7ED321", "clear": "#D9E4EE", "rose": "#F7A1C4"}
+
 # ---------------------------------------------------------------- catalogue
 KINDS = ["chrome-star", "gold-star", "jelly-flower-pink", "jelly-flower-peach", "jelly-flower-lilac",
-         "rhinestone-heart", "rhinestone-flower", "sequin", "holo-heart", "disco", "chrome-sparkle", "jelly-star"]
+         "rhinestone-heart", "rhinestone-flower", "sequin", "holo-heart", "disco", "chrome-sparkle", "jelly-star"] + \
+        [f"acrylic-{shape}-{c}" for shape in ("star", "heart", "round") for c in ACRYLIC]
 
 
 def gem(kind, size=110, seed=1):
@@ -236,13 +287,23 @@ def gem(kind, size=110, seed=1):
         return disco(size, seed)
     if kind == "chrome-sparkle":
         return chrome(_sparkle4(size), size, tint=(0.92, 0.86, 1.0))
+    if kind.startswith("acrylic-"):
+        _, shape, col = kind.split("-", 2)
+        c = ACRYLIC.get(col, col)
+        if shape == "star":
+            return acrylic(_star(size, inner=0.46), size, c, height=0.3)
+        if shape == "heart":
+            pts = _heart(size)
+            return acrylic(pts[::12], size, c, center=(size / 2, size * 0.52), height=0.42, table=0.32)
+        if shape == "round":
+            return acrylic(_circle(size)[::12], size, c, height=0.45, table=0.42)
     raise ValueError(f"unknown gem {kind}")
 
 
 if __name__ == "__main__":
     import sys
-    out = Image.new("RGBA", (6 * 180, 2 * 180), (240, 236, 228, 255))
+    out = Image.new("RGBA", (8 * 180, ((len(KINDS) + 7) // 8) * 180), (240, 236, 228, 255))
     for i, k in enumerate(KINDS):
         g = gem(k, 140)
-        out.alpha_composite(g, (i % 6 * 180 + (180 - g.width) // 2, i // 6 * 180 + (180 - g.height) // 2))
+        out.alpha_composite(g, (i % 8 * 180 + (180 - g.width) // 2, i // 8 * 180 + (180 - g.height) // 2))
     out.convert("RGB").save(sys.argv[1] if len(sys.argv) > 1 else "gems.jpg", quality=92)

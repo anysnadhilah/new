@@ -107,7 +107,13 @@ def main():
     fx, st = [], []
     used_types = {}
 
+    # scrapbook pins a title at the top of every idea: skip effects that would fight it for the screen
+    banned = {"phone-float", "headline-wall", "note-wall", "app-split", "phone-frame", "pull-back"} \
+        if style == "scrapbook" else set()
+
     def add_fx(spec):
+        if spec["type"] in banned:
+            return False
         s, e = span(spec)
         if not free(s, e, transition=spec["type"] == TRANSITION):
             return False
@@ -175,9 +181,10 @@ def main():
     # ---- transitions on cuts, ending reveal
     cuts = [s["start"] for s in tl["segments"][1:]]
     every = {"light": 6, "medium": 3, "max": 2}[amount]
+    starts = [x["start"] for x in plan.get("sections", []) or []]
     for k, c in enumerate(cuts):
-        if k % every == 0:
-            add_fx({"type": "zoom-through", "at": round(c, 3)})
+        if (k % every == 0 and not starts) or any(abs(c - x) < 0.45 for x in starts):
+            add_fx({"type": "zoom-through", "at": round(c, 3)})       # with sections: every new idea
     if amount != "light" and dur > 15:
         add_fx({"type": "pull-back", "start": round(dur - 3.6, 2), "end": round(dur, 2), "title": f"{proj.name}.mp4",
                 "items": ["picked the best takes", "cut the dead air", "captions added", "graphics added"],
@@ -185,14 +192,21 @@ def main():
 
     # ---- rhythm: wherever nothing has happened for a while, add the next graphic from a rotation,
     # on that moment's punch word (or its longest word)
-    gems = ["chrome-star", "jelly-flower-pink", "rhinestone-heart", "disco", "gold-star", "holo-heart", "sequin",
-            "chrome-sparkle", "jelly-flower-lilac", "rhinestone-flower"]
+    gems = ["acrylic-star-pink", "acrylic-heart-lilac", "acrylic-round-blue", "acrylic-star-yellow", "jelly-flower-pink",
+            "acrylic-heart-pink", "acrylic-star-blue", "acrylic-round-pink", "acrylic-star-lilac", "rhinestone-heart"]
     rotation = {
         "light": ["sticker", "punch-zoom", "sticker"],
         "medium": ["sticker", "punch-zoom", "sticker", "doodle-outline", "sticker", "glass-title"],
         "max": ["sticker", "punch-zoom", "glass-title", "sticker", "doodle-outline", "orbit", "sticker",
                 "paper-cutout", "cover-title", "sticker", "new-background", "punch-zoom"],
     }[amount]
+    if style == "scrapbook":
+        rotation = {
+            "light": ["sticker", "punch-zoom", "sticker"],
+            "medium": ["sticker", "punch-zoom", "doodle-outline", "sticker", "paper-cutout", "punch-zoom"],
+            "max": ["sticker", "punch-zoom", "doodle-outline", "sticker", "paper-cutout", "glass-title", "sticker",
+                    "orbit", "punch-zoom", "new-background"],
+        }[amount]
     if not cutout:
         rotation = [r for r in rotation if r in ("sticker", "punch-zoom")]
     turn = 0

@@ -7,15 +7,16 @@
   0  small decoration (per-caption pops, per-card / per-letter ticks, sparkles)
 
 direct() keeps what the level allows and spaces the survivors so they never crowd: "subtle" keeps 3s and the
-strongest 2s, "normal" keeps 2s, "bold" adds 1s. Gains stay well under the voice.
+strongest 2s, "normal" keeps 2s, "bold" adds 1s; at least 3 s, 1.5 s and 1 s apart. Gains stay well under the voice.
 """
 
 LEVELS = {"off": 0.0, "subtle": 0.55, "normal": 0.8, "bold": 1.0}
 MIN_PRIORITY = {"subtle": 2, "normal": 2, "bold": 1}
-SPACING = {"subtle": 3.0, "normal": 2.0, "bold": 1.2}           # seconds between two sounds
+SPACING = {"subtle": 3.0, "normal": 1.5, "bold": 1.0}           # seconds between two sounds
 KEY_ENTRANCES = {"zoom-through", "phone-frame", "pull-back", "app-split", "dolly-zoom", "cover-title", "glass-title",
                  "checklist", "chart-grow"}
 BULLET_STICKERS = {"chapter", "pill", "pill-yellow", "note"}
+PAIRS = {frozenset(p) for p in (("ding",), ("whoosh", "glow"), ("pop", "ding"), ("swish", "glow"))}
 
 
 def direct(events, plan):
@@ -27,8 +28,9 @@ def direct(events, plan):
     for t, name, gain, pri in sorted(events, key=lambda e: (-e[3], e[0])):
         if pri < MIN_PRIORITY[lvl]:
             continue
-        # bullet ticks of one list may follow each other closer; everything else keeps the full spacing
-        if any(abs(t - k[0]) < (0.8 if name == k[1] == "ding" else spacing) for k in keep):
+        # natural pairs may follow each other closely (ticks of one list, a whoosh into the title it reveals,
+        # a list popping up then its first tick); everything else keeps the full spacing
+        if any(abs(t - k[0]) < (0.25 if frozenset((name, k[1])) in PAIRS else spacing) for k in keep):
             continue
         keep.append((t, name, gain * LEVELS[lvl], pri))
     return sorted((t, n, g) for t, n, g, _ in keep)
