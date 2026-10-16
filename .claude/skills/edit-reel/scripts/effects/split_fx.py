@@ -19,7 +19,8 @@ from common import H, W
 from effects.base import Effect, rounded
 from gfx import drop_shadow, font, lerp, out_back, out_cubic, prog, rgba, text_img, xform
 
-CARD_SCALE = 0.5
+CARD_SCALE = 0.5               # "card" layout (no cutout available): the clip as a print at the bottom
+PERSON_SCALE = 0.84            # "cutout" layout (default): the speaker cut out, big, head just under the graphic
 CARD_TOP = 945                  # the pushed-down clip: 540 x 960 from here down
 PANEL_BOTTOM = 925
 UI = "Figtree-Medium.ttf"
@@ -53,6 +54,7 @@ class SplitPanel(Effect):
     Options: panel (calendar | popups | todo-scroll | time-bars | goals), title (heading, drawn by the effect only
     when the style has no pinned title of its own) and the panel's own data (see references/effects.md)."""
     name = "split-panel"
+    needs_matte = True           # the default layout cuts the speaker out (falls back to a card without a matte)
     hides_captions = True
     keeps_title = True           # scrapbook keeps its pinned title, set small at the very top
     ease_in = 0.45
@@ -68,6 +70,7 @@ class SplitPanel(Effect):
         self._bg = None
         self._shadow = None
         self.t0 = self.start + 0.35          # panel content starts once the push is under way
+        self.layout = spec.get("layout", "cutout")
 
     # ------------------------------------------------------------ layout: background, card, panel
     def _background(self):
@@ -90,6 +93,9 @@ class SplitPanel(Effect):
         e = self.env(t)
         if e <= 0.001:
             return frame
+        m = getattr(self, "ctx_matte", None)
+        if self.layout == "cutout" and m is not None:
+            return self._cutout(frame, m, t, out_cubic(e))
         k = out_cubic(e)
         sc = lerp(1.0, CARD_SCALE, k)
         cw, ch = int(W * sc), int(H * sc)
@@ -115,6 +121,40 @@ class SplitPanel(Effect):
         a = min(1.0, max(0.0, (k - 0.3) / 0.7))
         if panel is not None and a > 0.01:
             panel = xform(panel, alpha=a) if a < 1 else panel
+            out.paste(panel, (0, self.top), panel)
+            if not self.scrap and self.s.get("title"):
+                head = text_img(self.s["title"], UI_BOLD, 54, INK)
+                out.paste(head, (int(W / 2 - head.width / 2), self.top - 90), head)
+        return out
+
+    def _cutout(self, frame, matte, t, k):
+        """The speaker cut out of her background and kept big (focus on her), standing on the journal page with a
+        thin white sticker edge; her head sits just under the graphic."""
+        seg = self.ctx.seg_at(t)
+        f = seg.get("face")
+        head_top = ((f["cy"] - 1.0 * f["h"]) * H) if f else H * 0.12      # top of hair / hijab
+        sc = lerp(1.0, PERSON_SCALE, k)
+        target_y = PANEL_BOTTOM + 12 - head_top * PERSON_SCALE
+        oy = lerp(0, target_y, k)
+        ox = (W - W * sc) / 2
+        if f:                                         # keep her face centred as she scales
+            ox = lerp(0, W / 2 - f["cx"] * W * PERSON_SCALE, k)
+        out = Image.blend(frame, self._background(), min(1.0, k * 1.6)) if k < 0.62 else self._background().copy()
+        pw, ph = int(W * sc), int(H * sc)
+        person = frame.resize((pw, ph), Image.BILINEAR).convert("RGBA")
+        a = matte.resize((pw, ph), Image.BILINEAR)
+        person.putalpha(a)
+        if k > 0.05:
+            import cv2
+            edge = cv2.dilate(np.asarray(a), np.ones((13, 13), np.uint8))
+            rim = Image.new("RGBA", (pw, ph), (255, 255, 255, 0))
+            rim.putalpha(Image.fromarray((edge.astype(np.float32) * min(1, k * 2)).astype(np.uint8)))
+            out.paste(rim, (int(ox), int(oy)), rim)
+        out.paste(person, (int(ox), int(oy)), person)
+        panel = self.draw_panel(t - self.t0)
+        pa = min(1.0, max(0.0, (k - 0.3) / 0.7))
+        if panel is not None and pa > 0.01:
+            panel = xform(panel, alpha=pa) if pa < 1 else panel
             out.paste(panel, (0, self.top), panel)
             if not self.scrap and self.s.get("title"):
                 head = text_img(self.s["title"], UI_BOLD, 54, INK)
