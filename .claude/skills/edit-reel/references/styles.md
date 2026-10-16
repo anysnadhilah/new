@@ -32,6 +32,18 @@ Cosy, dreamy, playful.
   - `asterisk` / `star`: a big twinkling sparkle.
 - Cuts: a very soft warm flash. Sound: pop on punch words and stickers, twinkle on the hook.
 
+## Shared by every style
+- `sections` (one per idea, see "Writing sections" under scrapbook) drive the **zoom rhythm** in every style: a
+  slow push-in through the hook that punches on its last word, a punch-in on every new idea alternating a wider and
+  a closer framing, a small jump zoom on lines with an `emph` word (anchored on the eyes). Write sections for every
+  reel, whatever the style.
+- Each style shows a section's title its own way: scrapbook pins it for the whole idea; it girl shows a chapter
+  title (italic serif kicker over butter caps) for 2.6 s; whimsical pops a pill kicker and chunky two-tone words
+  with asterisks for 2.6 s. Titles sit above the head (down to the brows at most) and captions stay low meanwhile.
+- `split-panel` graphics work in every style, each with its own page behind the cut-out speaker (scrapbook pink
+  stripes, it girl cream editorial paper, whimsical warm butter with asterisks) and the idea's title on top.
+- Sounds in every style include zoom on punch-ins plus pop / blob / click on titles, graphics and stickers.
+
 ## scrapbook (`styles/scrapbook.py`)
 A journal page that talks (studied from engaging creator reels; our own build). The structure carries it: **one
 pinned title per idea**, everything else stays quiet.

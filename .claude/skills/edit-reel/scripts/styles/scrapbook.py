@@ -15,7 +15,7 @@ from PIL import Image
 
 from common import H, SAFE, W
 from gems import KINDS, gem
-from gfx import drop_shadow, in_out_sine, lerp, out_back, out_cubic, place, prog, sparkle, tape, text_img, torn_paper, xform
+from gfx import drop_shadow, lerp, out_back, out_cubic, place, prog, sparkle, tape, text_img, torn_paper, xform
 from styles.base import Style
 
 LAVENDER = "#F5C6F0"
@@ -125,19 +125,7 @@ class Scrapbook(Style):
 
     # ---------------------------------------------------------------- titles
     def _titles(self):
-        """The hook and every section become a title: lines of (kind, word images, word start times)."""
-        out = []
-        hook = self.ctx.hook
-        if hook:
-            out.append({"start": hook["start"], "end": hook["end"], "kicker": hook.get("label"), "title": hook["text"],
-                        "sub": hook.get("sub"), "times": self.hook_word_times(hook), "hook": True})
-        for s in self.ctx.plan.get("sections", []) or []:
-            if hook and s["start"] < hook["end"] - 0.05:
-                continue
-            out.append({**s, "times": None, "hook": False})
-        for i, tt in enumerate(out):
-            tt["i"] = i
-        return out
+        return self.beats()
 
     def _build(self, tt):
         """Lay the title out once: rows of words with sizes, a fit scale for the free room and its height."""
@@ -277,31 +265,6 @@ class Scrapbook(Style):
             place(canvas, xform(img, scale=lerp(0.2, 1, e) * (1 - 0.3 * k_out), rot=rot + 140 * (1 - out_cubic(p)),
                                 alpha=min(1, p * 3) * (1 - k_out)), px, py)
 
-    # ---------------------------------------------------------------- camera: the zoom rhythm (the visual hook)
-    def frame_zoom(self, t):
-        """Slow push-in through the hook; every new idea lands with a punch-in and alternates between a wider and
-        a closer framing, drifting closer while it is explained; a line with a key word jumps a little closer.
-        Always anchored on the eyes, so titles above the head stay clear."""
-        seg = self.ctx.seg_at(t)
-        f = seg.get("face")
-        cx, cy = ((f["cx"] * W, (f["cy"] - 0.2 * f["h"]) * H) if f else (W / 2, H * 0.4))
-        tt = self.title_at(t)
-        z = 1.0
-        if tt is not None and tt["hook"]:
-            z = 1 + 0.17 * in_out_sine(prog(t, tt["start"], tt["end"] - tt["start"]))
-            last = max(tt["times"] or [tt["start"]])
-            z += 0.05 * (1 - out_cubic(prog(t, last, 0.3))) * (t >= last)
-        elif tt is not None:
-            z = (1.0 if tt["i"] % 2 else 1.09) + 0.04 * prog(t, tt["start"], tt["end"] - tt["start"])
-            z += 0.06 * (1 - out_cubic(prog(t, tt["start"], 0.35)))
-            for cap in self.caps:
-                if cap.get("emph") and cap["start"] <= t < cap["end"]:
-                    z += 0.05
-                    break
-        else:
-            z = super().frame_zoom(t)[0]
-        return min(z, 1.25), cx, cy
-
     def _sparkle(self, size):
         key = ("sparkle", size)
         if key not in self.cache:
@@ -401,12 +364,10 @@ class Scrapbook(Style):
     def sfx(self):
         """(time, sound, gain, priority). Every title: a zoom on the punch-in, the magic glow, a blob as the gems
         land. Stickers pop. The rest (jump zooms on key lines, kicker pencil) only plays on "bold"."""
-        ev = []
+        ev = list(self.beat_sfx())
         for tt in self.titles:
             hook = tt["hook"]
             ev.append((tt["start"], "glow", 0.2, 3 if hook else 2))
-            if not hook:
-                ev.append((tt["start"] - 0.14, "zoom", 0.12, 2))
             land = (max(tt["times"]) if hook and tt["times"] else tt["start"] + 0.12) + 0.22
             ev.append((land, "blob", 0.16, 2))
             if tt.get("kicker"):

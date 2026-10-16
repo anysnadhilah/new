@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image
 
 from common import FPS, H, SAFE, W
-from gfx import out_cubic, place, prog
+from gfx import in_out_sine, out_cubic, place, prog
 
 
 class Context:
@@ -177,17 +177,88 @@ class Style:
         """(time, sound, gain) or (time, sound, gain, priority); see effects/sound.py for priorities."""
         return []
 
+    # ------------------------------------------------------------ beats: the hook + plan.json "sections"
+    def beats(self):
+        """The reel's ideas in order: the hook, then each section ({start, end, kicker, title, sub}). Every style
+        uses them for the zoom rhythm; each style shows their titles in its own way."""
+        if "_beats" not in self.__dict__:
+            out = []
+            hook = self.ctx.hook
+            if hook:
+                out.append({"start": hook["start"], "end": hook["end"], "kicker": hook.get("label"), "title": hook["text"],
+                            "sub": hook.get("sub"), "times": self.hook_word_times(hook), "hook": True})
+            for sec in self.ctx.plan.get("sections", []) or []:
+                if hook and sec["start"] < hook["end"] - 0.05:
+                    continue
+                out.append({**sec, "times": None, "hook": False})
+            for i, b in enumerate(out):
+                b["i"] = i
+            self._beats = out
+        return self._beats
+
+    def beat_at(self, t):
+        for b in self.beats():
+            if b["start"] <= t < b["end"]:
+                return b
+        return None
+
     def frame_zoom(self, t):
-        """Camera at time t as (zoom, centre x, centre y): by default a small punch-in that settles after a cut."""
+        """Camera at time t as (zoom, centre x, centre y), the zoom rhythm every style shares: a slow push-in
+        through the hook landing with a punch on its last word; every new idea lands with a punch-in and alternates
+        a wider and a closer framing, drifting closer while it is explained; a caption with a key word jumps a
+        little closer. Anchored on the eyes so text above the head stays clear. Without beats: a small punch-in
+        after each cut."""
+        seg = self.ctx.seg_at(t)
+        f = seg.get("face")
+        cx, cy = ((f["cx"] * W, (f["cy"] - 0.2 * f["h"]) * H) if f else (W / 2, H * 0.4))
+        b = self.beat_at(t)
+        if b is not None and b["hook"]:
+            z = 1 + 0.17 * in_out_sine(prog(t, b["start"], b["end"] - b["start"]))
+            last = max(b["times"] or [b["start"]])
+            z += 0.05 * (1 - out_cubic(prog(t, last, 0.3))) * (t >= last)
+            return min(z, 1.25), cx, cy
+        if b is not None:
+            z = (1.0 if b["i"] % 2 else 1.09) + 0.04 * prog(t, b["start"], b["end"] - b["start"])
+            z += 0.06 * (1 - out_cubic(prog(t, b["start"], 0.35)))
+            if any(cap.get("emph") and cap["start"] <= t < cap["end"] for cap in self.caps):
+                z += 0.05
+            return min(z, 1.25), cx, cy
         k = self.cut_punch
         if k:
             for c in self.ctx.cuts:
                 if 0 <= t - c < 0.32:
-                    return 1 + k * (1 - out_cubic(prog(t, c, 0.32))), W / 2, H / 2
-        return 1.0, W / 2, H / 2
+                    return 1 + k * (1 - out_cubic(prog(t, c, 0.32))), cx, cy
+        return 1.0, cx, cy
+
+    def fit_top(self, b, h):
+        """Scale and top y for a heading of height h above the head for the whole beat: it may come down over hair
+        or hijab to the brows, never onto the eyes (like scrapbook titles), never below 55%."""
+        segs = [sg for sg in self.ctx.segments if sg["start"] < b["end"] and sg["end"] > b["start"]] or [self.ctx.seg_at(b["start"])]
+        room = min(((sg["face"]["cy"] - 0.5 * sg["face"]["h"]) * H if sg.get("face") else 700) for sg in segs) - 190
+        return max(0.55, min(1.0, room / max(h, 1))), 190
+
+    def heading_on(self, t):
+        """True while a section heading is on screen (the first 2.6 s of a non-hook beat)."""
+        b = self.beat_at(t)
+        return b is not None and not b["hook"] and t - b["start"] < 2.6
+
+    def beat_sfx(self):
+        """A zoom sound on every idea's punch-in (the hook has its own sound)."""
+        return [(b["start"] - 0.14, "zoom", 0.12, 2) for b in self.beats() if not b["hook"]]
+
+    def draw_section(self, canvas, t):
+        """Show the current section's title over the video (styles that do not pin titles)."""
+
+    def draw_split_title(self, canvas, t):
+        """While a split-panel graphic is on screen: the current beat's title at the top of the page."""
 
     def caption_y(self, cap, lay):
-        """Vertical centre of a caption block (once per caption)."""
+        """Vertical centre of a caption block (once per caption). While a section heading holds the top, the
+        caption sits low under the chin (above Instagram's own text) instead of jumping up into the heading."""
+        if self.heading_on(cap["start"] + 0.01) or self.heading_on(cap["end"] - 0.01):
+            box = self.ctx.face_core(self.ctx.seg_at(cap["start"] + 0.01))
+            chin = box[3] if box else 0
+            return min(max(1480, chin + 30 + lay["h"] / 2), 1565 - lay["h"] / 2)
         return self.ctx.block_y(cap["start"] + 0.01, lay["h"] + 40, prefer=self.caption_prefer(cap))
 
     def caption_prefer(self, cap):
@@ -279,8 +350,12 @@ class Style:
                 img, dx, dy = self.animate(tk, t, cap, k_out)
                 place(canvas, img, cx + tk["x"] + dx, cy + tk["y"] + dy)
             self.front(canvas, t, cap, lay, cx, cy, k_out)
-        if in_hook:
+        if self.split is not None:
+            self.draw_split_title(canvas, t)
+        elif in_hook:
             self.draw_hook(canvas, t, hook)
+        elif not self.hide_captions:
+            self.draw_section(canvas, t)
         for st in self.ctx.stickers:
             if st["at"] <= t < st["at"] + st.get("dur", 1.5):
                 self.draw_sticker(canvas, t, st)

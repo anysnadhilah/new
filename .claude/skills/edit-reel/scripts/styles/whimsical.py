@@ -140,6 +140,85 @@ class Whimsical(Style):
         rot = t * 30 if kind in ("asterisk", "star") else 0
         place(canvas, xform(img, scale=p, rot=rot), x, y + 3 * ease_sin(local, 0.4))
 
+    # ---------------------------------------------------------------- sections: pill + chunky title
+    def draw_section(self, canvas, t):
+        """Each new idea pops in for 2.6 s: the kicker on a butter pill, the point in chunky two-tone words,
+        two twinkling asterisks."""
+        b = self.beat_at(t)
+        if b is None or b["hook"] or t - b["start"] > 2.6:
+            return
+        key = ("sec", b["i"])
+        if key not in self.cache:
+            kick = pill(b["kicker"], fill=BUTTER, size=40) if b.get("kicker") else None
+            lines = self.hook_lines(b["title"].lower(), lambda x: chunky(x, 96, CREAM).width > 920)
+            rows = [chunky(text, 96, CREAM if i % 2 == 0 else BUTTER) for i, (text, _) in enumerate(lines)]
+            h = sum(r.height - 2 * r.info["pad"] - 14 for r in rows) + (kick.height + 8 if kick else 0)
+            k, top = self.fit_top(b, h)
+            self.cache[key] = (kick, rows, h, k, top)
+        kick, rows, h, k, y = self.cache[key]
+        local = t - b["start"]
+        out = 1 - out_cubic(prog(local, 2.4, 0.2))
+        top = y
+        if kick is not None:
+            p = out_back(prog(local, 0, 0.3), 1.8)
+            place(canvas, xform(kick, scale=p * k, alpha=out), W / 2, y + kick.height * k / 2)
+            y += (kick.height + 8) * k
+        for i, r in enumerate(rows):
+            rh = (r.height - 2 * r.info["pad"] - 14) * k
+            p = prog(local, 0.12 + 0.1 * i, 0.32)
+            if p > 0:
+                place(canvas, xform(r, scale=k * lerp(0.7, 1, out_back(p, 1.8)), alpha=min(1, p * 4) * out), W / 2, y + rh / 2)
+            y += rh
+        for j, (sx, sy, s) in enumerate(((-0.44, 0.1, 64), (0.45, 0.8, 84))):
+            p = out_back(prog(local, 0.3 + 0.1 * j, 0.4), 1.8)
+            if p > 0:
+                place(canvas, xform(self.stars[s], scale=p * k, rot=t * 20, alpha=out), W / 2 + sx * 900, top + sy * h * k)
+
+    def caption_prefer(self, cap):
+        return "bottom" if self.heading_on(cap["start"] + 0.01) else None
+
+    def draw_split_title(self, canvas, t):
+        """Over a graphic page: the idea in chunky brown and butter words (hook words appear as spoken)."""
+        b = self.beat_at(t)
+        if b is None:
+            return
+        key = ("split", b["i"])
+        if key not in self.cache:
+            kick = pill(b["kicker"], fill=BUTTER, size=40) if b.get("kicker") else None
+            words = b["title"].lower().split()
+            imgs = [text_img(w, CHUNKY, 92, "#5B3A1A" if i % 2 == 0 else "#E0A400", tracking=-0.03) for i, w in enumerate(words)]
+            times = b["times"] or [b["start"] + 0.06 * i for i in range(len(words))]
+            rows = [list(range(first, first + len(line.split())))
+                    for line, first in self.hook_lines(b["title"].lower(), lambda x: text_img(x, CHUNKY, 92, CREAM).width > 960)]
+            self.cache[key] = (kick, imgs, times, rows)
+        kick, imgs, times, rows = self.cache[key]
+        k_out = prog(t, b["end"] - 0.16, 0.16)
+        if ("fit",) + key not in self.__dict__.setdefault("_fit", {}):
+            tot = (kick.height - 2 * kick.info.get("pad", 0) + 6) if kick is not None else 0
+            for row in rows:
+                ws = [imgs[i].width - 2 * imgs[i].info["pad"] for i in row]
+                rh = max(imgs[i].height - 2 * imgs[i].info["pad"] for i in row)
+                tot += rh * min(1.0, 960 / (sum(ws) + 22 * (len(row) - 1))) + (-4)
+            self._fit[("fit",) + key] = min(1.0, 215 / max(tot, 1))    # fits between Instagram's top bar and the graphic
+        fk = self._fit[("fit",) + key]
+        y = 195
+        if kick is not None:
+            p = out_back(prog(t, b["start"], 0.3), 1.8)
+            place(canvas, xform(kick, scale=p * fk, alpha=1 - k_out), W / 2, y + kick.height * fk / 2)
+            y += (kick.height + 6) * fk
+        for row in rows:
+            ws = [imgs[i].width - 2 * imgs[i].info["pad"] for i in row]
+            rh = max(imgs[i].height - 2 * imgs[i].info["pad"] for i in row)
+            scale = min(1.0, 960 / (sum(ws) + 22 * (len(row) - 1))) * fk
+            x = W / 2 - (sum(ws) + 22 * (len(row) - 1)) * scale / 2
+            for i, w in zip(row, ws):
+                p = prog(t, times[i], 0.3)
+                if p > 0:
+                    place(canvas, xform(imgs[i], scale=scale * lerp(0.6, 1, out_back(p, 1.8)), alpha=min(1, p * 3) * (1 - k_out)),
+                          x + w * scale / 2, y + rh * scale / 2)
+                x += (w + 22) * scale
+            y += rh * scale - 4
+
     # ---------------------------------------------------------------- transitions
     def draw_cut(self, canvas, t, cut):
         fl = 1 - prog(t, cut, 0.12)
@@ -155,8 +234,12 @@ class Whimsical(Style):
                 if emph and _n(w["w"]) == _n(emph):
                     ev.append((w["s"], "pop", 0.2))
         if self.ctx.hook:
-            ev.append((self.ctx.hook["start"] + 0.1, "twinkle", 0.16))
-        ev += [(st["at"], "pop", 0.18) for st in self.ctx.stickers]
+            ev.append((self.ctx.hook["start"] + 0.1, "twinkle", 0.16, 3))
+        ev += [(st["at"], "pop", 0.18, 2) for st in self.ctx.stickers]
+        ev += list(self.beat_sfx())                                        # zoom on every idea's punch-in
+        for b in self.beats():
+            if not b["hook"]:
+                ev += [(b["start"] + 0.08, "pop", 0.18, 2), (b["start"] + 0.45, "blob", 0.14, 2)]
         return ev
 
 

@@ -65,7 +65,8 @@ class SplitPanel(Effect):
         self.panel = spec.get("panel", "calendar")
         style = (getattr(ctx, "plan", None) or {}).get("style")
         self.scrap = style == "scrapbook"
-        self.top = 420 if self.scrap else 230
+        self.style = style or "it-girl"
+        self.top = 420                       # the style draws the idea's title above the graphic
         self.ph = PANEL_BOTTOM - self.top
         self._bg = None
         self._shadow = None
@@ -74,18 +75,34 @@ class SplitPanel(Effect):
 
     # ------------------------------------------------------------ layout: background, card, panel
     def _background(self):
+        """The page behind the speaker, in the style's own look."""
         if self._bg is None:
-            bg = Image.new("RGB", (W, H), (255, 244, 248))
-            d = ImageDraw.Draw(bg)
-            for x in range(0, W, 72):                                 # soft pink stripes like a journal page
-                d.rectangle((x, 0, x + 36, H), fill=(252, 226, 238))
             r = np.random.default_rng(5)
-            from gfx import sparkle
-            for _ in range(14):
-                sp = sparkle(int(r.uniform(18, 34)), "#FFFFFF", glow_blur=2)
-                bg.paste(sp, (int(r.uniform(20, W - 40)), int(r.uniform(150, H - 60))), sp)
-            if not self.scrap:
-                bg = Image.new("RGB", (W, H), (246, 244, 240))
+            if self.style == "scrapbook":                             # soft pink stripes like a journal page
+                bg = Image.new("RGB", (W, H), (255, 244, 248))
+                d = ImageDraw.Draw(bg)
+                for x in range(0, W, 72):
+                    d.rectangle((x, 0, x + 36, H), fill=(252, 226, 238))
+                from gfx import sparkle
+                for _ in range(14):
+                    sp = sparkle(int(r.uniform(18, 34)), "#FFFFFF", glow_blur=2)
+                    bg.paste(sp, (int(r.uniform(20, W - 40)), int(r.uniform(150, H - 60))), sp)
+            elif self.style == "whimsical":                           # warm butter glow with a few asterisks
+                yy = np.linspace(0, 1, H)[:, None, None]
+                top, bot = np.array([255, 247, 222]), np.array([255, 232, 196])
+                bg = Image.fromarray(np.broadcast_to(top * (1 - yy) + bot * yy, (H, W, 3)).astype(np.uint8))
+                from gfx import asterisk
+                for _ in range(10):
+                    a = asterisk(int(r.uniform(26, 50)), "#F2C14E", arms=6, width=0.2)
+                    bg.paste(a, (int(r.uniform(20, W - 60)), int(r.uniform(150, H - 80))), a)
+            else:                                                     # it girl: cream editorial paper, thin frame
+                bg = Image.new("RGB", (W, H), (243, 238, 230))
+                d = ImageDraw.Draw(bg)
+                d.rectangle((36, 150, W - 36, H - 36), outline=(206, 196, 182), width=2)
+                d.rectangle((48, 162, W - 48, H - 48), outline=(222, 214, 202), width=1)
+                noise = r.normal(0, 4, (H // 4, W // 4)).astype(np.float32)
+                grain = Image.fromarray(np.clip(128 + noise, 0, 255).astype(np.uint8)).resize((W, H))
+                bg = Image.blend(bg, Image.merge("RGB", (grain, grain, grain)), 0.04)
             self._bg = bg
         return self._bg
 
@@ -122,9 +139,6 @@ class SplitPanel(Effect):
         if panel is not None and a > 0.01:
             panel = xform(panel, alpha=a) if a < 1 else panel
             out.paste(panel, (0, self.top), panel)
-            if not self.scrap and self.s.get("title"):
-                head = text_img(self.s["title"], UI_BOLD, 54, INK)
-                out.paste(head, (int(W / 2 - head.width / 2), self.top - 90), head)
         return out
 
     def _cutout(self, frame, matte, t, k):
@@ -166,9 +180,6 @@ class SplitPanel(Effect):
         if panel is not None and pa > 0.01:
             panel = xform(panel, alpha=pa) if pa < 1 else panel
             out.paste(panel, (0, self.top), panel)
-            if not self.scrap and self.s.get("title"):
-                head = text_img(self.s["title"], UI_BOLD, 54, INK)
-                out.paste(head, (int(W / 2 - head.width / 2), self.top - 90), head)
         return out
 
     # ------------------------------------------------------------ panels

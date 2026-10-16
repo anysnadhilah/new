@@ -226,6 +226,8 @@ def main():
     a = ap.parse_args()
     proj = project_dir(a.project)
     plan = load_json(proj / "plan.json")
+    if a.style:
+        plan["style"] = a.style                 # effects read the style too (page look, checklist look)
     tl = load_json(proj / "timeline.json")
     ctx = Context(tl, plan, proj)
     style = load_style(a.style or plan.get("style", "it-girl"), ctx)
