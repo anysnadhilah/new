@@ -1,0 +1,420 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Edit bay: a sticky monitor + cut timeline on the left, decision cards on the right; one column on phones. */
+:root {
+  --bg: #F5F3F7;
+  --surface: #FFFFFF;
+  --sunken: #ECE8F0;
+  --ink: #261E2C;
+  --muted: #6E6476;
+  --line: #DCD5E2;
+  --accent: #A3285F;
+  --accent-ink: #FFFFFF;
+  --butter: #FFE24D;
+  --butter-ink: #3A3000;
+  --keep: #2E8A57;
+  --change: #B86E0B;
+  --drop: #C23B3B;
+  --keep-bg: #E3F3EA;
+  --change-bg: #FCEFD9;
+  --drop-bg: #FBE4E2;
+  --shadow: 0 1px 2px rgba(38, 30, 44, .06), 0 6px 20px rgba(38, 30, 44, .06);
+  --display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16121A; --surface: #211B26; --sunken: #2A2330; --ink: #F2ECF5; --muted: #A99EB2; --line: #3A3141;
+    --accent: #F17DB2; --accent-ink: #24101A; --butter: #FFE24D; --butter-ink: #2E2600;
+    --keep: #5FCB8E; --change: #F0A845; --drop: #F2726D;
+    --keep-bg: #1C3327; --change-bg: #3A2C14; --drop-bg: #3B1E1E;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16121A; --surface: #211B26; --sunken: #2A2330; --ink: #F2ECF5; --muted: #A99EB2; --line: #3A3141;
+  --accent: #F17DB2; --accent-ink: #24101A; --butter: #FFE24D; --butter-ink: #2E2600;
+  --keep: #5FCB8E; --change: #F0A845; --drop: #F2726D;
+  --keep-bg: #1C3327; --change-bg: #3A2C14; --drop-bg: #3B1E1E;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tc { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 12.5px; letter-spacing: -.01em; }
+
+.bay { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 820px) { .bay { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- monitor */
+.monitor { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); display: grid; gap: 12px; }
+@media (max-width: 820px) { .monitor { position: static; } .screen { max-height: 54vh; } }
+.screen { position: relative; aspect-ratio: 9 / 16; max-width: 100%; max-height: 68vh; margin: 0 auto; border-radius: 18px; overflow: hidden; background: #000; box-shadow: var(--shadow); }
+.screen video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.transport { display: flex; align-items: center; gap: 8px; justify-content: center; }
+.transport button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-weight: 500; }
+.transport .play { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); padding: 8px 18px; font-weight: 700; }
+.clock { min-width: 128px; text-align: center; color: var(--muted); }
+.track { position: relative; height: 46px; border-radius: 10px; background: var(--sunken); overflow: hidden; cursor: pointer; touch-action: none; }
+.track .seg { position: absolute; top: 18px; bottom: 6px; border-right: 2px solid var(--bg); background: color-mix(in srgb, var(--accent) 22%, var(--sunken)); }
+.track .seg.alt { background: color-mix(in srgb, var(--accent) 36%, var(--sunken)); }
+.track .seg.drop { background: repeating-linear-gradient(135deg, var(--drop-bg) 0 5px, transparent 5px 10px); }
+.track .seg span { position: absolute; left: 4px; top: 2px; font: 500 9.5px var(--mono); color: var(--ink); opacity: .75; }
+.track .fx { position: absolute; top: 5px; height: 9px; border-radius: 3px; background: var(--butter); }
+.track .note-pin { position: absolute; top: 2px; width: 2px; height: 14px; background: var(--accent); }
+.track .head { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--ink); pointer-events: none; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.quicknote { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.quicknote input { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; background: var(--surface); }
+.btn { border: 0; border-radius: 10px; padding: 9px 14px; background: var(--ink); color: var(--bg); font-weight: 700; white-space: nowrap; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ---------- desk */
+.desk { min-width: 0; display: grid; gap: 18px; }
+.masthead { display: grid; gap: 6px; }
+.eyebrow { font: 600 11.5px var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 800 clamp(26px, 4vw, 38px)/1.05 var(--display); letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { border-radius: 999px; padding: 3px 10px; font-size: 12.5px; background: var(--sunken); color: var(--ink); }
+.chip.butter { background: var(--butter); color: var(--butter-ink); font-weight: 700; }
+.banner { border-radius: 12px; padding: 10px 14px; background: var(--change-bg); color: var(--ink); font-size: 14px; }
+.tally { display: flex; gap: 16px; flex-wrap: wrap; align-items: baseline; font-size: 14px; color: var(--muted); }
+.tally b { font: 800 20px var(--display); color: var(--ink); margin-right: 4px; }
+.tally .k b { color: var(--keep); } .tally .c b { color: var(--change); } .tally .d b { color: var(--drop); }
+
+.tabs { display: flex; gap: 4px; padding: 4px; background: var(--sunken); border-radius: 12px; overflow-x: auto; }
+.tabs button { flex: 1 0 auto; border: 0; background: transparent; border-radius: 9px; padding: 8px 12px; font-weight: 600; color: var(--muted); }
+.tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.tabs .count { font: 500 11px var(--mono); margin-left: 6px; color: var(--muted); }
+.panel-intro { color: var(--muted); font-size: 14px; margin: 0; max-width: 62ch; }
+
+.list { display: grid; gap: 10px; }
+.item { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.item.keep { border-color: color-mix(in srgb, var(--keep) 45%, var(--line)); }
+.item.change { border-color: color-mix(in srgb, var(--change) 55%, var(--line)); }
+.item.drop { border-color: color-mix(in srgb, var(--drop) 55%, var(--line)); }
+.item.drop .thumb img { filter: grayscale(1); opacity: .55; }
+.thumb { border: 0; padding: 0; background: var(--sunken); border-radius: 9px; overflow: hidden; aspect-ratio: 9 / 16; width: 74px; position: relative; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb .t { position: absolute; left: 4px; bottom: 4px; background: rgba(0, 0, 0, .65); color: #fff; border-radius: 5px; padding: 1px 4px; font: 500 9.5px var(--mono); }
+.body { min-width: 0; display: grid; gap: 6px; align-content: start; }
+.kind { font: 700 11px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.title { font-weight: 600; overflow-wrap: anywhere; }
+.meta { color: var(--muted); }
+.decide { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; width: fit-content; }
+.decide button { border: 0; background: transparent; padding: 6px 14px; font-weight: 600; font-size: 13.5px; color: var(--muted); }
+.decide button + button { border-left: 1px solid var(--line); }
+.decide button[aria-pressed="true"][data-v="keep"] { background: var(--keep-bg); color: var(--keep); }
+.decide button[aria-pressed="true"][data-v="change"] { background: var(--change-bg); color: var(--change); }
+.decide button[aria-pressed="true"][data-v="drop"] { background: var(--drop-bg); color: var(--drop); }
+textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--bg); resize: vertical; }
+.saved { font-size: 12px; color: var(--muted); min-height: 1em; }
+
+.caprow { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; align-items: center; padding: 8px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.caprow.edited { border-color: color-mix(in srgb, var(--change) 55%, var(--line)); }
+.caprow .tc { border: 0; background: transparent; text-align: left; color: var(--muted); padding: 0; }
+.capin { background: transparent; border-color: transparent; padding: 4px 6px; }
+.capin:hover, .capin:focus { border-color: var(--line); background: var(--bg); }
+.emph { background: var(--butter); color: var(--butter-ink); border-radius: 4px; padding: 0 3px; font-weight: 700; font-size: 12px; }
+
+.looks { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.look { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 14px; display: grid; gap: 6px; }
+.look[aria-pressed="true"] { border: 2px solid var(--accent); padding: 13px; }
+.look strong { font: 800 18px var(--display); }
+.look span { color: var(--muted); font-size: 13.5px; }
+
+.note { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.note .tc { border: 1px solid var(--line); background: var(--bg); border-radius: 7px; padding: 2px 7px; }
+.note.done { opacity: .75; }
+.note .reply { color: var(--keep); font-size: 13.5px; }
+.status { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--change); }
+.note.done .status { color: var(--keep); }
+.x { border: 0; background: transparent; color: var(--muted); padding: 2px 6px; border-radius: 6px; }
+.empty { color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; padding: 16px; font-size: 14px; }
+
+.handoff { display: grid; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+.handoff h2 { font: 800 19px var(--display); margin: 0; }
+.handoff p { margin: 0; color: var(--muted); font-size: 14px; max-width: 62ch; }
+.handoff code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px; padding: 2px 6px; color: var(--ink); }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+
+<script type="application/json" id="review-data">__REVIEW_DATA__</script>
+
+<div class="bay">
+  <section class="monitor" aria-label="Draft player">
+    <div class="screen"><video id="video" src="preview.mp4" playsinline preload="metadata"></video></div>
+    <div class="transport">
+      <button id="back" type="button" aria-label="Back 2 seconds">−2s</button>
+      <button id="play" class="play" type="button">Play</button>
+      <button id="fwd" type="button" aria-label="Forward 2 seconds">+2s</button>
+      <span id="clock" class="clock tc">00:00.00 / 00:00.00</span>
+    </div>
+    <div id="track" class="track" role="slider" aria-label="Timeline" tabindex="0" aria-valuemin="0"></div>
+    <div class="legend"><span><i style="background:color-mix(in srgb,var(--accent) 30%,var(--sunken))"></i>cuts</span><span><i style="background:var(--butter)"></i>effects &amp; graphics</span><span><i style="background:var(--accent);width:3px"></i>your notes</span></div>
+    <form id="quicknote" class="quicknote">
+      <input id="quicknote-text" type="text" autocomplete="off" placeholder="Note at this moment…" aria-label="Note at this moment">
+      <button class="btn" id="quicknote-add" type="submit">Add at <span id="quicknote-at" class="tc">00:00.0</span></button>
+    </form>
+  </section>
+
+  <main class="desk">
+    <header class="masthead">
+      <div class="eyebrow">Reel review</div>
+      <h1 id="name">Draft</h1>
+      <div class="chips" id="chips"></div>
+    </header>
+    <div id="banner" class="banner" hidden></div>
+    <div class="tally" id="tally"></div>
+    <nav class="tabs" role="tablist" id="tabs"></nav>
+    <section id="panel" aria-live="polite"></section>
+    <section class="handoff" aria-labelledby="handoff-title">
+      <h2 id="handoff-title">Send it back for the next draft</h2>
+      <p>Your choices save as you make them. When you're done, mark the draft ready, then tell Claude <code>apply my review</code> in the chat. Claude reads every Keep, Change, Drop and note, re-edits, and updates this page.</p>
+      <div class="row"><button class="btn" id="ready" type="button">Mark ready for the next draft</button><span id="ready-state" class="saved"></span></div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("review-data").textContent);
+  const $ = (s, r = document) => r.querySelector(s);
+  const el = (tag, attrs = {}, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") n.className = v; else if (k === "text") n.textContent = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else if (v !== null && v !== undefined) n.setAttribute(k, v);
+    }
+    kids.flat().forEach(c => c != null && n.append(c));
+    return n;
+  };
+  const tc = (s, dp = 2) => {
+    if (s == null || isNaN(s)) return "--:--";
+    const m = Math.floor(s / 60), r = s - m * 60;
+    return String(m).padStart(2, "0") + ":" + r.toFixed(dp).padStart(dp ? 3 + dp : 2, "0");
+  };
+  const STYLE_NAMES = { "it-girl": "it girl", whimsical: "whimsical", scrapbook: "scrapbook" };
+
+  // ---------- state
+  const state = { tab: "cuts", decisions: {}, notes: [], look: null, ready: null, db: null, canWrite: true };
+  try { state.tab = localStorage.getItem("reel-review-tab") || "cuts"; } catch (e) {}
+
+  // ---------- header
+  $("#name").textContent = D.name;
+  const chips = $("#chips");
+  [[`draft ${D.version}`, "butter"], [`${D.duration.toFixed(1)} s`], [STYLE_NAMES[D.style] || D.style], [`${D.cuts.length} cuts`], [`${D.graphics.length} graphics`], [`built ${D.built}`]]
+    .forEach(([t, c]) => chips.append(el("span", { class: "chip " + (c || ""), text: t })));
+
+  // ---------- player
+  const video = $("#video"), track = $("#track"), clock = $("#clock");
+  if (D.cuts.length) video.poster = D.cuts[0].thumb;
+  const seek = t => { video.currentTime = Math.max(0, Math.min(D.duration - 0.05, t)); };
+  $("#play").addEventListener("click", () => video.paused ? video.play() : video.pause());
+  $("#back").addEventListener("click", () => seek(video.currentTime - 2));
+  $("#fwd").addEventListener("click", () => seek(video.currentTime + 2));
+  video.addEventListener("play", () => $("#play").textContent = "Pause");
+  video.addEventListener("pause", () => $("#play").textContent = "Play");
+  const head = el("div", { class: "head" });
+  function drawTrack() {
+    track.replaceChildren();
+    D.cuts.forEach((c, i) => {
+      const dec = state.decisions[c.id];
+      track.append(el("div", { class: "seg" + (i % 2 ? " alt" : "") + (dec && dec.status === "drop" ? " drop" : ""), style: `left:${c.start / D.duration * 100}%;width:${(c.end - c.start) / D.duration * 100}%`, title: `${c.event} ${c.line}` }, el("span", { text: c.event })));
+    });
+    D.graphics.forEach(g => track.append(el("div", { class: "fx", style: `left:${g.start / D.duration * 100}%;width:${Math.max(0.6, (g.end - g.start) / D.duration * 100)}%`, title: g.kind })));
+    state.notes.filter(n => n.t != null).forEach(n => track.append(el("div", { class: "note-pin", style: `left:${n.t / D.duration * 100}%` })));
+    track.append(head);
+    tick();
+  }
+  function tick() {
+    const t = video.currentTime || 0;
+    head.style.left = (t / D.duration * 100) + "%";
+    clock.textContent = tc(t) + " / " + tc(D.duration);
+    $("#quicknote-at").textContent = tc(t, 1);
+    track.setAttribute("aria-valuenow", t.toFixed(1)); track.setAttribute("aria-valuemax", D.duration.toFixed(1));
+  }
+  video.addEventListener("timeupdate", tick);
+  (function loop() { if (!video.paused) tick(); requestAnimationFrame(loop); })();
+  const fromPointer = e => { const r = track.getBoundingClientRect(); seek((e.clientX - r.left) / r.width * D.duration); };
+  track.addEventListener("pointerdown", e => { track.setPointerCapture(e.pointerId); fromPointer(e); });
+  track.addEventListener("pointermove", e => { if (e.buttons) fromPointer(e); });
+  track.addEventListener("keydown", e => { if (e.key === "ArrowLeft") seek(video.currentTime - 1); if (e.key === "ArrowRight") seek(video.currentTime + 1); });
+
+  // ---------- persistence
+  const notice = msg => { const b = $("#banner"); b.textContent = msg; b.hidden = !msg; };
+  async function saveDecision(id, body) {
+    state.decisions[id] = { ...(state.decisions[id] || {}), ...body };
+    render();
+    if (!state.db) return;
+    try { await state.db.doc("decisions/" + id).set({ ...state.decisions[id], v: D.version, at: new Date().toISOString() }); }
+    catch (e) { failWrite(e); }
+  }
+  async function clearDecision(id) {
+    delete state.decisions[id]; render();
+    if (state.db) try { await state.db.doc("decisions/" + id).delete(); } catch (e) { failWrite(e); }
+  }
+  function failWrite(e) {
+    if (e && e.code === "invalid_argument") { state.canWrite = false; notice("You can look around, but this view can't save choices. Ask the owner for edit access."); render(); }
+    else notice("Couldn't save just now. Check your connection and try that choice again.");
+  }
+  const timers = {};
+  const debounce = (key, fn, ms = 600) => { clearTimeout(timers[key]); timers[key] = setTimeout(fn, ms); };
+
+  // ---------- tabs
+  const TABS = [["cuts", "Cuts", () => D.cuts.length], ["graphics", "Graphics", () => D.graphics.length], ["captions", "Captions", () => D.captions.length], ["look", "Look", () => ""], ["notes", "Notes", () => state.notes.length]];
+  function drawTabs() {
+    $("#tabs").replaceChildren(...TABS.map(([id, label, n]) => el("button", { role: "tab", "aria-selected": String(state.tab === id), id: "tab-" + id, type: "button", onclick: () => { state.tab = id; try { localStorage.setItem("reel-review-tab", id); } catch (e) {} render(); } }, label, el("span", { class: "count", text: String(n()) }))));
+  }
+
+  function decider(item) {
+    const dec = state.decisions[item.id] || {};
+    const status = dec.status || "keep";
+    const box = el("div", { class: "decide", role: "group", "aria-label": "Decision" },
+      ...[["keep", "Keep"], ["change", "Change"], ["drop", "Drop"]].map(([v, label]) => el("button", {
+        type: "button", "data-v": v, "aria-pressed": String(status === v), disabled: state.canWrite ? null : "",
+        onclick: () => v === "keep" && !dec.note ? clearDecision(item.id) : saveDecision(item.id, { status: v }) }, label)));
+    const parts = [box];
+    if (status === "change" || status === "drop") {
+      const ta = el("textarea", { rows: "2", id: "note-" + item.id, placeholder: status === "change" ? "What should change? e.g. shorter, start 1s later, different text…" : "Why drop it? (optional)", disabled: state.canWrite ? null : "" });
+      ta.value = dec.note || "";
+      const saved = el("div", { class: "saved" });
+      ta.addEventListener("input", () => { saved.textContent = "Saving…"; debounce(item.id, async () => { await saveDecision(item.id, { status, note: ta.value }); }); });
+      parts.push(ta, saved);
+    }
+    return parts;
+  }
+  function card(item, kind, title, meta) {
+    const status = (state.decisions[item.id] || {}).status || "";
+    return el("article", { class: "item " + status },
+      el("button", { class: "thumb", type: "button", "aria-label": "Play from " + tc(item.start), onclick: () => { seek(item.start); video.play(); } },
+        el("img", { src: item.thumb, alt: "", loading: "lazy" }), el("span", { class: "t", text: tc(item.start, 1) })),
+      el("div", { class: "body" }, el("div", { class: "kind", text: kind }), el("div", { class: "title", text: title }), el("div", { class: "meta tc", text: meta }), ...decider(item)));
+  }
+
+  const PANELS = {
+    cuts: () => [
+      el("p", { class: "panel-intro", text: "Every take in the draft, in order. Drop a take you don't want, or ask for a change like \"start half a second later\" or \"use the earlier take of this line\"." }),
+      el("div", { class: "list" }, D.cuts.map(c => card(c, `Event ${c.event} · clip ${c.clip}${c.zoom > 1.01 ? " · zoom " + c.zoom.toFixed(2) + "×" : ""}`, c.line || "(no words)", `${tc(c.start)} → ${tc(c.end)} · ${(c.end - c.start).toFixed(1)} s · source ${tc(c.src_in)}–${tc(c.src_out)}`)))],
+    graphics: () => [
+      el("p", { class: "panel-intro", text: "Every graphic and effect on the timeline. The thumbnail is a real frame from the middle of it." }),
+      D.graphics.length ? el("div", { class: "list" }, D.graphics.map(g => card(g, g.kind, g.title, `${tc(g.start)} → ${tc(g.end)} · ${(g.end - g.start).toFixed(1)} s${g.detail ? " · " + g.detail : ""}`))) : el("div", { class: "empty", text: "No graphics in this draft yet." })],
+    captions: () => {
+      const rows = D.captions.map(c => {
+        const dec = state.decisions[c.id];
+        const inp = el("input", { class: "capin", id: "cap-" + c.id, value: dec && dec.text != null ? dec.text : c.text, "aria-label": "Caption at " + tc(c.start), disabled: state.canWrite ? null : "" });
+        inp.addEventListener("input", () => debounce(c.id, () => {
+          if (inp.value.trim() === c.text.trim()) clearDecision(c.id); else saveDecision(c.id, { status: "change", text: inp.value.trim() });
+        }));
+        inp.addEventListener("focus", () => seek(c.start));
+        return el("div", { class: "caprow" + (dec ? " edited" : "") },
+          el("button", { class: "tc", type: "button", onclick: () => { seek(c.start); video.play(); }, text: tc(c.start) }),
+          el("div", { class: "row" }, inp, c.emph ? el("span", { class: "emph", text: c.emph }) : null));
+      });
+      return [el("p", { class: "panel-intro", text: "Fix any word the transcription misheard: just retype it. Highlighted words are the punch words." }), el("div", { class: "list" }, rows)];
+    },
+    look: () => {
+      const pick = state.look || D.style;
+      const LOOKS = [["it-girl", "it girl", "Clean editorial: white serif captions, the key line big, butter-yellow chapter titles."],
+        ["whimsical", "whimsical", "Warm glow, chunky cream and butter-yellow words, twinkling asterisks, pill labels."],
+        ["scrapbook", "scrapbook", "Collage headlines in mixed fonts, shiny 3D gems, notes and taped photos."]];
+      return [el("p", { class: "panel-intro", text: "Switch the whole look for the next draft. Everything else stays." }),
+        el("div", { class: "looks" }, LOOKS.map(([id, name, desc]) => el("button", { class: "look", type: "button", "aria-pressed": String(pick === id), disabled: state.canWrite ? null : "",
+          onclick: async () => { state.look = id; render(); if (state.db) try { await state.db.doc("meta/look").set({ style: id, v: D.version, at: new Date().toISOString() }); } catch (e) { failWrite(e); } } },
+          el("strong", { text: name }), el("span", { text: desc }), id === D.style ? el("span", { class: "chip", text: "this draft" }) : null)))];
+    },
+    notes: () => {
+      const list = [...state.notes].sort((a, b) => (a.t ?? 1e9) - (b.t ?? 1e9));
+      const general = el("textarea", { rows: "3", id: "general-note", placeholder: "Anything else about this draft? e.g. \"faster pace overall\", \"less sparkle\"…", disabled: state.canWrite ? null : "" });
+      return [el("p", { class: "panel-intro", text: "Notes pinned to a moment come from the box under the player. Claude marks each one done with a short reply." }),
+        list.length ? el("div", { class: "list" }, list.map(n => el("div", { class: "note" + (n.done ? " done" : "") },
+          n.t != null ? el("button", { class: "tc", type: "button", onclick: () => { seek(n.t); video.play(); }, text: tc(n.t, 1) }) : el("span", { class: "chip", text: "whole reel" }),
+          el("div", {}, el("div", { text: n.text }), n.reply ? el("div", { class: "reply", text: "Claude: " + n.reply }) : null, el("div", { class: "status", text: n.done ? "done" : "open" })),
+          !n.done && state.canWrite ? el("button", { class: "x", type: "button", "aria-label": "Delete note", onclick: () => deleteNote(n.id), text: "✕" }) : el("span")))) : el("div", { class: "empty", text: "No notes yet. Pause on a moment and type in the box under the player." }),
+        el("div", { class: "row" }, general, el("button", { class: "btn ghost", type: "button", disabled: state.canWrite ? null : "", onclick: () => { if (general.value.trim()) { addNote(null, general.value.trim()); general.value = ""; } } }, "Add note for the whole reel"))];
+    },
+  };
+
+  async function addNote(t, text) {
+    const note = { t, text, v: D.version, at: new Date().toISOString(), done: false };
+    if (!state.db) { state.notes.push({ ...note, id: "local-" + Date.now() }); render(); return; }
+    try { await state.db.collection("notes").add(note); } catch (e) { failWrite(e); }
+  }
+  async function deleteNote(id) {
+    if (!state.db) { state.notes = state.notes.filter(n => n.id !== id); render(); return; }
+    try { await state.db.doc("notes/" + id).delete(); } catch (e) { failWrite(e); }
+  }
+  $("#quicknote").addEventListener("submit", e => {
+    e.preventDefault();
+    const inp = $("#quicknote-text");
+    if (!inp.value.trim() || !state.canWrite) return;
+    addNote(Math.round(video.currentTime * 10) / 10, inp.value.trim());
+    inp.value = "";
+    state.tab = "notes"; render();
+  });
+  $("#ready").addEventListener("click", async () => {
+    const body = { ready: true, v: D.version, at: new Date().toISOString() };
+    state.ready = body; render();
+    if (state.db) try { await state.db.doc("meta/status").set(body); } catch (e) { failWrite(e); }
+  });
+
+  function drawTally() {
+    const vals = Object.values(state.decisions);
+    const n = s => vals.filter(d => d.status === s).length;
+    const items = D.cuts.length + D.graphics.length;
+    const keep = items - Object.keys(state.decisions).filter(k => !k.startsWith("cap-")).length;
+    const caps = Object.keys(state.decisions).filter(k => k.startsWith("cap-")).length;
+    $("#tally").replaceChildren(
+      el("span", { class: "k" }, el("b", { text: String(keep) }), "keep"),
+      el("span", { class: "c" }, el("b", { text: String(n("change") - caps) }), "change"),
+      el("span", { class: "d" }, el("b", { text: String(n("drop")) }), "drop"),
+      el("span", {}, el("b", { text: String(caps) }), "caption fixes"),
+      el("span", {}, el("b", { text: String(state.notes.filter(x => !x.done).length) }), "open notes"));
+  }
+  function render() {
+    // keep focus and caret in a field that re-renders
+    const active = document.activeElement && document.activeElement.id;
+    const caret = active && document.activeElement.selectionStart;
+    drawTabs(); drawTally(); drawTrack();
+    $("#panel").replaceChildren(...PANELS[state.tab]());
+    $("#ready").disabled = !state.canWrite;
+    $("#ready-state").textContent = state.ready && state.ready.v === D.version ? "Marked ready " + new Date(state.ready.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ". Now tell Claude: apply my review." : "";
+    if (active) { const n = document.getElementById(active); if (n) { n.focus(); try { n.setSelectionRange(caret, caret); } catch (e) {} } }
+  }
+  render();
+
+  // ---------- live store
+  (async () => {
+    const db = await window.claude?.use?.("db");
+    if (!db) { notice("Saving is off in this view. Open this page in Claude while signed in to keep your choices."); return; }
+    state.db = db;
+    db.collection("decisions").onSnapshot(snap => {
+      const next = {};
+      snap.docs.forEach(d => { const b = d.data(); if (b && b.v === D.version) next[d.id] = { status: b.status, note: b.note || "", text: b.text }; });
+      state.decisions = next; render();
+    }, e => notice("Live updates stopped (" + e.code + "). Reload the page to reconnect."));
+    db.collection("notes").onSnapshot(snap => {
+      state.notes = snap.docs.map(d => ({ id: d.id, ...d.data() })); render();
+    }, () => {});
+    db.doc("meta/look").onSnapshot(s => { const b = s.exists ? s.data() : null; state.look = b && b.v === D.version ? b.style : null; render(); }, () => {});
+    db.doc("meta/status").onSnapshot(s => { state.ready = s.exists ? s.data() : null; render(); }, () => {});
+  })();
+})();
+</script>

@@ -126,6 +126,33 @@ notes: caption/sticker/hook notes only need Step 6-7 (re-render); take changes n
 Rough timings for a 60 s reel from 3-4 min of 4K phone footage: setup first time ~2 min; ingest ~1.5 min;
 assemble ~4 min; render ~2-4 min. First draft in ~15 min on a recent Mac, ~20-25 min in a cloud session.
 
+## Step 9: Review page (after every draft)
+
+Give the user a review page instead of asking for notes in chat:
+```
+PY SK/scripts/review.py <project>          # writes <project>/review/: index.html, thumbs/, preview.mp4, files.json
+```
+Publish it with the Artifact tool: `file_path` = `<project>/review/index.html`, `root` = `<project>/review`, `files` =
+the map in `review/files.json` (keys and values are the same relative paths), `capabilities` = `{"db": {}}`,
+`icon` = "film" on the first publish. Save the returned url into `review/review.json` as `"url"`; every later draft
+republishes to that same url (same `file_path` in this session, or pass `url`). Send the user the link and say:
+press Keep / Change / Drop on any take or graphic, retype misheard captions, switch the look, pin notes to moments,
+then "Mark ready" and tell you "apply my review".
+
+When they do:
+1. Export the page's database: ArtifactData `list` with `out_dir` = `<project>/work/review_export` for each of
+   `decisions`, `notes` and `meta`.
+2. `PY SK/scripts/review_apply.py <project> <project>/work/review_export`: applies drops, caption fixes and the look
+   switch, and prints the Changes and notes that need judgement (also in `work/review_todo.json`).
+3. Do each printed item in `edl.json` / `plan.json` (a take's "start later" = move its `in`; "use the other take" =
+   pick it from `transcript.txt`; an effect "bigger/shorter" = its options and times). Then assemble (only if cuts
+   changed), cutout (if cutout effects changed), render, check, `review.py`, and republish to the same url.
+4. Tidy the page's database with one ArtifactData `batch`: delete every `decisions` document and `meta/status`
+   (pin each with the `version` the list showed), and `update` each note you handled with
+   `{"done": true, "reply": "<one short line on what you changed>"}`.
+5. Tell the user the page is updated with the new draft.
+The page only shows decisions for the current draft version, so stale ones never leak into the next round.
+
 ## Hard rules
 1. Never put text or graphics on the face (eyes to chin). The scripts place text in free zones; verify on snaps.
 2. Everything important inside the Reels safe area: top 250, bottom 1440, sides 60, right 150 below y 1100.

@@ -115,11 +115,12 @@ def full(proj, style, ctx, safe, draft):
     print(f"rendered {out}  ({time.time() - t0:.0f}s)\nphone copy {phone}")
 
 
-def snapshots(proj, style, ctx, times, safe):
+def stills(proj, style, ctx, times, safe=False):
+    """Finished frames (grade + effects + style layer) at the given times, as full-size RGB images."""
     work = proj / "work"
     effects = load_effects({"effects": ctx.effects}, ctx=ctx)
     matte = Matte(work)
-    thumbs = []
+    out = []
     for t in times:
         frame = work / "snap_frame.png"
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.3f}", "-i", str(work / "aroll.mkv"),
@@ -131,7 +132,13 @@ def snapshots(proj, style, ctx, times, safe):
         style.draw(canvas, t)
         safe_guides(canvas) if safe else None
         base.alpha_composite(canvas)
-        thumbs.append((t, base.convert("RGB").resize((W // 3, H // 3), Image.LANCZOS)))
+        out.append(base.convert("RGB"))
+    return out
+
+
+def snapshots(proj, style, ctx, times, safe):
+    work = proj / "work"
+    thumbs = [(t, im.resize((W // 3, H // 3), Image.LANCZOS)) for t, im in zip(times, stills(proj, style, ctx, times, safe))]
     cols = min(4, len(thumbs))
     rows = (len(thumbs) + cols - 1) // cols
     sheet = Image.new("RGB", (cols * W // 3, rows * (H // 3 + 30)), "#111")

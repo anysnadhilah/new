@@ -21,6 +21,8 @@ What it does for you:
   and glass title (text behind your head)
 - Subtle sound effects (synthesised, royalty-free) and loudness levelled for Instagram
 - Checks every cut and the audio before it hands you the video
+- A review page for every draft: play it, press Keep / Change / Drop on each take, graphic and effect, retype misheard
+  captions, switch the look and pin notes to exact moments. Claude reads your choices and makes the next draft.
 
 ## Requirements
 - A Mac (Apple Silicon or Intel) or Linux. Windows is not supported yet.
