@@ -23,7 +23,8 @@ class Whimsical(Style):
     line_gap = -18
     word_gap = 0.2
     out_dur = 0.14
-    cut_window = (0.0, 0.12)
+    cut_window = (0.0, 0.0)
+    cut_punch = 0.03
     push = 0.0
 
     def __init__(self, ctx):
@@ -87,35 +88,32 @@ class Whimsical(Style):
     # ---------------------------------------------------------------- hook: stacked two-tone headline
     def draw_hook(self, canvas, t, hook):
         if "_hook" not in self.__dict__:
-            words, lines, line = hook["text"].lower().split(), [], []
-            for w in words:
-                if line and chunky(" ".join(line + [w]), 150, CREAM).width > 920:
-                    lines.append(line)
-                    line = []
-                line.append(w)
-            lines.append(line)
-            rows = [chunky(" ".join(ln), 150, CREAM if i % 2 == 0 else BUTTER) for i, ln in enumerate(lines)]
+            times = self.hook_word_times(hook)
+            lines = self.hook_lines(hook["text"].lower(), lambda s: chunky(s, 150, CREAM).width > 920)
+            rows = [chunky(text, 150, CREAM if i % 2 == 0 else BUTTER) for i, (text, _) in enumerate(lines)]
+            when = [times[first] for _, first in lines]
             sub = pill(hook["label"], fill=BUTTER, size=40) if hook.get("label") else None
             k = self.ctx.fit(hook["start"], sum(r.height - 2 * r.info["pad"] - 26 for r in rows) + (sub.height + 10 if sub else 0))
             heights = [(r.height - 2 * r.info["pad"] - 26) * k for r in rows]
             total = sum(heights) + (sub.height + 10 if sub else 0)
-            self._hook = {"rows": rows, "heights": heights, "sub": sub, "h": total, "k": k,
+            self._hook = {"rows": rows, "when": when, "heights": heights, "sub": sub, "h": total, "k": k,
                           "y": self.ctx.block_y(hook["start"], total + 40)}
         hk = self._hook
-        local = t - hook["start"]
         k_out = prog(t, hook["end"] - 0.18, 0.18)
         y = hk["y"] - hk["h"] / 2
-        for i, (img, h) in enumerate(zip(hk["rows"], hk["heights"])):
-            p = prog(local, 0.12 * i, 0.4)
-            place(canvas, xform(img, scale=hk["k"] * lerp(0.6, 1, out_back(p, 2.0)) * (1 - 0.1 * k_out),
-                                alpha=min(1, p * 4) * (1 - k_out)), W / 2, y + h / 2)
+        for img, h, at in zip(hk["rows"], hk["heights"], hk["when"]):
+            p = prog(t, at, 0.35)
+            if p > 0:
+                place(canvas, xform(img, scale=hk["k"] * lerp(0.7, 1, out_back(p, 1.8)) * (1 - 0.1 * k_out),
+                                    alpha=min(1, p * 4) * (1 - k_out)), W / 2, y + h / 2)
             y += h
+        last = hk["when"][-1]
         if hk["sub"] is not None:
-            p = out_back(prog(local, 0.12 * len(hk["rows"]) + 0.1, 0.35))
+            p = out_back(prog(t, last + 0.25, 0.35))
             place(canvas, xform(hk["sub"], scale=p, alpha=1 - k_out), W / 2, y + hk["sub"].height / 2 + 10)
-        for j, (sx, sy, s) in enumerate(((-0.42, -0.45, 84), (0.43, 0.15, 64), (-0.36, 0.5, 46))):
-            p = out_back(prog(local, 0.3 + 0.1 * j, 0.4), 2.2)
-            place(canvas, xform(self.stars[s], scale=p, rot=t * 30, alpha=1 - k_out), W / 2 + sx * 900, hk["y"] + sy * hk["h"])
+        for j, (sx, sy, s) in enumerate(((-0.42, -0.45, 84), (0.43, 0.15, 64))):
+            p = out_back(prog(t, last + 0.1 * j, 0.4), 1.8)
+            place(canvas, xform(self.stars[s], scale=p, rot=t * 20, alpha=1 - k_out), W / 2 + sx * 900, hk["y"] + sy * hk["h"])
 
     # ---------------------------------------------------------------- stickers
     def draw_sticker(self, canvas, t, st):

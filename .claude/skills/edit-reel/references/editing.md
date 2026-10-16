@@ -14,6 +14,10 @@
 
 ## Captions (plan.json)
 - Each caption group is 1-4 words shown while they are spoken; the words appear one by one on their timestamps.
+- Mixed-language speakers (e.g. Malay with English words): when the speaker says an English word, spell it in
+  English. Whisper in Malay mode "Malay-ifies" English words: ambisius → ambitious, klender → calendar, gos →
+  goals, sistem → system, fokus → focus, produktif → productive. Ask once if unsure which spelling the creator
+  wants, and save the answer in config.json as `"spelling": "english-loanwords"` (or `"malay"`).
 - Fix every mishearing by editing `"w"` (keep `"s"`/`"e"`). Common: names, brands, English words inside other
   languages (e.g. "klender" → "kalendar", "gos" → "goals", "-ta" → "ke"). Write the speaker's language the way they
   would type it. Remove a word entirely only if it was never said.
@@ -26,7 +30,8 @@
 
 ## Hook
 `{"text": "...", "label": "...", "start": 0, "end": 2.5}` — on screen during the opening line; it replaces the
-captions while it shows. 2-5 words, a question or bold claim from the video itself (e.g. "terlalu ambisius?").
+captions while it shows. 2-5 words, a question or bold claim from the video itself (e.g. "terlalu ambitious?").
+Its lines appear one by one as the words are spoken, so keep the hook's words in the order they are said.
 The label is a tiny kicker ("real talk", "pov", "my method"). Set `"hook": null` to skip.
 
 ## Stickers

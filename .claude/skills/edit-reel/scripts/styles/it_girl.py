@@ -25,6 +25,7 @@ class ItGirl(Style):
     word_gap = 0.2
     out_dur = 0.12
     cut_window = (0.0, 0.0)
+    cut_punch = 0.02
     push = 0.025
 
     def grade(self):
@@ -47,32 +48,29 @@ class ItGirl(Style):
     # ---------------------------------------------------------------- hook: italic kicker, big line, small line
     def draw_hook(self, canvas, t, hook):
         if "_hook" not in self.__dict__:
-            rows = []
+            times = self.hook_word_times(hook)
+            rows, when = [], []
             if hook.get("label"):
                 rows.append(serif(hook["label"], 76, ITALIC, tracking=0.0))
-            words, line, lines = hook["text"].split(), [], []
-            for w in words:
-                trial = " ".join(line + [w])
-                if line and serif(trial, 120, tracking=-0.05).width > 900:
-                    lines.append(" ".join(line))
-                    line = []
-                line.append(w)
-            lines.append(" ".join(line))
-            rows += [serif(ln, 120, tracking=-0.05, shadow=BIG_SHADOW) for ln in lines]
+                when.append(hook["start"])
+            for text, first in self.hook_lines(hook["text"], lambda s: serif(s, 120, tracking=-0.05).width > 900):
+                rows.append(serif(text, 120, tracking=-0.05, shadow=BIG_SHADOW))
+                when.append(times[first])
             if hook.get("sub"):
                 rows.append(serif(hook["sub"], 56))
+                when.append(min(hook["end"] - 0.5, when[-1] + 0.5))
             k = self.ctx.fit(hook["start"], sum(r.height - 2 * r.info["pad"] + 26 for r in rows))
             heights = [(r.height - 2 * r.info["pad"]) * k for r in rows]
             total = sum(heights) + 26 * k * len(rows)
-            self._hook = {"rows": rows, "heights": heights, "h": total, "k": k,
+            self._hook = {"rows": rows, "when": when, "heights": heights, "h": total, "k": k,
                           "y": self.ctx.block_y(hook["start"], total + 20)}
         hk = self._hook
-        local = t - hook["start"]
         k_out = prog(t, hook["end"] - 0.2, 0.2)
         y = hk["y"] - hk["h"] / 2
-        for i, (img, h) in enumerate(zip(hk["rows"], hk["heights"])):
-            p = out_cubic(prog(local, 0.08 * i, 0.4))
-            place(canvas, xform(img, scale=hk["k"], alpha=p * (1 - k_out), blur=(1 - p) * 4), W / 2, y + h / 2 + (1 - p) * 12)
+        for img, h, at in zip(hk["rows"], hk["heights"], hk["when"]):
+            p = out_cubic(prog(t, at, 0.4))
+            if p > 0:
+                place(canvas, xform(img, scale=hk["k"], alpha=p * (1 - k_out), blur=(1 - p) * 4), W / 2, y + h / 2 + (1 - p) * 12)
             y += h + 26 * hk["k"]
 
     # ---------------------------------------------------------------- stickers

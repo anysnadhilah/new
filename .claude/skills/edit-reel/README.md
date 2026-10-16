@@ -21,8 +21,9 @@ What it does for you:
   note wall, headline wall, chart grow, orbit, new background, paper cutout, doodle outline, dolly zoom, cover title
   and glass title (text behind your head)
 - Motion graphics placed automatically from what you say (or on the music's beat): light, medium or max
-- Sound effects matched to every graphic and transition (16 sounds, synthesised, royalty-free), off / subtle /
-  normal / bold, or swap in your own; loudness levelled for Instagram
+- Sound effects only where they add impact: the intro, bullet points, key transitions and punchlines (16 sounds,
+  synthesised, royalty-free), off / subtle / normal / bold, or swap in your own; loudness levelled for Instagram
+- The intro title appears word by word with your voice; every cut lands with a gentle punch-in
 - Works with any video: vertical or landscape, with or without a face, with or without speech
 - Checks every cut and the audio before it hands you the video
 - A review page for every draft: play it, press Keep / Change / Drop on each take, graphic and effect, retype misheard

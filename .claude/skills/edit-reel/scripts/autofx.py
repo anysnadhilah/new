@@ -16,7 +16,7 @@ import sys
 from common import load_json, project_dir, save_json
 from plan import STOP
 
-GAP = {"light": 7.0, "medium": 3.0, "max": 0.8}         # longest idle time (no graphic on screen) we allow
+GAP = {"light": 14.0, "medium": 7.0, "max": 1.5}        # longest idle time (no graphic on screen) we allow
 MIN_SPACE = 0.3                                          # never closer than this to another graphic
 TRANSITION = "zoom-through"                              # a 0.4 s cut transition: stickers may overlap it
 
@@ -174,7 +174,7 @@ def main():
 
     # ---- transitions on cuts, ending reveal
     cuts = [s["start"] for s in tl["segments"][1:]]
-    every = {"light": 4, "medium": 2, "max": 1}[amount]
+    every = {"light": 6, "medium": 3, "max": 2}[amount]
     for k, c in enumerate(cuts):
         if k % every == 0:
             add_fx({"type": "zoom-through", "at": round(c, 3)})

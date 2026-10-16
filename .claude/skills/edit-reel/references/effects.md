@@ -59,10 +59,12 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
     ([r, g, b] 0-1). Hides captions.
 
 ## Sound
-Every effect plays its own sounds automatically (`scripts/effects/sound.py`): e.g. punch-zoom = riser + impact,
-zoom-through = whoosh, checklist = pop + a ding per tick, phone-float = swish + a notification per message,
-walls = a pop per card, cover-title = impact + shutter, glass-title = chime + impact. plan.json `"sfx"` scales all of
-them: off | subtle | normal | bold.
+Sound marks moments, it is not decoration. Every effect proposes sounds (`scripts/effects/sound.py`), each with a
+priority: 3 = the intro hook, 2 = bullet points (checklist ticks, chapter/pill stickers), key transitions and big
+punches (punch-zoom with words, cover/glass title, chart landing), 1 = other entrances, 0 = decoration (per-card or
+per-letter ticks). A sound director keeps only what the level allows and spaces the survivors apart:
+`"sfx"` off | subtle (priority 2+, 3 s apart) | normal (2+, 2 s apart, the default) | bold (1+, 1.2 s apart).
+A 60 s reel on normal gets roughly 6-10 sounds, never one per second.
 
 ## Automatic placement
 `autofx.py --amount light|medium|max` places effects and stickers from the transcript (and music beats). Treat its

@@ -123,6 +123,7 @@ class Style:
     emph_own_line = True
     out_dur = 0.16       # caption exit animation
     cut_window = (0.0, 0.0)  # seconds before/after a cut that draw_cut runs
+    cut_punch = 0.03         # every cut lands with a small zoom that settles (0 = off)
 
     def __init__(self, ctx, seed=11):
         self.ctx = ctx
@@ -263,6 +264,56 @@ class Style:
 
     def word_visible_at(self, tk):
         return tk["s"] - 0.05
+
+    # ------------------------------------------------------------ hook timing: follow the voice
+    def hook_word_times(self, hook):
+        """When each word of the hook text is spoken (matched to the transcript), so the hook can appear
+        line by line with the voice. Words that cannot be matched are spread evenly between their neighbours."""
+        if "_hook_times" in self.__dict__:
+            return self._hook_times
+        spoken = [w for seg in self.ctx.segments for w in seg["words"]
+                  if hook["start"] - 0.3 <= w["s"] <= hook["end"] + 1.5]
+        words = hook["text"].split()
+        times, j = [], 0
+        for hw in words:
+            h = _norm(hw)
+            hit = None
+            for k in range(j, len(spoken)):
+                sw = _norm(spoken[k]["w"])
+                if sw == h or (len(h) >= 4 and sw[:4] == h[:4]):
+                    hit = k
+                    break
+            if hit is None:
+                times.append(None)
+            else:
+                times.append(max(hook["start"], spoken[hit]["s"] - 0.05))
+                j = hit + 1
+        # fill gaps: evenly between known neighbours (or across the first 60% of the hook)
+        span_end = hook["start"] + (hook["end"] - hook["start"]) * 0.6
+        known = [(i, x) for i, x in enumerate(times) if x is not None]
+        for i, x in enumerate(times):
+            if x is None:
+                prev = max((k for k in known if k[0] < i), default=(-1, hook["start"]), key=lambda k: k[0])
+                nxt = min((k for k in known if k[0] > i), default=(len(words), span_end), key=lambda k: k[0])
+                f = (i - prev[0]) / max(nxt[0] - prev[0], 1)
+                times[i] = prev[1] + (nxt[1] - prev[1]) * f
+        # never later than leaves time to read before the hook ends
+        last_ok = hook["end"] - 0.6
+        self._hook_times = [min(x, last_ok) for x in times]
+        return self._hook_times
+
+    @staticmethod
+    def hook_lines(text, too_wide):
+        """Split hook text into lines; returns [(line text, index of its first word)]."""
+        words, out, line, first = text.split(), [], [], 0
+        for i, w in enumerate(words):
+            if line and too_wide(" ".join(line + [w])):
+                out.append((" ".join(line), first))
+                line, first = [], i
+            line.append(w)
+        if line:
+            out.append((" ".join(line), first))
+        return out
 
 
 def _norm(s):

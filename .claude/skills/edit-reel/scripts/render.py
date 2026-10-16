@@ -19,10 +19,21 @@ from PIL import Image, ImageDraw
 from common import FPS, H, SFX, SR, W, die, load_json, project_dir
 from gfx import font
 from effects import Matte, any_hides_captions, compose, load_effects, reserved_zone
-from effects.sound import effect_sounds, level as sound_level
+from effects.base import zoom as zoom_frame
+from gfx import out_cubic, prog
+from effects.sound import effect_sounds
 from styles.base import Context, blank, safe_guides
 
 STYLES = {"whimsical": "styles.whimsical", "it-girl": "styles.it_girl", "scrapbook": "styles.scrapbook"}
+
+
+def punch(frame, style, ctx, t):
+    """Every cut lands with a small zoom that settles over a third of a second (energy without flashes)."""
+    k = getattr(style, "cut_punch", 0)
+    for c in ctx.cuts:
+        if 0 <= t - c < 0.32 and k:
+            return zoom_frame(frame, 1 + k * (1 - out_cubic(prog(t, c, 0.32))))
+    return frame
 
 
 def load_style(name, ctx):
@@ -44,12 +55,22 @@ def load_sound(name, proj):
 
 
 def sound_events(style, ctx, plan):
-    """Style sounds (captions, stickers, hook, cuts) + effect sounds, scaled by the plan's sfx level."""
-    k = sound_level(plan)
-    events = list(style.sfx())
+    """Every candidate sound (style + effects) with a priority, then the sound director keeps the few that matter."""
+    from effects.sound import BULLET_STICKERS, direct
+    hook = plan.get("hook")
+    stickers = {round(st["at"], 2): st.get("type") for st in plan.get("stickers", [])}
+    events = []
+    for at, name, gain in style.sfx():
+        if hook and abs(at - hook["start"]) < 0.6:
+            pri = 3
+        elif stickers.get(round(at, 2)) in BULLET_STICKERS:
+            pri = 2
+        else:
+            pri = 0
+        events.append((at, name, gain, pri))
     for e in load_effects({"effects": ctx.effects}, ctx=ctx):
         events += effect_sounds(e)
-    return [(at, name, gain * k) for at, name, gain in events if k > 0]
+    return direct(events, plan)
 
 
 def sfx_track(events, duration, path, proj):
@@ -104,8 +125,10 @@ def full(proj, style, ctx, safe, draft):
             die(f"a-roll ended early at frame {f} of {ctx.frames}: {dec.stderr.read().decode()[-800:]}")
         t = f / FPS
         frame = None
+        if style.cut_punch and any(0 <= t - c < 0.32 for c in ctx.cuts):
+            frame = punch(Image.frombytes("RGB", (W, H), raw), style, ctx, t)
         if any(e.active(t) for e in effects):
-            frame = compose(Image.frombytes("RGB", (W, H), raw), t, effects, matte)
+            frame = compose(frame or Image.frombytes("RGB", (W, H), raw), t, effects, matte)
         style.hide_captions = any_hides_captions(effects, t)
         style.reserved = reserved_zone(effects, t)
         layer = blank()
@@ -147,7 +170,7 @@ def stills(proj, style, ctx, times, safe=False):
         frame = work / "snap_frame.png"
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.3f}", "-i", str(work / "aroll.mkv"),
                         "-filter_complex", style.grade(), "-map", "[bg]", "-frames:v", "1", str(frame)], check=True)
-        base = compose(Image.open(frame).convert("RGB"), t, effects, matte).convert("RGBA")
+        base = compose(punch(Image.open(frame).convert("RGB"), style, ctx, t), t, effects, matte).convert("RGBA")
         style.hide_captions = any_hides_captions(effects, t)
         style.reserved = reserved_zone(effects, t)
         canvas = blank()
