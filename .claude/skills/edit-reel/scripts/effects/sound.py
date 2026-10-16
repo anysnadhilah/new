@@ -18,7 +18,7 @@ KEY_ENTRANCES = {"zoom-through", "phone-frame", "pull-back", "app-split", "dolly
 BULLET_STICKERS = {"chapter", "pill", "pill-yellow", "note"}
 PAIRS = {frozenset(p) for p in (("ding",), ("whoosh", "glow"), ("pop", "ding"), ("swish", "glow"), ("pop",), ("click",),
                                  ("zoom", "glow"), ("glow", "blob"), ("zoom", "click"), ("zoom", "pop"), ("pop", "blob"),
-                                 ("blob",), ("click", "ding"))}
+                                 ("blob",), ("click", "ding"), ("write", "twinkle"))}
 
 
 def direct(events, plan):

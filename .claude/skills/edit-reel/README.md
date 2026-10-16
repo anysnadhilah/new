@@ -7,7 +7,7 @@ with Keep / Change / Drop buttons.
 
 | Style | Vibe |
 |---|---|
-| 🤍 **it girl** | clean editorial: white serif captions, the key line big, butter-yellow chapter titles |
+| 🤍 **it girl** | clean editorial: Playfair serif captions, the key word in gold italic, gold oval titles with minimal stars |
 | ✨ **whimsical** | warm glow, chunky cream + butter-yellow words, twinkling asterisks, pill labels |
 | 💎 **scrapbook** | a journal page that talks: a pinned title per idea in mixed fonts (handwritten + chunky lavender), sparkle bursts, shiny 3D gems, handwritten asides, quiet subtitles |
 
@@ -17,7 +17,7 @@ What it does for you:
 - Frames your face and adds gentle punch-ins between takes
 - Word-by-word animated captions in your language, placed so they **never cover your face**
 - An animated hook title for the first seconds, stickers and transitions
-- 18 video effects: graphic panels above your pushed-down clip (calendar, to-do scroll, pop-ups, time bars, goal cards), punch zoom, zoom-through cut, checklist, floating phone, phone frame, pull-back reveal, app split,
+- 19 video effects: gold oval titles, graphic panels above your pushed-down clip (calendar, to-do scroll, pop-ups, time bars, goal cards), punch zoom, zoom-through cut, checklist, floating phone, phone frame, pull-back reveal, app split,
   note wall, headline wall, chart grow, orbit, new background, paper cutout, doodle outline, dolly zoom, cover title
   and glass title (text behind your head)
 - Motion graphics placed automatically from what you say (or on the music's beat): light, medium or max

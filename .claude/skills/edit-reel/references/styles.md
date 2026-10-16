@@ -6,16 +6,19 @@ The hook (`plan.json` → `hook`) takes `text`, optional `label` (small kicker) 
 Hooks shrink automatically to fit the free space around the head.
 
 ## it-girl (`styles/it_girl.py`)
-Clean, chic, editorial. Use for "it girl", "cool girl", "clean girl", "aesthetic", "luxury".
+Clean, chic, editorial, a little luxe. Use for "it girl", "cool girl", "clean girl", "aesthetic", "luxury".
 - Grade: natural and bright, a touch of warmth. No frame, no light leaks, clean cuts: the restraint is the look.
-- Captions: Tinos (classic Times-like serif), white, tight tracking, soft shadow. A whole phrase fades in at once.
-- Punch word (`emph`): same serif set big on its own line, so the key line dominates ("you / don't have / to be a").
+- Type: Playfair Display. Captions in the regular cut, white, soft shadow, the whole phrase fading in at once.
+- Punch word (`emph`): big gold italic (Playfair Display Italic, #F3D46A) on its own line.
+- Section titles (2.6 s): a small white italic kicker over the point in gold italic, with two minimal gold
+  four-point stars beside it. Over graphics (split-panel): an ink serif headline on cream editorial paper.
+- Signature motion graphic: `circle-title` (see effects.md) on the method name / the turn / the takeaway: gold italic
+  inside a thin gold oval that draws itself, minimal stars. Use 1-2 per reel.
 - Hook: italic serif `label` above, big serif line, optional small `sub` line under.
 - Stickers:
-  - `chapter` + `text`: bold butter-yellow caps title, e.g. "1. plan your week" (great for list videos; give it
-    the whole section as `dur`).
+  - `chapter` + `text`: gold italic serif title, e.g. "1. plan your week".
   - `italic` + `text`: white italic serif label, e.g. a method or product name.
-- Sound: almost none (tick on stickers). Assemble push: 0.025.
+- Sound: whoosh on the hook, zoom on punch-ins, click on chapter titles, pop on stickers, pencil + twinkle on the oval.
 
 ## whimsical (`styles/whimsical.py`)
 Cosy, dreamy, playful.

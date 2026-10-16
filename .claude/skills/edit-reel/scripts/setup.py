@@ -32,6 +32,8 @@ FONT_SPECS = {
     "Fredoka-Bold.ttf": "Fredoka:wght@700",
     "Sacramento-Regular.ttf": "Sacramento",
     "InstrumentSerif-Regular.ttf": "Instrument+Serif",
+    "PlayfairDisplay-Italic.ttf": "Playfair+Display:ital,wght@1,500",
+    "PlayfairDisplay-Regular.ttf": "Playfair+Display:wght@400",
 }
 
 ok = True

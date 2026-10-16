@@ -2,16 +2,15 @@
 a phrase at a time, the key line set big in the middle, soft butter-yellow chapter titles, italic serif labels.
 No frames, no flashy transitions: the restraint is the look."""
 from common import W
-from gfx import out_cubic, place, prog, text_img, xform
+from gfx import out_back, out_cubic, place, prog, sparkle, text_img, xform
 
 INK = "#2B2530"
 from styles.base import Style
 
 WHITE = "#FFFFFF"
-BUTTER = "#FFF1A6"
-SERIF = "Tinos-Regular.ttf"
-ITALIC = "Tinos-Italic.ttf"
-SANS_BOLD = "Figtree-ExtraBold.ttf"
+SERIF = "PlayfairDisplay-Regular.ttf"
+ITALIC = "PlayfairDisplay-Italic.ttf"
+GOLD = "#F3D46A"
 SHADOW = (0, 2, 9, (0, 0, 0, 120))
 BIG_SHADOW = (0, 3, 14, (0, 0, 0, 110))
 
@@ -36,9 +35,9 @@ class ItGirl(Style):
 
     # ---------------------------------------------------------------- captions: a phrase at a time
     def word_img(self, text, emph, ci):
-        if emph:
-            return serif(text, 132, tracking=-0.05, shadow=BIG_SHADOW)
-        return serif(text, 66)
+        if emph:                                                  # the key word: big gold italic
+            return serif(text, 128, ITALIC, fill=GOLD, tracking=-0.01, shadow=BIG_SHADOW)
+        return serif(text, 62, tracking=-0.02)
 
     def animate(self, tk, t, cap, k_out):
         start = cap["start"]
@@ -77,12 +76,12 @@ class ItGirl(Style):
 
     # ---------------------------------------------------------------- stickers
     def draw_sticker(self, canvas, t, st):
-        """chapter: bold butter-yellow caps title ("1. HOBBY JOURNAL"); italic: white italic serif label."""
+        """chapter: gold italic serif title ("1. hobby journal"); italic: white italic serif label."""
         key = ("st", st.get("type"), st.get("text"))
         if key not in self.__dict__.setdefault("_st", {}):
             text = st.get("text", "")
             if st.get("type") == "chapter":
-                img = text_img(text.upper(), SANS_BOLD, 50, BUTTER, tracking=-0.03, shadow=(0, 2, 8, (0, 0, 0, 120)))
+                img = serif(text, 76, ITALIC, fill=GOLD, tracking=-0.01, shadow=BIG_SHADOW)
             else:
                 img = serif(text, 70, ITALIC, tracking=0.02)
             self._st[key] = img
@@ -106,8 +105,8 @@ class ItGirl(Style):
             rows = []
             if b.get("kicker"):
                 rows.append(serif(b["kicker"], 54, ITALIC, tracking=0.0))
-            for line, _ in self.hook_lines(b["title"].upper(), lambda x: text_img(x, SANS_BOLD, 58, BUTTER).width > 900):
-                rows.append(text_img(line, SANS_BOLD, 58, BUTTER, tracking=-0.03, shadow=(0, 2, 8, (0, 0, 0, 130))))
+            for line, _ in self.hook_lines(b["title"], lambda x: serif(x, 96, ITALIC).width > 900):
+                rows.append(serif(line, 96, ITALIC, fill=GOLD, tracking=-0.01, shadow=BIG_SHADOW))
             h = sum(r.height - 2 * r.info["pad"] + 8 for r in rows)
             k, top = self.fit_top(b, h)
             self._st[key] = (rows, k, top)
@@ -120,6 +119,18 @@ class ItGirl(Style):
             if q > 0:
                 place(canvas, xform(r, scale=k, alpha=q * out, blur=(1 - q) * 3), W / 2, y + rh / 2 + (1 - q) * 10)
             y += rh + 8 * k
+        widest = max(r.width - 2 * r.info["pad"] for r in rows) * k
+        top = self._st[key][2]
+        for j, (side, fy, s) in enumerate(((-1, 0.15, 40), (1, 0.75, 28))):    # minimal gold stars
+            p = out_back(prog(local, 0.35 + 0.12 * j, 0.35), 2.0)
+            if p > 0:
+                place(canvas, xform(self._star(s), scale=p, alpha=out), W / 2 + side * (widest / 2 + 46), top + fy * (y - top))
+
+    def _star(self, size):
+        key = ("star", size)
+        if key not in self.__dict__.setdefault("_st", {}):
+            self._st[key] = sparkle(size, GOLD, glow_blur=2)
+        return self._st[key]
 
     def caption_prefer(self, cap):
         return "bottom" if self.heading_on(cap["start"] + 0.01) else None

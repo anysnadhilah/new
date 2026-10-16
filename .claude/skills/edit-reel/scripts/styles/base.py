@@ -354,7 +354,7 @@ class Style:
             self.draw_split_title(canvas, t)
         elif in_hook:
             self.draw_hook(canvas, t, hook)
-        elif not self.hide_captions:
+        elif not self.hide_captions and self.reserved != "top":
             self.draw_section(canvas, t)
         for st in self.ctx.stickers:
             if st["at"] <= t < st["at"] + st.get("dur", 1.5):

@@ -206,8 +206,8 @@ def main():
                     "messages": [text] + [caption_text(n) for n in nxt[:1]]})
         elif any(w in TITLE for w in words) and cutout:
             word = next((w["w"] for w in c["words"] if norm(w["w"]) in TITLE), c.get("emph") or text.split()[-1])
-            add_fx({"type": "glass-title" if i % 2 else "cover-title", "start": s0, "end": min(dur, s0 + 2.6),
-                    "text": norm(word).upper()})
+            # the name of a method / system: a gold italic title with an oval drawing around it, above the head
+            add_fx({"type": "circle-title", "start": s0, "end": min(dur, s0 + 3.0), "text": norm(word)})
         elif any(w in FEEL for w in words) and cutout:
             add_fx({"type": "headline-wall" if i % 2 else "note-wall", "start": s0, "end": min(dur, s0 + 2.8),
                     "headlines": [text] + [caption_text(n) for n in nxt[:3]], "notes": [text] + [caption_text(n) for n in nxt[:3]]})

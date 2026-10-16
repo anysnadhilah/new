@@ -1,4 +1,4 @@
-# Effects library (18)
+# Effects library (19)
 
 Effects go in `plan.json` → `"effects": [...]`, each `{"type": "...", "start": s, "end": e, ...options}` in reel
 seconds. They work with every style; the style's captions are drawn on top (some effects hide or move them).
@@ -23,7 +23,7 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
 | Showing off your content | `orbit` |
 | Mood shift, "imagine..." | `new-background`, `dolly-zoom` |
 | Playful, crafty moment | `paper-cutout`, `doodle-outline` |
-| Big title / the name of your method | `cover-title`, `glass-title` |
+| Big title / the name of your method | `circle-title` (above the head), `cover-title`, `glass-title` (behind it) |
 | Calendar, schedule, appointments | `split-panel` calendar |
 | Opening hook: too many things, overwhelm | `split-panel` popups |
 | A long to-do list | `split-panel` todo-scroll |
@@ -77,6 +77,12 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
     - `time-bars`: `days[]`, `hours[]`, `label`, `unit` (free hours per day grow as bars; the total counts up).
     - `goals`: `goals[]`, `picks[]` (indexes), `pick_at` (s) (cards pop in, then only the picked ones light up).
     Sounds: zoom on the push, then clicks (calendar, list), pops (pop-ups, cards) and blobs (bars, the pick).
+
+19. **circle-title**: an elegant title above the head in gold italic serif (Playfair Display Italic; a second
+    line a little softer), a thin gold oval drawing itself around it like a pen line with a small gap at the top,
+    and two minimal four-point gold stars twinkling in. `text` ("come back|method"), `color`, `size`. Captions move
+    down while it shows; never behind the head. Use it for the name of a method, the turn, the takeaway
+    ("that's|okay"). Sounds: pencil write + twinkle.
 
 ## Sound
 Sound marks moments, it is not decoration. Every effect proposes sounds (`scripts/effects/sound.py`), each with a
