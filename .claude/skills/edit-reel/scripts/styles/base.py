@@ -132,7 +132,15 @@ class Style:
         self.caption_box = None
         self.hide_captions = False
         self.reserved = None
-        self.layouts = [self.layout(i, c) for i, c in enumerate(ctx.captions)]
+        self.caps, self.layouts = [], []
+        for i, c in enumerate(ctx.captions):
+            lay = self.layout(i, c)
+            if c.get("emph") and lay["h"] + 40 > ctx.room(c["start"] + 0.01):
+                # the big key word would push the caption onto the face: set this line plainly instead
+                c = dict(c, emph=None)
+                lay = self.layout(i, c)
+            self.caps.append(c)
+            self.layouts.append(lay)
 
     # ------------------------------------------------------------ style hooks
     def grade(self):
@@ -229,7 +237,7 @@ class Style:
         self.ambient(canvas, t)
         hook = self.ctx.hook
         in_hook = bool(hook) and hook["start"] <= t < hook["end"]
-        for cap, lay in zip(self.ctx.captions, self.layouts):
+        for cap, lay in zip(self.caps, self.layouts):
             if not (cap["start"] <= t < cap["end"]) or self.hide_captions or not self.ctx.plan.get("show_captions", True):
                 continue
             if in_hook:

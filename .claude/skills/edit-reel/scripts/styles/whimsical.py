@@ -149,7 +149,7 @@ class Whimsical(Style):
     # ---------------------------------------------------------------- sound
     def sfx(self):
         ev = []
-        for cap in self.ctx.captions:
+        for cap in self.caps:
             emph = cap.get("emph") or ""
             for w in cap["words"]:
                 if emph and _n(w["w"]) == _n(emph):

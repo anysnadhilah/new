@@ -183,8 +183,10 @@ class Scrapbook(Style):
         local = t - st["at"]
         dur = st.get("dur", 1.8)
         p = out_back(prog(local, 0, 0.32), 2.0) * (1 - out_cubic(prog(local, dur - 0.15, 0.15)))
-        y = st.get("y", SAFE["top"] + img.height / 2 + 20)
-        x = st.get("x", self.ctx.free_x(st["at"], y, img.width)[-1])
+        if "_xy" not in st:                             # decided once, clear of the caption showing at that moment
+            y = st.get("y") or self.clear_y(st["at"], img.height)
+            st["_xy"] = (st.get("x") or self.ctx.free_x(st["at"], y, img.width)[-1], y)
+        x, y = st["_xy"]
         place(canvas, xform(img, scale=p, rot=st.get("rot", -5)), x, y)          # still: no wobble
 
     def _photo(self, st):

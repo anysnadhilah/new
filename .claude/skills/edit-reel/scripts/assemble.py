@@ -102,7 +102,16 @@ def face_in_frame(samples, seg, info):
     inside = [f for f in samples if seg["in"] <= f[0] <= seg["out"]] or samples
     if not inside:
         return None
-    fx, fy, fw, fh = (statistics.median(f[i] for f in inside) for i in range(1, 5))
+    # the area the face moves through during the take (10th-90th percentile edges), not its average spot:
+    # people lean in and sway, and text placed from the median would touch the chin
+    def edge(vals, q):
+        vals = sorted(vals)
+        return vals[min(len(vals) - 1, int(q * len(vals)))]
+    x0, y0 = edge([f[1] - f[3] / 2 for f in inside], 0.1), edge([f[2] - f[4] / 2 for f in inside], 0.1)
+    x1, y1 = edge([f[1] + f[3] / 2 for f in inside], 0.9), edge([f[2] + f[4] / 2 for f in inside], 0.9)
+    fw, fh = statistics.median(f[3] for f in inside), statistics.median(f[4] for f in inside)
+    fx, fy = (x0 + x1) / 2, (y0 + y1) / 2
+    fw, fh = max(fw, x1 - x0), max(fh, y1 - y0)
     if seg.get("fit") == "blur":
         k = min(W / info["width"], H / info["height"])
         ox, oy = (W - info["width"] * k) / 2, (H - info["height"] * k) / 2

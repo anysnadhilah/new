@@ -30,7 +30,11 @@ class PunchZoom(Effect):
         super().__init__(spec, ctx)
         self.amount = float(spec.get("zoom", 1.3)) - 1
         lines = [x for x in spec.get("text", "").split("|") if x]
-        self.lines = [chunky(x, 150, CREAM if i % 2 == 0 else BUTTER) for i, x in enumerate(lines)]
+        size = 150
+        for x in lines:                                 # one size for all lines, the widest fits the safe area
+            im = chunky(x, size, CREAM)
+            size = min(size, int(size * 930 / max(im.width - 2 * im.info["pad"], 1)))
+        self.lines = [chunky(x, size, CREAM if i % 2 == 0 else BUTTER) for i, x in enumerate(lines)]
         self.hides_captions = bool(lines)
 
     def whole(self, frame, t):
