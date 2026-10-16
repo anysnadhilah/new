@@ -132,7 +132,12 @@ class SplitPanel(Effect):
         thin white sticker edge; her head sits just under the graphic."""
         seg = self.ctx.seg_at(t)
         f = seg.get("face")
-        head_top = ((f["cy"] - 1.0 * f["h"]) * H) if f else H * 0.12      # top of hair / hijab
+        if not hasattr(self, "_head"):
+            self._head = {}
+        if seg["id"] not in self._head:                 # the real top of her head, from the cutout (once per take)
+            rows = np.where((np.asarray(matte) > 128).sum(axis=1) > 12)[0]
+            self._head[seg["id"]] = float(rows[0]) if len(rows) else (((f["cy"] - 1.0 * f["h"]) * H) if f else H * 0.12)
+        head_top = self._head[seg["id"]]
         sc = lerp(1.0, PERSON_SCALE, k)
         target_y = PANEL_BOTTOM + 12 - head_top * PERSON_SCALE
         oy = lerp(0, target_y, k)
@@ -143,9 +148,14 @@ class SplitPanel(Effect):
         pw, ph = int(W * sc), int(H * sc)
         person = frame.resize((pw, ph), Image.BILINEAR).convert("RGBA")
         a = matte.resize((pw, ph), Image.BILINEAR)
+        import cv2
+        arr = np.asarray(a)
+        n, lab, stats, _ = cv2.connectedComponentsWithStats((arr > 100).astype(np.uint8), 8)
+        if n > 2:                                      # keep only her (the biggest piece): no stray bits of the car
+            keep = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
+            a = Image.fromarray(np.where(cv2.dilate((lab == keep).astype(np.uint8), np.ones((9, 9), np.uint8)) > 0, arr, 0).astype(np.uint8))
         person.putalpha(a)
         if k > 0.05:
-            import cv2
             edge = cv2.dilate(np.asarray(a), np.ones((13, 13), np.uint8))
             rim = Image.new("RGBA", (pw, ph), (255, 255, 255, 0))
             rim.putalpha(Image.fromarray((edge.astype(np.float32) * min(1, k * 2)).astype(np.uint8)))

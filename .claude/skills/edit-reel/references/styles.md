@@ -63,8 +63,8 @@ pinned title per idea**, everything else stays quiet.
   - `note` + `text`: handwritten words on a torn yellow note.
   - `photo` + `file` (path inside the project, e.g. `photos/book.jpg`), optional `w`: a taped print. Ask the user for
     photos that fit the story (places, products, screenshots) and drop them in `<project>/photos/`.
-- Graphics never hide behind the head in this style: when a graphic needs space, use `split-panel` (the clip is
-  pushed down into a card and the graphic plays above it). Every reel opens with a motion graphic as its hook (a
+- Graphics never hide behind the head in this style: when a graphic needs space, use `split-panel` (the speaker is cut out
+  of her background and kept big, and the graphic plays above her head). Every reel opens with a motion graphic as its hook (a
   `popups` panel during the hook) and gets 3-5 panels that show what is said (calendar, to-do scroll, time bars,
   goal cards).
 - Motion graphics are a must in this style (aim for something moving every 4-6 s besides the titles):

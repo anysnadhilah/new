@@ -64,8 +64,10 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
 17. **glass-title** (cutout): a big 3D chrome-glass word stands behind you, letters sliding up. `text`, `tint`
     ([r, g, b] 0-1). Hides captions.
 
-18. **split-panel**: the clip slides down into a white-bordered card on a striped page and a motion graphic plays
-    in the space above it, so a graphic never hides behind (or covers) the head. Captions hide; scrapbook keeps its
+18. **split-panel** (cutout): the speaker is cut out of her background and kept big (head just under the graphic,
+    thin white sticker edge) on a striped journal page, and a motion graphic plays in the space above her head, so a
+    graphic never hides behind (or covers) the head. `layout: "card"` shrinks the whole clip into a bordered card
+    instead (also the fallback when a frame has no cutout). Captions hide; scrapbook keeps its
     pinned title, set small at the very top. `panel` and its data:
     - `calendar`: `events[]` of `{day, text, color?}` (they light up on their days one by one with a cursor click),
       `month`, `year`, `today`. Use it whenever the speaker mentions a calendar, schedule, appointment or meeting.
