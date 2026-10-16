@@ -184,7 +184,38 @@ def write():
     return n * strokes * np.sin(np.pi * x / x[-1]) ** 0.6 * 0.8
 
 
-SOUNDS = {"glow": glow, "write": write, "pop": pop, "twinkle": twinkle, "whoosh": whoosh, "slap": slap, "tick": tick, "shutter": shutter,
+def blob():
+    """Bubbly water-drop blip: a sine that glides up fast with a soft body (gems landing, cards appearing)."""
+    x = t(0.22)
+    f = 260 + 900 * (1 - np.exp(-x * 38))
+    s = np.sin(2 * np.pi * np.cumsum(f) / SR) * env(len(x), 0.002, 14)
+    s += 0.35 * np.sin(2 * np.pi * np.cumsum(f * 2) / SR) * env(len(x), 0.002, 26)
+    return lowpass(s, 4000)
+
+
+def click():
+    """Crisp computer-mouse click: two tiny plastic ticks (UI taps, calendar events, list scrolls)."""
+    x = t(0.09)
+    s = np.zeros_like(x)
+    for at, g in ((0.0, 1.0), (0.032, 0.55)):
+        i = int(at * SR)
+        n = highpass(rng.standard_normal(len(x) - i), 2500) * env(len(x) - i, 0.0005, 160) * g
+        n += np.sin(2 * np.pi * 3100 * x[: len(x) - i]) * env(len(x) - i, 0.0005, 120) * 0.4 * g
+        s[i:] += n
+    return s
+
+
+def zoom():
+    """Quick "zwip" for a zoom / punch-in: a short airy rush that rises in pitch."""
+    x = t(0.38)
+    n = rng.standard_normal(len(x))
+    k = (x / x[-1]) ** 2                                   # brightness sweeps up: crossfade dull -> bright
+    band = (lowpass(n, 1000) * (1 - k) + lowpass(n, 6000) * k) - lowpass(n, 300)
+    tone = np.sin(2 * np.pi * np.cumsum(300 + 1400 * (x / x[-1]) ** 2) / SR) * 0.25
+    return (band * 1.2 + tone) * np.sin(np.pi * np.clip(x / x[-1], 0, 1)) ** 1.2 * np.minimum(1, (x[-1] - x) / 0.05)
+
+
+SOUNDS = {"glow": glow, "write": write, "blob": blob, "click": click, "zoom": zoom, "pop": pop, "twinkle": twinkle, "whoosh": whoosh, "slap": slap, "tick": tick, "shutter": shutter,
           "riser": riser, "impact": impact, "ding": ding, "notify": notify, "typing": typing, "rustle": rustle,
           "swish": swish, "chime": chime, "boop": boop, "swoosh": swoosh}
 

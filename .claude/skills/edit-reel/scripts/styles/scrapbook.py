@@ -186,8 +186,19 @@ class Scrapbook(Style):
                 return tt
         return None
 
-    def draw_title(self, canvas, t, tt):
-        lay = tt.get("layout") or self._build(tt)
+    def _split_layout(self, tt):
+        """The same title set small at the very top while a split-panel graphic fills the space under it."""
+        if "split_layout" not in tt:
+            base = tt.get("layout") or self._build(tt)
+            raw_h, raw_w = base["h"] / base["k"], base["w"] / base["k"]
+            k = min(1.0, 215 / raw_h, 980 / raw_w)
+            lay = dict(base, k=k, y0=TITLE_TOP, h=raw_h * k, w=raw_w * k, zone="top")
+            lay["spots"] = self._confetti_spots(tt["i"], raw_w * k, TITLE_TOP, raw_h * k)
+            tt["split_layout"] = lay
+        return tt["split_layout"]
+
+    def draw_title(self, canvas, t, tt, lay=None):
+        lay = lay or tt.get("layout") or self._build(tt)
         k = lay["k"]
         k_out = prog(t, tt["end"] - 0.16, 0.16)
         y = lay["y0"]
@@ -303,7 +314,12 @@ class Scrapbook(Style):
     def ambient(self, canvas, t):
         """Draw the title under everything else so captions and stickers sit on top of it."""
         tt = self.title_at(t)
-        if tt is None or self.hide_captions:
+        if tt is None:
+            return
+        if self.split is not None:                       # the clip is a card at the bottom: title small on top
+            self.draw_title(canvas, t, tt, self._split_layout(tt))
+            return
+        if self.hide_captions:
             return
         lay = tt.get("layout") or self._build(tt)
         if self.reserved and self.reserved == lay["zone"]:
@@ -383,15 +399,24 @@ class Scrapbook(Style):
 
     # ---------------------------------------------------------------- sound: a magic glow for every title
     def sfx(self):
-        """(time, sound, gain, priority): titles are the moments; the rest only plays on "bold"."""
+        """(time, sound, gain, priority). Every title: a zoom on the punch-in, the magic glow, a blob as the gems
+        land. Stickers pop. The rest (jump zooms on key lines, kicker pencil) only plays on "bold"."""
         ev = []
         for tt in self.titles:
-            ev.append((tt["start"], "glow", 0.2, 3 if tt["hook"] else 2))
+            hook = tt["hook"]
+            ev.append((tt["start"], "glow", 0.2, 3 if hook else 2))
+            if not hook:
+                ev.append((tt["start"] - 0.14, "zoom", 0.12, 2))
+            land = (max(tt["times"]) if hook and tt["times"] else tt["start"] + 0.12) + 0.22
+            ev.append((land, "blob", 0.16, 2))
             if tt.get("kicker"):
                 ev.append((tt["start"] + 0.05, "write", 0.08, 0))
         for st in self.ctx.stickers:
             kind = st.get("type", "gem")
-            ev.append((st["at"], "write" if kind in ("aside", "note") else "swish", 0.1, 1))
+            ev.append((st["at"], "write" if kind in ("aside", "note") else "pop", 0.14, 1 if kind in ("aside", "note") else 2))
+        for cap in self.caps:
+            if cap.get("emph"):
+                ev.append((cap["start"], "zoom", 0.07, 1))
         return ev
 
 

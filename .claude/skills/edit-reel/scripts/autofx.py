@@ -32,6 +32,11 @@ TITLE = set("""method secret rule rules system framework formula hack rahsia kae
 peraturan""".split())
 GROW = set("""grow growth grew increase increased double doubled scale revenue sales followers income profit naik
 meningkat bertambah jualan pendapatan untung""".split())
+CAL = set("""calendar calender kalendar jadual schedule appointment appointments meeting meetings temujanji planner""".split())
+TIMEW = set("""masa time jam hours hour minit minutes""".split())
+HOWMUCH = set("""berapa how""".split())
+GOALW = set("""goal goals matlamat target targets""".split())
+FEW = set("""satu dua tiga one two three 1 2 3""".split())
 CHANGE = set("""imagine instead before after dulu sekarang bayangkan""".split())
 
 
@@ -108,8 +113,9 @@ def main():
     used_types = {}
 
     # scrapbook pins a title at the top of every idea: skip effects that would fight it for the screen
-    banned = {"phone-float", "headline-wall", "note-wall", "app-split", "phone-frame", "pull-back"} \
-        if style == "scrapbook" else set()
+    # and never hide a graphic behind the head: graphics get their own space (split-panel pushes the clip down)
+    banned = {"phone-float", "headline-wall", "note-wall", "app-split", "phone-frame", "pull-back", "cover-title",
+              "glass-title", "orbit", "chart-grow"} if style == "scrapbook" else set()
 
     def add_fx(spec):
         if spec["type"] in banned:
@@ -121,7 +127,8 @@ def main():
             return False
         if spec.get("text") and any(f.get("text") == spec["text"] and f["type"] == spec["type"] for f in fx):
             return False
-        if used_types.get(spec["type"], 0) >= {"light": 1, "medium": 2, "max": 4}[amount]:
+        limit = {"light": 2, "medium": 5, "max": 7} if spec["type"] == "split-panel" else {"light": 1, "medium": 2, "max": 4}
+        if used_types.get(spec["type"], 0) >= limit[amount]:
             return False
         spec["auto"] = True
         fx.append(spec)
@@ -145,6 +152,37 @@ def main():
         plan["hook"] = {"text": " ".join(text.split()[:5]).strip(",."), "start": 0.0,
                         "end": round(min(3.0, max(1.8, first["end"] + 0.4)), 2), "auto": True}
         taken.append((0.0, plan["hook"]["end"], False))
+
+    # ---- scrapbook: the intro gets its own motion graphic (pop-up windows of what the opening is about) and
+    # spoken things become graphics above the pushed-down clip
+    if style == "scrapbook" and caps:
+        hook_end = plan["hook"]["end"] if plan.get("hook") else min(3.0, caps[0]["end"])
+        hook_words = {norm(x) for x in (plan.get("hook") or {}).get("text", "").split()}
+        words = [w["w"].strip(",.?!") for c in caps if hook_end <= c["start"] < hook_end + 12 for w in c["words"]]
+        things = []
+        for w in words:
+            if norm(w) not in STOP and norm(w) not in hook_words and len(norm(w)) >= 4 and w.lower() not in things:
+                things.append(w.lower())
+        if hook_end > 1.4:
+            spec = {"type": "split-panel", "panel": "popups", "start": 0.3, "end": round(hook_end - 0.05, 2),
+                    "items": things[:5] or ["too many things"], "every": round(min(0.42, (hook_end - 1.2) / 5), 2)}
+            taken[:] = [x for x in taken if not (x[0] == plan["hook"]["start"] and x[1] == plan["hook"]["end"])] \
+                if plan.get("hook") else taken
+            add_fx(spec)
+        for i, c in enumerate(caps):
+            ws = [norm(w["w"]) for w in c["words"]]
+            near = " ".join(caption_text(n) for n in caps[i: i + 3])
+            s0 = round(c["start"], 2)
+            if any(w in CAL for w in ws):
+                add_fx({"type": "split-panel", "panel": "calendar", "start": s0, "end": min(dur, s0 + 4.0),
+                        "events": [{"day": d, "text": t} for d, t in zip((6, 9, 13, 16), ("meeting", "appointment", "kerja", "family"))]})
+            elif any(w in HOWMUCH for w in ws) and any(norm(x) in TIMEW for x in near.split()):
+                add_fx({"type": "split-panel", "panel": "time-bars", "start": s0, "end": min(dur, s0 + 3.6)})
+            elif any(w in FEW for w in ws) and "goal" in near.lower():
+                add_fx({"type": "split-panel", "panel": "goals", "start": max(0, s0 - 1.0), "end": min(dur, s0 + 2.0),
+                        "picks": [0, 3], "pick_at": 1.2})
+            elif any(k in caption_text(c).lower() for k in ("to-do", "todo", "to do list", "senarai", "task list", "tasks")):
+                add_fx({"type": "split-panel", "panel": "todo-scroll", "start": s0, "end": min(dur, s0 + 2.8)})
 
     # ---- cue-driven effects, strongest cues first
     for i, c in enumerate(caps):

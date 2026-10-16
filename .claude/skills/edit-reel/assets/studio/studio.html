@@ -97,6 +97,16 @@ textarea#links { font: 500 13px/1.6 var(--mono); }
 .empty { border: 1px dashed var(--line); border-radius: 16px; padding: 18px; color: var(--muted); font-size: 14px; }
 .steps { display: grid; gap: 6px; color: var(--muted); font-size: 14px; padding-left: 20px; margin: 0; }
 code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px; padding: 1px 6px; color: var(--ink); }
+.rules { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; display: grid; gap: 12px; box-shadow: var(--shadow); }
+.rules h2 { font: 800 21px var(--display); margin: 0; }
+.rules ol { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+.rules li { padding-right: 4px; }
+.rules li .rtext { overflow-wrap: anywhere; }
+.rules li button { margin-left: 8px; border: 0; background: none; color: var(--muted); font-size: 13px; text-decoration: underline; padding: 0; }
+.rules li button:hover { color: var(--accent); }
+.addrule { display: flex; gap: 8px; flex-wrap: wrap; }
+.addrule input { flex: 1 1 260px; }
+.btn.small { padding: 9px 14px; font-size: 14px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
@@ -139,6 +149,12 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
     </form>
 
     <section class="queue" aria-labelledby="queue-title">
+      <div class="rules" aria-labelledby="rules-title">
+        <h2 id="rules-title">My rules</h2>
+        <p class="hint">Claude reads these before every edit and follows them on every reel. Write them in your own words.</p>
+        <ol id="rules"><li class="hint">No rules yet.</li></ol>
+        <form class="addrule" id="addrule"><input id="rule" type="text" placeholder="e.g. always spell English words in English" autocomplete="off" aria-label="New rule"><button class="btn small" type="submit">Add rule</button></form>
+      </div>
       <h2 id="queue-title">Your reels</h2>
       <ol class="steps">
         <li>Fill in the form and press Start.</li>
@@ -164,7 +180,7 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
   };
   const STYLES = [["it-girl", "it girl", "Clean serif captions, the key line big, butter chapter titles."],
     ["whimsical", "whimsical", "Warm glow, chunky two-tone words, twinkling asterisks, pills."],
-    ["scrapbook", "scrapbook", "Collage headlines, shiny 3D gems, notes and taped photos."],
+    ["scrapbook", "scrapbook", "A pinned title per idea, acrylic gems, zooms and graphics above your clip."],
     ["surprise", "surprise me", "Claude picks the look that suits the video."]];
   const GRAPHICS = [["light", "light", "a few, on the key moments"], ["medium", "medium", "a graphic every few seconds"], ["max", "max", "tons: something on almost every line"]];
   const SFX = [["off", "off"], ["subtle", "subtle"], ["normal", "normal"], ["bold", "bold"]];
@@ -231,11 +247,28 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
     }));
   }
 
+  function drawRules(docs) {
+    const box = $("#rules");
+    if (!docs.length) { box.replaceChildren(el("li", { class: "hint", text: "No rules yet." })); return; }
+    box.replaceChildren(...docs.map(d => el("li", {}, el("span", { class: "rtext", text: (d.data() || {}).text || "" }),
+      el("button", { type: "button", text: "remove", "aria-label": "Remove this rule", onclick: async () => {
+        try { await db.collection("rules").doc(d.id).delete(); } catch (e) { msg("Couldn't remove that rule just now.", true); }
+      } }))));
+  }
+  $("#addrule").addEventListener("submit", async e => {
+    e.preventDefault();
+    const text = $("#rule").value.trim();
+    if (!text || !db) return;
+    try { await db.collection("rules").add({ text, at: new Date().toISOString() }); $("#rule").value = ""; }
+    catch (err) { msg("Couldn't save the rule just now.", true); }
+  });
+
   (async () => {
     db = await window.claude?.use?.("db");
     if (!db) { banner("Saving is off in this view. Open the studio in Claude while signed in to start reels."); $("#send").disabled = true; return; }
     db.collection("requests").orderBy("at", "desc").limit(50).onSnapshot(s => draw(s.docs),
       e => banner("Live updates stopped (" + e.code + "). Reload the page to reconnect."));
+    db.collection("rules").orderBy("at", "asc").limit(100).onSnapshot(s => drawRules(s.docs), () => {});
   })();
 })();
 </script>

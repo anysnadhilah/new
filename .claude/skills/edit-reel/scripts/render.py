@@ -20,7 +20,7 @@ from PIL import Image, ImageDraw
 
 from common import FPS, H, SFX, SR, W, die, load_json, project_dir
 from gfx import font
-from effects import Matte, any_hides_captions, compose, load_effects, reserved_zone
+from effects import Matte, any_hides_captions, compose, load_effects, reserved_zone, split_at
 from effects.base import zoom as zoom_frame
 from effects.sound import effect_sounds
 from styles.base import Context, blank, safe_guides
@@ -135,6 +135,7 @@ def full(proj, style, ctx, safe, draft):
             frame = compose(frame or Image.frombytes("RGB", (W, H), raw), t, effects, matte)
         style.hide_captions = any_hides_captions(effects, t)
         style.reserved = reserved_zone(effects, t)
+        style.split = split_at(effects, t)
         layer = blank()
         style.draw(layer, t)
         if safe:
@@ -191,6 +192,7 @@ def stills(proj, style, ctx, times, safe=False):
         base = compose(camera(Image.open(frame).convert("RGB"), style, t, effects), t, effects, matte).convert("RGBA")
         style.hide_captions = any_hides_captions(effects, t)
         style.reserved = reserved_zone(effects, t)
+        style.split = split_at(effects, t)
         canvas = blank()
         style.draw(canvas, t)
         safe_guides(canvas) if safe else None

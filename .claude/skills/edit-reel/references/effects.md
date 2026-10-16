@@ -1,4 +1,4 @@
-# Effects library (17)
+# Effects library (18)
 
 Effects go in `plan.json` → `"effects": [...]`, each `{"type": "...", "start": s, "end": e, ...options}` in reel
 seconds. They work with every style; the style's captions are drawn on top (some effects hide or move them).
@@ -24,6 +24,11 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
 | Mood shift, "imagine..." | `new-background`, `dolly-zoom` |
 | Playful, crafty moment | `paper-cutout`, `doodle-outline` |
 | Big title / the name of your method | `cover-title`, `glass-title` |
+| Calendar, schedule, appointments | `split-panel` calendar |
+| Opening hook: too many things, overwhelm | `split-panel` popups |
+| A long to-do list | `split-panel` todo-scroll |
+| How much time / hours | `split-panel` time-bars |
+| Choosing 1-2 goals / options | `split-panel` goals |
 
 ## Reference
 1. **punch-zoom**: fast punch-in on the face for a beat. `zoom` (1.3), `text` ("line one|line two": cream then
@@ -58,6 +63,18 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
     `color`. Hides captions.
 17. **glass-title** (cutout): a big 3D chrome-glass word stands behind you, letters sliding up. `text`, `tint`
     ([r, g, b] 0-1). Hides captions.
+
+18. **split-panel**: the clip slides down into a white-bordered card on a striped page and a motion graphic plays
+    in the space above it, so a graphic never hides behind (or covers) the head. Captions hide; scrapbook keeps its
+    pinned title, set small at the very top. `panel` and its data:
+    - `calendar`: `events[]` of `{day, text, color?}` (they light up on their days one by one with a cursor click),
+      `month`, `year`, `today`. Use it whenever the speaker mentions a calendar, schedule, appointment or meeting.
+    - `popups`: `items[]` (retro "reminder!!" windows pile up, one per item; `every` seconds apart). The intro hook
+      graphic: the things the video is about, or everything competing for attention.
+    - `todo-scroll`: `items[]`, `count`, `title` (an endless to-do list scrolls past, the counter climbs).
+    - `time-bars`: `days[]`, `hours[]`, `label`, `unit` (free hours per day grow as bars; the total counts up).
+    - `goals`: `goals[]`, `picks[]` (indexes), `pick_at` (s) (cards pop in, then only the picked ones light up).
+    Sounds: zoom on the push, then clicks (calendar, list), pops (pop-ups, cards) and blobs (bars, the pick).
 
 ## Sound
 Sound marks moments, it is not decoration. Every effect proposes sounds (`scripts/effects/sound.py`), each with a

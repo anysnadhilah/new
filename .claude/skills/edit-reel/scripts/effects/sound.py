@@ -16,7 +16,9 @@ SPACING = {"subtle": 3.0, "normal": 1.5, "bold": 1.0}           # seconds betwee
 KEY_ENTRANCES = {"zoom-through", "phone-frame", "pull-back", "app-split", "dolly-zoom", "cover-title", "glass-title",
                  "checklist", "chart-grow"}
 BULLET_STICKERS = {"chapter", "pill", "pill-yellow", "note"}
-PAIRS = {frozenset(p) for p in (("ding",), ("whoosh", "glow"), ("pop", "ding"), ("swish", "glow"))}
+PAIRS = {frozenset(p) for p in (("ding",), ("whoosh", "glow"), ("pop", "ding"), ("swish", "glow"), ("pop",), ("click",),
+                                 ("zoom", "glow"), ("glow", "blob"), ("zoom", "click"), ("zoom", "pop"), ("pop", "blob"),
+                                 ("blob",), ("click", "ding"))}
 
 
 def direct(events, plan):
@@ -30,7 +32,7 @@ def direct(events, plan):
             continue
         # natural pairs may follow each other closely (ticks of one list, a whoosh into the title it reveals,
         # a list popping up then its first tick); everything else keeps the full spacing
-        if any(abs(t - k[0]) < (0.25 if frozenset((name, k[1])) in PAIRS else spacing) for k in keep):
+        if any(abs(t - k[0]) < (0.1 if frozenset((name, k[1])) in PAIRS else spacing) for k in keep):
             continue
         keep.append((t, name, gain * LEVELS[lvl], pri))
     return sorted((t, n, g) for t, n, g, _ in keep)
@@ -38,6 +40,8 @@ def direct(events, plan):
 
 def effect_sounds(e):
     """Candidate sounds for one effect, as (time, name, gain, priority)."""
+    if hasattr(e, "cues"):
+        return e.cues()
     out = []
     first = True
     for t, name, gain in _effect_sounds(e):
@@ -51,6 +55,8 @@ def effect_sounds(e):
 
 
 def _effect_sounds(e):
+    if hasattr(e, "cues"):
+        return [(t, n, g) for t, n, g, _ in e.cues()]
     s, end = e.start, e.end
     n = e.name
     ev = []

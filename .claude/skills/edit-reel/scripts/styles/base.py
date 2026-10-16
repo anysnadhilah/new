@@ -132,6 +132,7 @@ class Style:
         self.caption_box = None
         self.hide_captions = False
         self.reserved = None
+        self.split = None        # a split-panel effect on screen: the clip sits in a card at the bottom
         self.caps, self.layouts = [], []
         for i, c in enumerate(ctx.captions):
             lay = self.layout(i, c)

@@ -17,11 +17,11 @@ What it does for you:
 - Frames your face and adds gentle punch-ins between takes
 - Word-by-word animated captions in your language, placed so they **never cover your face**
 - An animated hook title for the first seconds, stickers and transitions
-- 17 video effects: punch zoom, zoom-through cut, checklist, floating phone, phone frame, pull-back reveal, app split,
+- 18 video effects: graphic panels above your pushed-down clip (calendar, to-do scroll, pop-ups, time bars, goal cards), punch zoom, zoom-through cut, checklist, floating phone, phone frame, pull-back reveal, app split,
   note wall, headline wall, chart grow, orbit, new background, paper cutout, doodle outline, dolly zoom, cover title
   and glass title (text behind your head)
 - Motion graphics placed automatically from what you say (or on the music's beat): light, medium or max
-- Sound effects only where they add impact: the intro, bullet points, key transitions and punchlines (16 sounds,
+- Sound effects only where they add impact: the intro, bullet points, key transitions and punchlines (21 sounds incl. pop, blob, click and zoom,
   synthesised, royalty-free), off / subtle / normal / bold, or swap in your own; loudness levelled for Instagram
 - The intro title appears word by word with your voice; every cut lands with a gentle punch-in
 - Works with any video: vertical or landscape, with or without a face, with or without speech

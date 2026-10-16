@@ -63,14 +63,20 @@ pinned title per idea**, everything else stays quiet.
   - `note` + `text`: handwritten words on a torn yellow note.
   - `photo` + `file` (path inside the project, e.g. `photos/book.jpg`), optional `w`: a taped print. Ask the user for
     photos that fit the story (places, products, screenshots) and drop them in `<project>/photos/`.
+- Graphics never hide behind the head in this style: when a graphic needs space, use `split-panel` (the clip is
+  pushed down into a card and the graphic plays above it). Every reel opens with a motion graphic as its hook (a
+  `popups` panel during the hook) and gets 3-5 panels that show what is said (calendar, to-do scroll, time bars,
+  goal cards).
 - Motion graphics are a must in this style (aim for something moving every 4-6 s besides the titles):
   `zoom-through` on the cut where each new idea starts, `doodle-outline` on a feeling, `paper-cutout` on a dramatic
   word ("sos!"), `punch-zoom` with text on the key line, `dolly-zoom` on a realisation, a `checklist` recap of the
   steps (drawn as a yellow notepad with a lilac clip in this style), `cover-title` / `glass-title` for the name of
-  the method. Skip phone-float, walls, app-split, phone-frame and pull-back: they fight the pinned title. Effects that
+  the method in a `split-panel` or as a section title. Skip cover-title, glass-title, orbit, chart-grow, walls,
+  phone-float, app-split, phone-frame and pull-back: they hide behind the head or fight the pinned title. Effects that
   hide captions or own the top hide the title while they show.
-- Sound: a magic-glow shimmer on every new title (the hook first) and nothing on ordinary captions; on "bold" also
-  a swish per sticker and a pencil scribble for asides and kickers. A music bed (the user's own `music.mp3` in the
+- Sound (always includes pop, blob, click and zoom, on moments only): a zoom on every punch-in, the magic-glow
+  shimmer on every new title, a blob as its gems land, pops for stickers and pop-up windows, clicks for calendar
+  and list taps; on "bold" also jump-zoom sounds on key lines and a pencil for asides and kickers. A music bed (the user's own `music.mp3` in the
   project) suits this style well.
 
 ### Writing sections
