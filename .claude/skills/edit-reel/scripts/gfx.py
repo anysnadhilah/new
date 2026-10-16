@@ -389,3 +389,62 @@ def pill(text, value=None, fill="#FFFFFF", ink="#1E1E1E", size=40, font_name="Fi
     if v:
         card.alpha_composite(v, (w - v.width - int(size * 0.65), (h - v.height) // 2))
     return drop_shadow(card, 0, 4, 8, (40, 25, 15, 70))
+
+
+def deco_star(kind, size, color="#FBD3E0", width=None):
+    """Minimal decorative stars, drawn with thin lines:
+    burst   8 thin rays, long and short alternating (a twinkle of light)
+    outline a small five-point star drawn as an outline
+    spark   a slim four-point star with two tiny dots beside it
+    cross   a thin plus-shaped glint with a soft dot in the middle
+    asterisk six thin rays of equal length
+    heart   a tiny outline heart"""
+    wdt = width or max(2, size // 16)
+    pad = wdt * 3
+
+    def draw(d, k):
+        c = (size / 2 + pad) * k
+        r = size / 2 * k
+        col = rgba(color)
+        lw = max(1, int(wdt * k))
+
+        def ray(a, length):
+            x, y = c + math.cos(a) * length, c + math.sin(a) * length
+            d.line((c, c, x, y), fill=col, width=lw)
+            d.ellipse((x - lw / 2, y - lw / 2, x + lw / 2, y + lw / 2), fill=col)
+        if kind == "burst":
+            for i in range(8):
+                ray(-math.pi / 2 + i * math.pi / 4, r * (1.0 if i % 2 == 0 else 0.55))
+        elif kind == "asterisk":
+            for i in range(6):
+                ray(-math.pi / 2 + i * math.pi / 3, r * 0.9)
+        elif kind == "cross":
+            for i in range(4):
+                ray(i * math.pi / 2, r)
+            d.ellipse((c - lw * 1.4, c - lw * 1.4, c + lw * 1.4, c + lw * 1.4), fill=col)
+        elif kind == "outline":
+            pts = []
+            for i in range(11):
+                a = -math.pi / 2 + i * math.pi / 5
+                rr = r * (0.95 if i % 2 == 0 else 0.42)
+                pts.append((c + rr * math.cos(a), c + rr * math.sin(a)))
+            d.line(pts, fill=col, width=lw, joint="curve")
+        elif kind == "spark":
+            pts = []
+            for i in range(120):
+                a = 2 * math.pi * i / 120
+                ca, sa = math.cos(a), math.sin(a)
+                pts.append((c + r * 0.7 * math.copysign(abs(ca) ** 4, ca), c + r * math.copysign(abs(sa) ** 4, sa)))
+            d.polygon(pts, fill=col)
+            for dx, dy, rr in ((0.75, -0.55, 0.09), (0.95, -0.2, 0.06)):
+                d.ellipse((c + dx * r - rr * r, c + dy * r - rr * r, c + dx * r + rr * r, c + dy * r + rr * r), fill=col)
+        elif kind == "heart":
+            pts = []
+            for i in range(90):
+                t = 2 * math.pi * i / 89
+                x = 16 * math.sin(t) ** 3
+                y = -(13 * math.cos(t) - 5 * math.cos(2 * t) - 2 * math.cos(3 * t) - math.cos(4 * t))
+                pts.append((c + x * r / 17, c + y * r / 17))
+            d.line(pts, fill=col, width=lw, joint="curve")
+    img = supersample(size + 2 * pad, size + 2 * pad, draw, k=3)
+    return glow(img, max(2, size // 14), 1.2)

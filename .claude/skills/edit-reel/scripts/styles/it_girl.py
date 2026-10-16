@@ -2,7 +2,7 @@
 a phrase at a time, the key line set big in the middle, soft butter-yellow chapter titles, italic serif labels.
 No frames, no flashy transitions: the restraint is the look."""
 from common import W
-from gfx import out_back, out_cubic, place, prog, sparkle, text_img, xform
+from gfx import deco_star, out_back, out_cubic, place, prog, text_img, xform
 
 INK = "#2B2530"
 from styles.base import Style
@@ -10,9 +10,9 @@ from styles.base import Style
 WHITE = "#FFFFFF"
 SERIF = "PlayfairDisplay-Regular.ttf"
 ITALIC = "PlayfairDisplay-Italic.ttf"
-GOLD = "#F3D46A"
+ACCENT = "#FBD3E0"          # very light pink: key words, chapter titles, stars
 SHADOW = (0, 2, 9, (0, 0, 0, 120))
-BIG_SHADOW = (0, 3, 14, (0, 0, 0, 110))
+BIG_SHADOW = (0, 3, 14, (90, 30, 60, 150))
 
 
 def serif(text, size, font=SERIF, fill=WHITE, tracking=-0.045, shadow=SHADOW):
@@ -35,8 +35,8 @@ class ItGirl(Style):
 
     # ---------------------------------------------------------------- captions: a phrase at a time
     def word_img(self, text, emph, ci):
-        if emph:                                                  # the key word: big gold italic
-            return serif(text, 128, ITALIC, fill=GOLD, tracking=-0.01, shadow=BIG_SHADOW)
+        if emph:                                                  # the key word: big light pink italic
+            return serif(text, 128, ITALIC, fill=ACCENT, tracking=-0.01, shadow=BIG_SHADOW)
         return serif(text, 62, tracking=-0.02)
 
     def animate(self, tk, t, cap, k_out):
@@ -76,12 +76,12 @@ class ItGirl(Style):
 
     # ---------------------------------------------------------------- stickers
     def draw_sticker(self, canvas, t, st):
-        """chapter: gold italic serif title ("1. hobby journal"); italic: white italic serif label."""
+        """chapter: light pink italic serif title ("1. hobby journal"); italic: white italic serif label."""
         key = ("st", st.get("type"), st.get("text"))
         if key not in self.__dict__.setdefault("_st", {}):
             text = st.get("text", "")
             if st.get("type") == "chapter":
-                img = serif(text, 76, ITALIC, fill=GOLD, tracking=-0.01, shadow=BIG_SHADOW)
+                img = serif(text, 76, ITALIC, fill=ACCENT, tracking=-0.01, shadow=BIG_SHADOW)
             else:
                 img = serif(text, 70, ITALIC, tracking=0.02)
             self._st[key] = img
@@ -106,7 +106,7 @@ class ItGirl(Style):
             if b.get("kicker"):
                 rows.append(serif(b["kicker"], 54, ITALIC, tracking=0.0))
             for line, _ in self.hook_lines(b["title"], lambda x: serif(x, 96, ITALIC).width > 900):
-                rows.append(serif(line, 96, ITALIC, fill=GOLD, tracking=-0.01, shadow=BIG_SHADOW))
+                rows.append(serif(line, 96, ITALIC, fill=ACCENT, tracking=-0.01, shadow=BIG_SHADOW))
             h = sum(r.height - 2 * r.info["pad"] + 8 for r in rows)
             k, top = self.fit_top(b, h)
             self._st[key] = (rows, k, top)
@@ -121,7 +121,7 @@ class ItGirl(Style):
             y += rh + 8 * k
         widest = max(r.width - 2 * r.info["pad"] for r in rows) * k
         top = self._st[key][2]
-        for j, (side, fy, s) in enumerate(((-1, 0.15, 40), (1, 0.75, 28))):    # minimal gold stars
+        for j, (side, fy, s) in enumerate(((-1, 0.15, 40), (1, 0.75, 28))):    # minimal line stars
             p = out_back(prog(local, 0.35 + 0.12 * j, 0.35), 2.0)
             if p > 0:
                 place(canvas, xform(self._star(s), scale=p, alpha=out), W / 2 + side * (widest / 2 + 46), top + fy * (y - top))
@@ -129,7 +129,7 @@ class ItGirl(Style):
     def _star(self, size):
         key = ("star", size)
         if key not in self.__dict__.setdefault("_st", {}):
-            self._st[key] = sparkle(size, GOLD, glow_blur=2)
+            self._st[key] = deco_star(self.ctx.plan.get("star", "burst"), int(size * 1.3), ACCENT)
         return self._st[key]
 
     def caption_prefer(self, cap):

@@ -78,9 +78,9 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
     - `goals`: `goals[]`, `picks[]` (indexes), `pick_at` (s) (cards pop in, then only the picked ones light up).
     Sounds: zoom on the push, then clicks (calendar, list), pops (pop-ups, cards) and blobs (bars, the pick).
 
-19. **circle-title**: an elegant title above the head in gold italic serif (Playfair Display Italic; a second
-    line a little softer), a thin gold oval drawing itself around it like a pen line with a small gap at the top,
-    and two minimal four-point gold stars twinkling in. `text` ("come back|method"), `color`, `size`. Captions move
+19. **circle-title**: an elegant title above the head in very light pink italic serif (Playfair Display Italic; a
+    second line a little softer), a thin oval drawing itself around it like a pen line with a small gap at the top,
+    and two minimal line stars twinkling in (`star`: burst | outline | spark | cross | asterisk | heart). `text` ("come back|method"), `color`, `size`. Captions move
     down while it shows; never behind the head. Use it for the name of a method, the turn, the takeaway
     ("that's|okay"). Sounds: pencil write + twinkle.
 

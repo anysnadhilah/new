@@ -1,22 +1,22 @@
-"""19. circle-title: an elegant title above the head, gold italic serif (the second line a little softer), a thin
-gold oval drawing itself around it like a pen line (its ends leave a small gap at the top) and two minimal
-four-point stars twinkling in beside it. Made for key words: the name of a method, the turn, the takeaway."""
+"""19. circle-title: an elegant title above the head, very light pink italic serif (the second line a little softer), a
+thin oval in the same colour drawing itself around it like a pen line (its ends leave a small gap at the top) and two minimal line stars
+twinkling in beside it (plan.json "star": burst | outline | spark | cross | asterisk | heart). Made for key words: the name of a method, the turn, the takeaway."""
 import math
 
 from PIL import Image
 
 from common import H, W
 from effects.base import Effect
-from gfx import out_back, out_cubic, prog, sparkle, stroke_path, text_img, xform
+from gfx import deco_star, out_back, out_cubic, prog, stroke_path, text_img, xform
 
 ITALIC = "PlayfairDisplay-Italic.ttf"
-GOLD = "#F3D46A"
-SOFT_GOLD = "#E9CF78"
-SHADOW = (0, 3, 10, (60, 40, 20, 120))
+ACCENT = "#FBD3E0"             # very light pink
+SOFT_ACCENT = "#F6C2D3"
+SHADOW = (0, 3, 10, (110, 40, 70, 150))
 
 
 class CircleTitle(Effect):
-    """Options: text ("line one|line two"), color (gold), size (150)."""
+    """Options: text ("line one|line two"), color (very light pink), color2, star, size (150)."""
     name = "circle-title"
     reserves = "top"             # captions move down while it shows
     ease_in = 0.3
@@ -25,11 +25,12 @@ class CircleTitle(Effect):
     def __init__(self, spec, ctx):
         super().__init__(spec, ctx)
         lines = [x for x in spec.get("text", "come back|method").split("|") if x]
-        col = spec.get("color", GOLD)
+        col = spec.get("color", ACCENT)
+        self.col = col
         size = int(spec.get("size", 150))
         self.lines = []
         for i, line in enumerate(lines):
-            im = text_img(line, ITALIC, size, col if i == 0 else SOFT_GOLD, tracking=-0.01, shadow=SHADOW)
+            im = text_img(line, ITALIC, size, col if i == 0 else spec.get("color2", SOFT_ACCENT), tracking=-0.01, shadow=SHADOW)
             if i:
                 im = xform(im, alpha=0.82)                       # the second line sits a little softer
             self.lines.append(im)
@@ -43,7 +44,8 @@ class CircleTitle(Effect):
         self.k = max(0.6, min(1.0, (brow - 190) / full_h, 1000 / (2 * self.rx + 60)))
         self.cy = 190 + full_h * self.k / 2
         self._ring = {}
-        self._stars = [sparkle(46, GOLD, glow_blur=3), sparkle(30, GOLD, glow_blur=2)]
+        kind = spec.get("star") or (getattr(ctx, "plan", None) or {}).get("star", "burst")
+        self._stars = [deco_star(kind, 52, col), deco_star(kind, 34, col)]
 
     def _oval(self, upto):
         """The oval as a pen stroke from just right of the top centre, round, ending just left of it."""
@@ -54,7 +56,7 @@ class CircleTitle(Effect):
                 a = math.radians(-80 + i * (340 / 160))                   # leaves a ~20 degree gap at the top
                 wob = 1 + 0.015 * math.sin(a * 3)
                 pts.append((self.rx * math.cos(a) * wob, self.ry * math.sin(a) * wob + 0.04 * self.rx * math.cos(a)))
-            self._ring[q] = stroke_path(pts, 4, GOLD, upto=q)
+            self._ring[q] = stroke_path(pts, 4, self.col, upto=q)
         return self._ring[q]
 
     def front(self, frame, t):

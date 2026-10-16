@@ -7,7 +7,7 @@ with Keep / Change / Drop buttons.
 
 | Style | Vibe |
 |---|---|
-| 🤍 **it girl** | clean editorial: Playfair serif captions, the key word in gold italic, gold oval titles with minimal stars |
+| 🤍 **it girl** | clean editorial: Playfair serif captions, the key word in light pink italic, light pink oval titles with minimal line stars |
 | ✨ **whimsical** | warm glow, chunky cream + butter-yellow words, twinkling asterisks, pill labels |
 | 💎 **scrapbook** | a journal page that talks: a pinned title per idea in mixed fonts (handwritten + chunky lavender), sparkle bursts, shiny 3D gems, handwritten asides, quiet subtitles |
 

@@ -9,14 +9,14 @@ Hooks shrink automatically to fit the free space around the head.
 Clean, chic, editorial, a little luxe. Use for "it girl", "cool girl", "clean girl", "aesthetic", "luxury".
 - Grade: natural and bright, a touch of warmth. No frame, no light leaks, clean cuts: the restraint is the look.
 - Type: Playfair Display. Captions in the regular cut, white, soft shadow, the whole phrase fading in at once.
-- Punch word (`emph`): big gold italic (Playfair Display Italic, #F3D46A) on its own line.
-- Section titles (2.6 s): a small white italic kicker over the point in gold italic, with two minimal gold
-  four-point stars beside it. Over graphics (split-panel): an ink serif headline on cream editorial paper.
-- Signature motion graphic: `circle-title` (see effects.md) on the method name / the turn / the takeaway: gold italic
-  inside a thin gold oval that draws itself, minimal stars. Use 1-2 per reel.
+- Punch word (`emph`): big very light pink italic (Playfair Display Italic, #FBD3E0) on its own line.
+- Section titles (2.6 s): a small white italic kicker over the point in light pink italic, with two minimal
+  line stars beside it (plan.json `"star"`: burst (default) | outline | spark | cross | asterisk | heart). Over graphics (split-panel): an ink serif headline on cream editorial paper.
+- Signature motion graphic: `circle-title` (see effects.md) on the method name / the turn / the takeaway: light pink
+  italic inside a thin oval that draws itself, minimal line stars. Use 1-2 per reel.
 - Hook: italic serif `label` above, big serif line, optional small `sub` line under.
 - Stickers:
-  - `chapter` + `text`: gold italic serif title, e.g. "1. plan your week".
+  - `chapter` + `text`: light pink italic serif title, e.g. "1. plan your week".
   - `italic` + `text`: white italic serif label, e.g. a method or product name.
 - Sound: whoosh on the hook, zoom on punch-ins, click on chapter titles, pop on stickers, pencil + twinkle on the oval.
 
