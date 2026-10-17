@@ -208,6 +208,10 @@ def main():
             word = next((w["w"] for w in c["words"] if norm(w["w"]) in TITLE), c.get("emph") or text.split()[-1])
             # the name of a method / system: a gold italic title with an oval drawing around it, above the head
             add_fx({"type": "circle-title", "start": s0, "end": min(dur, s0 + 3.0), "text": norm(word)})
+        elif any(w in FEEL for w in words) and cutout and style in ("it-girl", "scrapbook"):
+            # the feeling word, big, just behind the head (it only nips the bottom of the letters)
+            word = next(w["w"] for w in c["words"] if norm(w["w"]) in FEEL)
+            add_fx({"type": "peek-title", "start": s0, "end": min(dur, s0 + 2.4), "text": norm(word) + "."})
         elif any(w in FEEL for w in words) and cutout:
             add_fx({"type": "headline-wall" if i % 2 else "note-wall", "start": s0, "end": min(dur, s0 + 2.8),
                     "headlines": [text] + [caption_text(n) for n in nxt[:3]], "notes": [text] + [caption_text(n) for n in nxt[:3]]})

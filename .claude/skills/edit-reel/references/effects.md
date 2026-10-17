@@ -1,4 +1,4 @@
-# Effects library (19)
+# Effects library (20)
 
 Effects go in `plan.json` → `"effects": [...]`, each `{"type": "...", "start": s, "end": e, ...options}` in reel
 seconds. They work with every style; the style's captions are drawn on top (some effects hide or move them).
@@ -18,7 +18,7 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
 | Showing an app, a message, a result | `phone-float`, `app-split` |
 | "This is what my feed / reel looks like" | `phone-frame` |
 | The ending / reveal of the work | `pull-back` |
-| Overwhelm, noise, many thoughts | `headline-wall`, `note-wall` |
+| Overwhelm, noise, many thoughts | `peek-title` (the feeling word), `headline-wall`, `note-wall` |
 | Growth, results, numbers | `chart-grow` |
 | Showing off your content | `orbit` |
 | Mood shift, "imagine..." | `new-background`, `dolly-zoom` |
@@ -83,6 +83,12 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
     and two minimal line stars twinkling in (`star`: burst | outline | spark | cross | asterisk | heart, or "big+small" e.g. burst+spark, the default). `text` ("come back|method"), `color`, `size`. Captions move
     down while it shows; never behind the head. Use it for the name of a method, the turn, the takeaway
     ("that's|okay"). Sounds: pencil write + twinkle.
+
+20. **peek-title** (cutout): one big word set just behind the head so the head only nips the bottom of the letters
+    and the word stays readable (a magazine-cover peek, soft cutout edges, no outline). Playfair Display Italic with
+    a light pink to lilac gradient, sliding in from the side; a burst + spark star twinkles in front. The word
+    follows the head gently as she moves. `text` ("overwhelmed."), `colors` ([left, right]), `overlap`, `star`. Use
+    for a feeling or the one word to remember, 1-2 per reel. Sounds: swish + blob.
 
 ## Sound
 Sound marks moments, it is not decoration. Every effect proposes sounds (`scripts/effects/sound.py`), each with a

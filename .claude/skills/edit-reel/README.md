@@ -17,7 +17,7 @@ What it does for you:
 - Frames your face and adds gentle punch-ins between takes
 - Word-by-word animated captions in your language, placed so they **never cover your face**
 - An animated hook title for the first seconds, stickers and transitions
-- 19 video effects: gold oval titles, graphic panels above your pushed-down clip (calendar, to-do scroll, pop-ups, time bars, goal cards), punch zoom, zoom-through cut, checklist, floating phone, phone frame, pull-back reveal, app split,
+- 20 video effects: oval titles, words peeking from behind your head, graphic panels above your pushed-down clip (calendar, to-do scroll, pop-ups, time bars, goal cards), punch zoom, zoom-through cut, checklist, floating phone, phone frame, pull-back reveal, app split,
   note wall, headline wall, chart grow, orbit, new background, paper cutout, doodle outline, dolly zoom, cover title
   and glass title (text behind your head)
 - Motion graphics placed automatically from what you say (or on the music's beat): light, medium or max

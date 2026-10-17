@@ -1,16 +1,16 @@
-"""The effects library: 19 motion-graphic / video effects that can be placed anywhere in a reel via
+"""The effects library: 20 motion-graphic / video effects that can be placed anywhere in a reel via
 plan.json "effects". See references/effects.md for what each one does and its options."""
 from effects.base import Effect, Matte, frame_index
 from effects.cutout_fx import CoverTitle, DoodleOutline, GlassTitle, NewBackground, PaperCutout
 from effects.frame_fx import AppSplit, DollyZoom, PhoneFrame, PullBack, PunchZoom, ZoomThrough
 from effects.overlay_fx import ChartGrow, Checklist, HeadlineWall, NoteWall, Orbit, PhoneFloat
 from effects.split_fx import SplitPanel
-from effects.title_fx import CircleTitle
+from effects.title_fx import CircleTitle, PeekTitle
 
 EFFECTS = {cls.name: cls for cls in (
     PunchZoom, ZoomThrough, PhoneFrame, PullBack, AppSplit, DollyZoom,
     Checklist, PhoneFloat, NoteWall, HeadlineWall, ChartGrow, Orbit,
-    NewBackground, PaperCutout, DoodleOutline, CoverTitle, GlassTitle, SplitPanel, CircleTitle,
+    NewBackground, PaperCutout, DoodleOutline, CoverTitle, GlassTitle, SplitPanel, CircleTitle, PeekTitle,
 )}
 
 

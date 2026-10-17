@@ -13,7 +13,8 @@ Clean, chic, editorial, a little luxe. Use for "it girl", "cool girl", "clean gi
 - Section titles (2.6 s): a small white italic kicker over the point in light pink italic, with two minimal
   line stars beside it (plan.json `"star"`: burst | outline | spark | cross | asterisk | heart, or two joined by "+" for big + small stars; default burst+spark). Over graphics (split-panel): an ink serif headline on cream editorial paper.
 - Signature motion graphic: `circle-title` (see effects.md) on the method name / the turn / the takeaway: light pink
-  italic inside a thin oval that draws itself, minimal line stars. Use 1-2 per reel.
+  italic inside a thin oval that draws itself, minimal line stars. Use 1-2 per reel. And `peek-title`: one feeling
+  word in pink-to-lilac italic just behind the head (it only nips the letters), 1-2 per reel.
 - Hook: italic serif `label` above, big serif line, optional small `sub` line under.
 - Stickers:
   - `chapter` + `text`: light pink italic serif title, e.g. "1. plan your week".
