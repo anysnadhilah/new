@@ -114,11 +114,13 @@ class PeekTitle(Effect):
         self.np = np
         text = spec.get("text", "stuck.")
         c0, c1 = spec.get("colors", ["#FCD9E4", "#CDB8F2"])
-        size = int(spec.get("size", 260))
-        mask = text_img(text, ITALIC, size, "#FFFFFF", tracking=-0.02, pad=10)
-        while mask.width > 980 and size > 120:
-            size -= 10
-            mask = text_img(text, ITALIC, size, "#FFFFFF", tracking=-0.02, pad=10)
+        # as big as it gets: the word fills the width edge to edge (short words get huge), then the space above
+        # the head decides the final scale per frame
+        size = int(spec.get("size", 0)) or 600
+        mask = text_img(text, ITALIC, size, "#FFFFFF", tracking=-0.03, pad=10)
+        while mask.width > 1050 and size > 120:
+            size = int(size * 0.94)
+            mask = text_img(text, ITALIC, size, "#FFFFFF", tracking=-0.03, pad=10)
         from gfx import rgba
         a, b = np.array(rgba(c0)[:3], np.float32), np.array(rgba(c1)[:3], np.float32)
         ramp = np.linspace(0, 1, mask.width, dtype=np.float32)[None, :, None]
@@ -130,10 +132,11 @@ class PeekTitle(Effect):
         box = mask.getchannel("A").getbbox()
         self.ink_top = box[1]
         xbox = text_img("x", ITALIC, size, "#FFFFFF", pad=10).getchannel("A").getbbox()
+        self.size = size
         self.baseline, self.xh = xbox[3], xbox[3] - xbox[1]          # where letters sit, and their small height
         self.overlap = float(spec.get("overlap", -0.05))       # the soft cutout edge already nips a little
         kinds = (spec.get("star") or (getattr(ctx, "plan", None) or {}).get("star", "burst+spark")).split("+")
-        self.stars = [deco_star(kinds[0], 56, c0), deco_star(kinds[-1], 40, c1)]
+        self.stars = [deco_star(kinds[0], 64, c0), deco_star(kinds[-1], 46, c1)]
         self._head = {}
 
     def _place(self, t):
@@ -150,7 +153,7 @@ class PeekTitle(Effect):
         head = self._head["y"]
         # the head may only nip the lowest `overlap` of the small letters: baseline just inside the head
         tall = self.baseline - self.ink_top
-        k = max(0.5, min(1.0, (head + self.overlap * self.xh - 190) / tall))
+        k = max(0.5, min(1.0, (head + self.overlap * self.xh - 150) / tall))     # may rise to just under IG's top bar
         y = head + self.overlap * self.xh * k - self.baseline * k
         return k, y
 
