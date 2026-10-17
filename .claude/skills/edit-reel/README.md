@@ -26,6 +26,7 @@ What it does for you:
 - The intro title appears word by word with your voice; every cut lands with a gentle punch-in
 - Works with any video: vertical or landscape, with or without a face, with or without speech
 - Checks every cut and the audio before it hands you the video
+- A Style Lab in your Reel Studio: palettes, fonts, captions, effects and transitions rendered on your own video, pick with take / more like this
 - A review page for every draft: play it, press Keep / Change / Drop on each take, graphic and effect, retype misheard
   captions, switch the look and pin notes to exact moments. Claude reads your choices and makes the next draft.
 

@@ -29,15 +29,26 @@ class ItGirl(Style):
     cut_punch = 0.02
     push = 0.025
 
+    def __init__(self, ctx):
+        """plan.json "look" (chosen in the Style Lab) can change: accent / accent2 (colours), title_font,
+        caption_font, captions (keyword | phrase | small)."""
+        look = ctx.plan.get("look", {}) or {}
+        self.A = look.get("accent", ACCENT)
+        self.A2 = look.get("accent2", "#CDB8F2")
+        self.TF = look.get("title_font", ITALIC)
+        self.CF = look.get("caption_font", SERIF)
+        self.cap_mode = look.get("captions", "keyword")
+        super().__init__(ctx)
+
     def grade(self):
         return ("[0:v]eq=contrast=1.03:saturation=0.96:brightness=0.012:gamma=1.01,"
                 "colorbalance=rs=0.015:gs=0.005:bs=-0.012:rh=0.01[bg]")
 
     # ---------------------------------------------------------------- captions: a phrase at a time
     def word_img(self, text, emph, ci):
-        if emph:                                                  # the key word: big light pink italic
-            return serif(text, 128, ITALIC, fill=ACCENT, tracking=-0.01, shadow=BIG_SHADOW)
-        return serif(text, 62, tracking=-0.02)
+        if emph and self.cap_mode == "keyword":                   # the key word: big accent italic
+            return serif(text, 128, self.TF, fill=self.A, tracking=-0.01, shadow=BIG_SHADOW)
+        return serif(text, 62 if self.cap_mode != "small" else 50, self.CF, tracking=-0.02)
 
     def animate(self, tk, t, cap, k_out):
         start = cap["start"]
@@ -52,7 +63,7 @@ class ItGirl(Style):
             times = self.hook_word_times(hook)
             rows, when = [], []
             if hook.get("label"):
-                rows.append(serif(hook["label"], 76, ITALIC, tracking=0.0))
+                rows.append(serif(hook["label"], 76, self.TF, tracking=0.0))
                 when.append(hook["start"])
             for text, first in self.hook_lines(hook["text"], lambda s: serif(s, 120, tracking=-0.05).width > 900):
                 rows.append(serif(text, 120, tracking=-0.05, shadow=BIG_SHADOW))
@@ -81,9 +92,9 @@ class ItGirl(Style):
         if key not in self.__dict__.setdefault("_st", {}):
             text = st.get("text", "")
             if st.get("type") == "chapter":
-                img = serif(text, 76, ITALIC, fill=ACCENT, tracking=-0.01, shadow=BIG_SHADOW)
+                img = serif(text, 76, self.TF, fill=self.A, tracking=-0.01, shadow=BIG_SHADOW)
             else:
-                img = serif(text, 70, ITALIC, tracking=0.02)
+                img = serif(text, 70, self.TF, tracking=0.02)
             self._st[key] = img
         img = self._st[key]
         local = t - st["at"]
@@ -104,9 +115,9 @@ class ItGirl(Style):
         if key not in self.__dict__.setdefault("_st", {}):
             rows = []
             if b.get("kicker"):
-                rows.append(serif(b["kicker"], 54, ITALIC, tracking=0.0))
-            for line, _ in self.hook_lines(b["title"], lambda x: serif(x, 96, ITALIC).width > 900):
-                rows.append(serif(line, 96, ITALIC, fill=ACCENT, tracking=-0.01, shadow=BIG_SHADOW))
+                rows.append(serif(b["kicker"], 54, self.TF, tracking=0.0))
+            for line, _ in self.hook_lines(b["title"], lambda x: serif(x, 96, self.TF).width > 900):
+                rows.append(serif(line, 96, self.TF, fill=self.A, tracking=-0.01, shadow=BIG_SHADOW))
             h = sum(r.height - 2 * r.info["pad"] + 8 for r in rows)
             k, top = self.fit_top(b, h)
             self._st[key] = (rows, k, top)
@@ -130,7 +141,7 @@ class ItGirl(Style):
         key = ("star", size)
         if key not in self.__dict__.setdefault("_st", {}):
             kinds = self.ctx.plan.get("star", "burst+spark").split("+")          # "a+b": a for big stars, b for small
-            self._st[key] = deco_star(kinds[0] if size >= 38 else kinds[-1], int(size * 1.3), ACCENT)
+            self._st[key] = deco_star(kinds[0] if size >= 38 else kinds[-1], int(size * 1.3), self.A)
         return self._st[key]
 
     def caption_prefer(self, cap):
@@ -143,12 +154,12 @@ class ItGirl(Style):
             return
         key = ("split", b["i"])
         if key not in self.__dict__.setdefault("_st", {}):
-            kick = serif(b["kicker"], 60, ITALIC, fill=INK, tracking=0.0, shadow=None) if b.get("kicker") else None
+            kick = serif(b["kicker"], 60, self.TF, fill=INK, tracking=0.0, shadow=None) if b.get("kicker") else None
             words = b["title"].split()
-            imgs = [serif(w, 104, fill=INK, tracking=-0.04, shadow=None) for w in words]
+            imgs = [serif(w, 104, self.CF, fill=INK, tracking=-0.04, shadow=None) for w in words]
             times = b["times"] or [b["start"] + 0.06 * i for i in range(len(words))]
             rows = []
-            for line, first in self.hook_lines(b["title"], lambda x: serif(x, 104, shadow=None).width > 960):
+            for line, first in self.hook_lines(b["title"], lambda x: serif(x, 104, self.CF, shadow=None).width > 960):
                 n = len(line.split())
                 rows.append(list(range(first, first + n)))
             self._st[key] = (kick, imgs, times, rows)

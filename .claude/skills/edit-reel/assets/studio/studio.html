@@ -107,6 +107,38 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
 .addrule { display: flex; gap: 8px; flex-wrap: wrap; }
 .addrule input { flex: 1 1 260px; }
 .btn.small { padding: 9px 14px; font-size: 14px; }
+.views { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); width: fit-content; }
+.views button { border: 0; background: none; padding: 7px 16px; border-radius: 999px; font-weight: 700; color: var(--muted); }
+.views button[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.lab { display: grid; gap: 14px; }
+.lab[hidden] { display: none; }
+.labhead { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: end; }
+.labhead p { margin: 0; color: var(--muted); font-size: 14px; max-width: 70ch; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tabs button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 13px; font-weight: 600; font-size: 14px; color: var(--muted); }
+.tabs button[aria-selected="true"] { border-color: var(--accent); color: var(--ink); }
+.tabs .count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; margin-left: 6px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: 11px; padding: 0 5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; }
+.card.wide { grid-column: span 2; }
+@media (max-width: 420px) { .card.wide { grid-column: span 1; } }
+.card.on { border: 2px solid var(--accent); }
+.card .ph { position: relative; background: #111; aspect-ratio: 9 / 16; }
+.card.wide .ph { aspect-ratio: 720 / 427; }
+.card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card .num { position: absolute; top: 8px; left: 8px; width: 24px; height: 24px; border-radius: 999px; background: rgba(0,0,0,.6); color: #fff; font: 700 12px var(--body); display: grid; place-items: center; }
+.card .sw { position: absolute; bottom: 8px; left: 8px; display: flex; gap: 4px; }
+.card .sw i { width: 20px; height: 20px; border-radius: 6px; border: 1px solid rgba(255,255,255,.7); display: block; }
+.card .body { padding: 10px 11px 11px; display: grid; gap: 6px; align-content: start; }
+.card b { font: 700 14.5px var(--body); }
+.card small { color: var(--muted); font-size: 12.5px; line-height: 1.35; }
+.picks { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+.picks label { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 12.5px; cursor: pointer; }
+.picks input { accent-color: var(--accent); margin: 0; }
+.labbar { position: sticky; bottom: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; box-shadow: var(--shadow); }
+.labbar .msg { flex: 1 1 200px; }
+.btn.ghost { background: none; color: var(--ink); border: 1px solid var(--line); }
+#labnotes { min-height: 120px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
@@ -117,7 +149,24 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
     <p class="lede">Drop a video link, pick a look, choose how much motion graphics and sound you want. Claude cuts it, captions it, animates it and sends a review page back here.</p>
   </header>
   <div id="banner" class="banner" hidden></div>
-  <div class="cols">
+  <div class="views" role="tablist" aria-label="Studio views">
+    <button role="tab" id="v-reels" aria-selected="true" type="button">Reels</button>
+    <button role="tab" id="v-lab" aria-selected="false" type="button">Style Lab</button>
+  </div>
+  <section class="lab" id="lab" hidden aria-label="Style Lab">
+    <div class="labhead">
+      <div><h2 style="font: 800 21px var(--display); margin: 0 0 4px">Style Lab</h2>
+        <p id="labintro">Every option below is rendered on your own video. Tick <b>take</b> for what you want in your reels, <b>more like this</b> when you want Claude to explore that direction.</p></div>
+      <div class="tabs" id="labtabs" role="tablist" aria-label="Style Lab sections"></div>
+    </div>
+    <div class="grid" id="labgrid"></div>
+    <div class="labbar">
+      <button class="btn" id="labsend" type="button">Send to Claude</button>
+      <button class="btn ghost small" id="labreset" type="button">Reset</button>
+      <span class="msg" id="labmsg"></span>
+    </div>
+  </section>
+  <div class="cols" id="reels">
     <form class="order" id="order" novalidate>
       <h2>New reel</h2>
       <fieldset>
@@ -263,12 +312,89 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
     catch (err) { msg("Couldn't save the rule just now.", true); }
   });
 
+  // ---------------- Style Lab
+  const lab = { data: null, tab: null, picks: {}, notes: "", saveT: null };
+  const view = v => {
+    $("#reels").hidden = v !== "reels"; $("#lab").hidden = v !== "lab";
+    $("#v-reels").setAttribute("aria-selected", v === "reels"); $("#v-lab").setAttribute("aria-selected", v === "lab");
+    try { localStorage.setItem("studio-view", v); } catch (e) {}
+    if (v === "lab" && !lab.data) loadLab();
+  };
+  $("#v-reels").addEventListener("click", () => view("reels"));
+  $("#v-lab").addEventListener("click", () => view("lab"));
+  const labmsg = (t, err) => { $("#labmsg").textContent = t; $("#labmsg").className = "msg" + (err ? " err" : ""); };
+  const chosen = () => Object.values(lab.picks).filter(p => p.take || p.more).length;
+  async function loadLab() {
+    try {
+      const r = await fetch("lab/lab.json", { cache: "no-store" });
+      if (!r.ok) throw new Error(r.status);
+      lab.data = await r.json();
+      lab.data.tabs.push({ id: "notes", label: "Notes", hint: "Anything else about your look.", cards: [] });
+      $("#labintro").textContent = `Rendered on "${lab.data.project}" (${lab.data.style.replace("-", " ")}), ${lab.data.built}. Tick take for what you want in every reel, more like this to explore that direction.`;
+      lab.tab = lab.data.tabs[0].id;
+      drawLab();
+    } catch (e) {
+      $("#labgrid").replaceChildren(el("div", { class: "empty", text: "No Style Lab yet. Ask Claude: make my style lab." }));
+    }
+  }
+  function drawLab() {
+    const tabs = lab.data.tabs;
+    $("#labtabs").replaceChildren(...tabs.map(t => {
+      const n = t.cards.filter(c => (lab.picks[c.id] || {}).take || (lab.picks[c.id] || {}).more).length;
+      return el("button", { type: "button", role: "tab", "aria-selected": String(t.id === lab.tab), onclick: () => { lab.tab = t.id; drawLab(); } },
+        t.label, n ? el("span", { class: "count", text: String(n) }) : null);
+    }));
+    const tab = tabs.find(t => t.id === lab.tab);
+    if (tab.id === "notes") {
+      const ta = el("textarea", { id: "labnotes", placeholder: "e.g. less pink, more cream; I love the oval title; no paper cutout" });
+      ta.value = lab.notes;
+      ta.addEventListener("input", () => { lab.notes = ta.value; queueSave(); });
+      $("#labgrid").replaceChildren(el("div", { style: "grid-column: 1 / -1; display: grid; gap: 8px" }, el("p", { class: "hint", text: tab.hint }), ta));
+      return;
+    }
+    $("#labgrid").replaceChildren(el("p", { class: "hint", style: "grid-column: 1 / -1; margin: 0", text: tab.hint }),
+      ...tab.cards.map((c, i) => {
+        const p = lab.picks[c.id] || {};
+        const box = (key, label) => el("label", {}, el("input", { type: "checkbox", ...(p[key] ? { checked: "" } : {}), onchange: e => {
+          lab.picks[c.id] = { ...(lab.picks[c.id] || {}), [key]: e.target.checked }; drawLab(); queueSave(); } }), label);
+        return el("article", { class: "card" + (c.wide ? " wide" : "") + (p.take ? " on" : "") },
+          el("div", { class: "ph" }, el("img", { src: c.img, alt: c.title + " preview on your video", loading: "lazy" }),
+            el("span", { class: "num", text: String(i + 1) }),
+            c.swatches ? el("span", { class: "sw" }, ...c.swatches.map(h => el("i", { style: "background:" + h }))) : null),
+          el("div", { class: "body" }, el("b", { text: c.title }), el("small", { text: c.desc }),
+            el("div", { class: "picks" }, box("take", "take"), box("more", "more like this"))));
+      }));
+    labmsg(chosen() ? `${chosen()} choices saved` : "");
+  }
+  function queueSave() {
+    clearTimeout(lab.saveT);
+    lab.saveT = setTimeout(() => saveLab(false), 600);
+  }
+  async function saveLab(sent) {
+    if (!db) { labmsg("Saving is off in this view.", true); return; }
+    const body = { project: lab.data ? lab.data.project : "", picks: lab.picks, notes: lab.notes, updated: new Date().toISOString() };
+    if (sent) { body.sent = new Date().toISOString(); body.applied = null; }
+    try {
+      await db.collection("lab").doc("choices").set(body);
+      labmsg(sent ? "Sent. Now tell Claude: apply my style lab" : `${chosen()} choices saved`);
+    } catch (e) { labmsg("Couldn't save just now. Try again.", true); }
+  }
+  $("#labsend").addEventListener("click", () => saveLab(true));
+  $("#labreset").addEventListener("click", () => { lab.picks = {}; lab.notes = ""; drawLab(); saveLab(false); });
+
   (async () => {
     db = await window.claude?.use?.("db");
     if (!db) { banner("Saving is off in this view. Open the studio in Claude while signed in to start reels."); $("#send").disabled = true; return; }
     db.collection("requests").orderBy("at", "desc").limit(50).onSnapshot(s => draw(s.docs),
       e => banner("Live updates stopped (" + e.code + "). Reload the page to reconnect."));
     db.collection("rules").orderBy("at", "asc").limit(100).onSnapshot(s => drawRules(s.docs), () => {});
+    try {
+      const d = await db.collection("lab").doc("choices").get();
+      if (d.exists) { const v = d.data() || {}; lab.picks = v.picks || {}; lab.notes = v.notes || ""; }
+    } catch (e) {}
+    let start = "reels";
+    try { start = localStorage.getItem("studio-view") || "reels"; } catch (e) {}
+    view(start);
   })();
 })();
 </script>

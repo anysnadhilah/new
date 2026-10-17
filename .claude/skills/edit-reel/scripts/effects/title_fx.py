@@ -25,12 +25,14 @@ class CircleTitle(Effect):
     def __init__(self, spec, ctx):
         super().__init__(spec, ctx)
         lines = [x for x in spec.get("text", "come back|method").split("|") if x]
-        col = spec.get("color", ACCENT)
+        look = (getattr(ctx, "plan", None) or {}).get("look", {}) or {}
+        col = spec.get("color", look.get("accent", ACCENT))
         self.col = col
         size = int(spec.get("size", 150))
         self.lines = []
         for i, line in enumerate(lines):
-            im = text_img(line, ITALIC, size, col if i == 0 else spec.get("color2", SOFT_ACCENT), tracking=-0.01, shadow=SHADOW)
+            im = text_img(line, look.get("title_font", ITALIC), size, col if i == 0 else spec.get("color2", look.get("accent2", SOFT_ACCENT)),
+                          tracking=-0.01, shadow=SHADOW)
             if i:
                 im = xform(im, alpha=0.82)                       # the second line sits a little softer
             self.lines.append(im)
@@ -113,14 +115,16 @@ class PeekTitle(Effect):
         import numpy as np
         self.np = np
         text = spec.get("text", "stuck.")
-        c0, c1 = spec.get("colors", ["#FCD9E4", "#CDB8F2"])
+        look = (getattr(ctx, "plan", None) or {}).get("look", {}) or {}
+        c0, c1 = spec.get("colors", [look.get("accent", "#FCD9E4"), look.get("accent2", "#CDB8F2")])
+        font = look.get("title_font", ITALIC)
         # as big as it gets: the word fills the width edge to edge (short words get huge), then the space above
         # the head decides the final scale per frame
         size = int(spec.get("size", 0)) or 600
-        mask = text_img(text, ITALIC, size, "#FFFFFF", tracking=-0.03, pad=10)
+        mask = text_img(text, font, size, "#FFFFFF", tracking=-0.03, pad=10)
         while mask.width > 1050 and size > 120:
             size = int(size * 0.94)
-            mask = text_img(text, ITALIC, size, "#FFFFFF", tracking=-0.03, pad=10)
+            mask = text_img(text, font, size, "#FFFFFF", tracking=-0.03, pad=10)
         from gfx import rgba
         a, b = np.array(rgba(c0)[:3], np.float32), np.array(rgba(c1)[:3], np.float32)
         ramp = np.linspace(0, 1, mask.width, dtype=np.float32)[None, :, None]
@@ -131,7 +135,7 @@ class PeekTitle(Effect):
         self.word = drop_shadow(word, 0, 6, 16, (90, 40, 80, 90))
         box = mask.getchannel("A").getbbox()
         self.ink_top = box[1]
-        xbox = text_img("x", ITALIC, size, "#FFFFFF", pad=10).getchannel("A").getbbox()
+        xbox = text_img("x", font, size, "#FFFFFF", pad=10).getchannel("A").getbbox()
         self.size = size
         self.baseline, self.xh = xbox[3], xbox[3] - xbox[1]          # where letters sit, and their small height
         self.overlap = float(spec.get("overlap", -0.05))       # the soft cutout edge already nips a little

@@ -116,6 +116,10 @@ def main():
     # and never hide a graphic behind the head: graphics get their own space (split-panel pushes the clip down)
     banned = {"phone-float", "headline-wall", "note-wall", "app-split", "phone-frame", "pull-back", "cover-title",
               "glass-title", "orbit", "chart-grow"} if style == "scrapbook" else set()
+    look = plan.get("look", {}) or {}                      # choices from the Style Lab
+    banned |= set(look.get("skip_effects", []))
+    if look.get("transition") in ("punch", "none"):        # no zoom-through: the camera punch-ins carry the cuts
+        banned.add(TRANSITION)
 
     def add_fx(spec):
         if spec["type"] in banned:

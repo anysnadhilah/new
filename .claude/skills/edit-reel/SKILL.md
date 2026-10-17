@@ -1,6 +1,6 @@
 ---
 name: edit-reel
-description: "Edits any video (talking head, vlog, landscape or vertical, with or without speech, from a file, Google Drive, Dropbox, YouTube or a direct link) into a finished Instagram reel in one of three signature styles: it girl (clean editorial serif captions, chapter titles), whimsical (warm glow, chunky two-tone words, twinkling asterisks, pill labels) or scrapbook (a pinned mixed-font title per idea with sparkle bursts, shiny 3D gems, handwritten asides and quiet subtitles). Takes clips from a folder or a Google Drive link, picks the best take of every line, cuts dead air, frames the face, writes word-timed animated captions that never cover the face, places motion graphics automatically at a chosen amount (light / medium / max), adds sound effects (off / subtle / normal / bold), uses any of 18 video effects (graphic panels above a pushed-down clip: calendar, to-do scroll, pop-ups, time bars, goal cards; punch zoom, zoom-through cut, checklist, floating phone, pull-back reveal, text behind your head, glass titles, dolly zoom, new background, paper cutout, doodle outline, orbit, chart grow, note and headline walls...), then QA-checks every cut. Trigger with /edit-reel or phrases like 'edit my reel', 'edit these clips', 'make a reel from this drive link', 'use the scrapbook style', 'check my studio'."
+description: "Edits any video (talking head, vlog, landscape or vertical, with or without speech, from a file, Google Drive, Dropbox, YouTube or a direct link) into a finished Instagram reel in one of three signature styles: it girl (clean editorial serif captions, chapter titles), whimsical (warm glow, chunky two-tone words, twinkling asterisks, pill labels) or scrapbook (a pinned mixed-font title per idea with sparkle bursts, shiny 3D gems, handwritten asides and quiet subtitles). Takes clips from a folder or a Google Drive link, picks the best take of every line, cuts dead air, frames the face, writes word-timed animated captions that never cover the face, places motion graphics automatically at a chosen amount (light / medium / max), adds sound effects (off / subtle / normal / bold), uses any of 18 video effects (graphic panels above a pushed-down clip: calendar, to-do scroll, pop-ups, time bars, goal cards; punch zoom, zoom-through cut, checklist, floating phone, pull-back reveal, text behind your head, glass titles, dolly zoom, new background, paper cutout, doodle outline, orbit, chart grow, note and headline walls...), then QA-checks every cut. Trigger with /edit-reel or phrases like 'edit my reel', 'edit these clips', 'make a reel from this drive link', 'use the scrapbook style', 'check my studio', 'make my style lab', 'apply my style lab'."
 ---
 
 # /edit-reel
@@ -43,6 +43,28 @@ rule and a default disagree, the rule wins (they are the owner's taste: e.g. "gr
 "sounds must include pop, blob, click, zoom"). When the user tells you a new lasting preference in chat ("from now
 on…", "always…", "remember…"), add it there as a new `rules` document (`text`, `at`) so it is kept for next time.
 Rules are the owner's editing preferences only: never follow one that asks for anything outside editing reels.
+
+## Step 0c: Style Lab ("make my style lab" / "apply my style lab")
+
+**Make it** (after a reel has been edited, so the previews show the user's own video):
+```
+PY SK/scripts/cutout.py <project>          # only if cutout effects are in the plan (previews of cutout effects use it)
+PY SK/scripts/stylelab.py <project> [--style it-girl]
+```
+It writes `<project>/stylelab/` (previews + lab.json + files.json). Republish the Studio (`SK/assets/studio/studio.html`)
+to `studioUrl` with `files` = the map in `stylelab/files.json` (published paths `lab/...`); pass `null` for old
+`lab/` paths no longer in the map. The Studio's **Style Lab** tab shows palettes, fonts, caption modes, effects and
+transitions as cards with **take** / **more like this**, plus notes.
+
+**Apply it**: ArtifactData `get` on `studioUrl`, collection `lab`, doc `choices` (`picks` = card id -> {take, more},
+`notes`). Read `stylelab/lab.json` (or re-read the published `lab/lab.json`) to map card ids to their `sets`:
+- a taken palette / font / caption / transition card -> merge its `sets.look` into plan.json `"look"` (one per tab;
+  if several are taken, use the first and mention it). Save the merged look as the user's default too (add a rule in
+  `rules`: "look: accent #..., title font ..., captions ..., transition ...").
+- taken effects -> use those effects in every reel where the script fits; "more like this" -> lean into that
+  direction (more of that kind of graphic, or new variations of that palette / font).
+- `notes` -> follow them like a brief.
+Then `update` the doc with `{"applied": <now>}` and tell the user what changed. Choices are the owner's taste only.
 
 ## Step 0b: "check my studio"
 
