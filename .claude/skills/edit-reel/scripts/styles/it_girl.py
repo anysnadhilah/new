@@ -121,7 +121,7 @@ class ItGirl(Style):
             y += rh + 8 * k
         widest = max(r.width - 2 * r.info["pad"] for r in rows) * k
         top = self._st[key][2]
-        for j, (side, fy, s) in enumerate(((-1, 0.15, 40), (1, 0.75, 28))):    # minimal line stars
+        for j, (side, fy, s) in enumerate(((-1, 0.15, 42), (1, 0.75, 34))):    # minimal line stars
             p = out_back(prog(local, 0.35 + 0.12 * j, 0.35), 2.0)
             if p > 0:
                 place(canvas, xform(self._star(s), scale=p, alpha=out), W / 2 + side * (widest / 2 + 46), top + fy * (y - top))
@@ -129,7 +129,8 @@ class ItGirl(Style):
     def _star(self, size):
         key = ("star", size)
         if key not in self.__dict__.setdefault("_st", {}):
-            self._st[key] = deco_star(self.ctx.plan.get("star", "burst"), int(size * 1.3), ACCENT)
+            kinds = self.ctx.plan.get("star", "burst+spark").split("+")          # "a+b": a for big stars, b for small
+            self._st[key] = deco_star(kinds[0] if size >= 38 else kinds[-1], int(size * 1.3), ACCENT)
         return self._st[key]
 
     def caption_prefer(self, cap):

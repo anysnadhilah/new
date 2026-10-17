@@ -44,8 +44,8 @@ class CircleTitle(Effect):
         self.k = max(0.6, min(1.0, (brow - 190) / full_h, 1000 / (2 * self.rx + 60)))
         self.cy = 190 + full_h * self.k / 2
         self._ring = {}
-        kind = spec.get("star") or (getattr(ctx, "plan", None) or {}).get("star", "burst")
-        self._stars = [deco_star(kind, 52, col), deco_star(kind, 34, col)]
+        kinds = (spec.get("star") or (getattr(ctx, "plan", None) or {}).get("star", "burst+spark")).split("+")
+        self._stars = [deco_star(kinds[0], 52, col), deco_star(kinds[1 % len(kinds)], 42, col)]   # big, small
 
     def _oval(self, upto):
         """The oval as a pen stroke from just right of the top centre, round, ending just left of it."""

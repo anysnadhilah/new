@@ -80,7 +80,7 @@ laptop CPU; faster on Apple Silicon). Without it they fall back to drawing in fr
 
 19. **circle-title**: an elegant title above the head in very light pink italic serif (Playfair Display Italic; a
     second line a little softer), a thin oval drawing itself around it like a pen line with a small gap at the top,
-    and two minimal line stars twinkling in (`star`: burst | outline | spark | cross | asterisk | heart). `text` ("come back|method"), `color`, `size`. Captions move
+    and two minimal line stars twinkling in (`star`: burst | outline | spark | cross | asterisk | heart, or "big+small" e.g. burst+spark, the default). `text` ("come back|method"), `color`, `size`. Captions move
     down while it shows; never behind the head. Use it for the name of a method, the turn, the takeaway
     ("that's|okay"). Sounds: pencil write + twinkle.
 
