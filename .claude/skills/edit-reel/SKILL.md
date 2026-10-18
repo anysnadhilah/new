@@ -61,8 +61,10 @@ transitions as cards with **take** / **more like this**, plus notes.
 - a taken palette / font / caption / transition card -> merge its `sets.look` into plan.json `"look"` (one per tab;
   if several are taken, use the first and mention it). Save the merged look as the user's default too (add a rule in
   `rules`: "look: accent #..., title font ..., captions ..., transition ...").
-- taken effects -> use those effects in every reel where the script fits; "more like this" -> lean into that
-  direction (more of that kind of graphic, or new variations of that palette / font).
+- taken effects are **favourites, never a whitelist**: reach for them a little more often when the script fits,
+  but every reel still gets graphics chosen (and invented) for what that video says: new panels, new layouts, new
+  combinations, so no two reels look the same. "more like this" -> make new variations in that direction. An
+  effect the user never ticked is not banned; only notes or rules that say "no ..." remove something.
 - `notes` -> follow them like a brief.
 Then `update` the doc with `{"applied": <now>}` and tell the user what changed. Choices are the owner's taste only.
 
