@@ -219,8 +219,10 @@ Give the user a review page instead of asking for notes in chat:
 PY SK/scripts/review.py <project>          # writes <project>/review/: index.html, thumbs/, preview.mp4, files.json
 ```
 Publish it with the Artifact tool: `file_path` = `<project>/review/index.html`, `root` = `<project>/review`, `files` =
-the map in `review/files.json` (keys and values are the same relative paths), `capabilities` =
-`{"db": {}, "comments": {}}` (comments carries the page's **Apply my review** button to you),
+the map in `review/files.json` (keys are published paths; `final/part-*.bin` entries carry their own
+`contentType`; pass `null` for old `final/` parts no longer listed), `capabilities` =
+`{"db": {}, "comments": {}, "downloads": true}` (comments carries the page's **Apply my review** button to you;
+downloads its **Download video** button: the Instagram-ready 1080x1920 file, joined from the parts),
 `icon` = "film" on the first publish. Save the returned url into `review/review.json` as `"url"`; every later draft
 republishes to that same url (same `file_path` in this session, or pass `url`). Send the user the link and say:
 press Keep / Change / Drop on any take or graphic, retype misheard captions, switch the look, the amount of

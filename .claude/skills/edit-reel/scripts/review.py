@@ -19,6 +19,7 @@ from styles.base import Context
 
 THUMB = (180, 320)
 MAX_PREVIEW = 14 * 1024 * 1024          # stays under the 15 MB per-file publish limit
+PART = 14 * 1024 * 1024                 # the download is published in parts this size; the page joins them
 
 FX_NAMES = {"punch-zoom": "punch zoom", "zoom-through": "zoom-through cut", "phone-frame": "phone frame",
             "pull-back": "pull-back reveal", "app-split": "app split", "dolly-zoom": "dolly zoom",
@@ -43,6 +44,27 @@ def preview(src, dest):
         if dest.stat().st_size <= MAX_PREVIEW:
             return
     die("preview is still over 14 MB; the reel is too long for the review page")
+
+
+def final_parts(src, out):
+    """The Instagram-ready file (1080x1920 H.264 high, 30 fps, AAC 48 kHz, fast start), cut into parts the page
+    downloads and joins back into one .mp4. Returns the published part paths and the size."""
+    dest = out / "final.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(src), "-vf", "scale=1080:1920:flags=lanczos,fps=30",
+                    "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-maxrate", "12M", "-bufsize", "24M",
+                    "-profile:v", "high", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
+                    "-movflags", "+faststart", str(dest)], check=True)
+    pdir = out / "final"
+    pdir.mkdir(exist_ok=True)
+    for old in pdir.glob("part-*.bin"):
+        old.unlink()
+    blob = dest.read_bytes()
+    parts = []
+    for i in range(0, len(blob), PART):
+        f = pdir / f"part-{i // PART:02d}.bin"
+        f.write_bytes(blob[i:i + PART])
+        parts.append(f"final/{f.name}")
+    return parts, len(blob)
 
 
 def fx_detail(spec):
@@ -114,11 +136,13 @@ def main():
     print(f"{len(items)} thumbnails in {time.time() - t0:.0f}s", flush=True)
 
     preview(video, out / "preview.mp4")
+    parts, size = final_parts(video, out)
     name = proj.name.replace("-", " ").replace("_", " ").title()
     data = {"name": name, "version": version, "style": plan.get("style", "it-girl"), "duration": tl["duration"],
             "built": time.strftime("%d %b %H:%M"), "cuts": cuts, "graphics": graphics, "captions": captions,
             "graphics_amount": plan.get("graphics", "medium"), "sfx": plan.get("sfx", "normal"),
-            "studio": config().get("studioUrl")}
+            "studio": config().get("studioUrl"),
+            "download": {"parts": parts, "size": size, "filename": f"{name} {version}.mp4"}}
     ch_path = out / "changes.json"                 # what the last review changed (written by review_apply.py + Claude)
     ch = json.loads(ch_path.read_text()) if ch_path.exists() else {}
     if ch.get("from") and ch["from"] != version:
@@ -137,6 +161,7 @@ def main():
     info_path.write_text(json.dumps(info, indent=2))
     files = {f"thumbs/{p.name}": str(p) for p in sorted((out / "thumbs").glob("*.jpg"))}
     files["preview.mp4"] = str(out / "preview.mp4")
+    files.update({p: {"from": str(out / p), "contentType": "application/octet-stream"} for p in parts})
     (out / "files.json").write_text(json.dumps(files, indent=2))
     mb = (out / "preview.mp4").stat().st_size / 1e6
     print(f"review page for {version}: {out / 'index.html'} ({len(cuts)} cuts, {len(graphics)} graphics, "

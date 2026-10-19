@@ -93,6 +93,9 @@ button { cursor: pointer; }
 .progtxt { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
 .progtxt b { color: var(--ink); }
 .btn.big { padding: 12px 20px; font-size: 16px; background: var(--accent); color: var(--accent-ink); }
+.dl { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.dl .msg { flex: 1 1 180px; font-size: 13.5px; color: var(--muted); }
+.dl .bar { flex: 1 1 100%; }
 .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
 .quicknote { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
@@ -198,13 +201,17 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
       <h1 id="name">Draft</h1>
       <div class="chips" id="chips"></div>
     </header>
+    <div class="dl" id="dl" hidden>
+      <button class="btn big" id="dl-btn" type="button">Download video</button>
+      <span class="msg" id="dl-msg"></span>
+    </div>
     <div id="banner" class="banner" hidden></div>
     <div class="tally" id="tally"></div>
     <nav class="tabs" role="tablist" id="tabs"></nav>
     <section id="panel" aria-live="polite"></section>
     <section class="handoff" aria-labelledby="handoff-title">
       <h2 id="handoff-title">Send it back for the next draft</h2>
-      <p id="handoff-text">Your choices save as you make them. When you're done, press Apply my review: Claude reads every Keep, Change, Drop and note, re-edits, and the new draft lands on this page with a list of what changed.</p>
+      <p id="handoff-text">Love it as it is? Press Download video at the top. Your choices save as you make them. When you're done, press Apply my review: Claude reads every Keep, Change, Drop and note, re-edits, and the new draft lands on this page with a list of what changed.</p>
       <div class="row"><button class="btn big" id="ready" type="button">Apply my review</button><span id="ready-state" class="saved"></span></div>
       <div id="apply-prog" class="prog" hidden></div>
     </section>
@@ -510,6 +517,47 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
     if (active) { const n = document.getElementById(active); if (n) { n.focus(); try { n.setSelectionRange(caret, caret); } catch (e) {} } }
   }
   render();
+
+  // ---------- download: the Instagram-ready file, published in parts and joined here
+  (async () => {
+    const F = D.download;
+    if (!F || !F.parts || !F.parts.length) return;
+    const downloads = await window.claude?.use?.("downloads");
+    const box = $("#dl"), btn = $("#dl-btn"), m = $("#dl-msg");
+    const mb = (F.size / 1048576).toFixed(0);
+    box.hidden = false;
+    if (!downloads) { btn.disabled = true; m.textContent = "Open this page in Claude to download the video."; return; }
+    m.textContent = `${F.filename} · ${mb} MB · 1080×1920, ready for Instagram`;
+    let blob = null;
+    const bar = el("div", { class: "bar", role: "progressbar", "aria-label": "Download progress" }, el("i", { style: "width:0%" }));
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      try {
+        if (!blob) {
+          box.append(bar);
+          const chunks = [];
+          for (let i = 0; i < F.parts.length; i++) {
+            m.textContent = `Getting the video… ${Math.round(i / F.parts.length * 100)}%`;
+            bar.firstChild.style.width = (i / F.parts.length * 100) + "%";
+            const r = await fetch(F.parts[i]);
+            if (!r.ok) throw new Error("part " + i);
+            chunks.push(await r.blob());
+          }
+          bar.remove();
+          blob = new Blob(chunks, { type: "video/mp4" });
+        }
+        m.textContent = "Choose where to save it…";
+        await downloads.save({ filename: F.filename, data: blob });
+        m.textContent = "Saved. Post it straight to Instagram.";
+        btn.textContent = "Download again";
+      } catch (e) {
+        bar.remove();
+        m.textContent = e && e.code === "declined" ? "Not saved. Press Download whenever you're ready."
+          : e && e.code === "rate_limited" ? "A save window is already open. Finish that one first."
+          : "Couldn't download just now. Check your connection and try again.";
+      } finally { btn.disabled = false; }
+    });
+  })();
 
   // ---------- live store
   (async () => {
