@@ -695,7 +695,7 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
     const F = D.download;
     const dlBtn = el("button", { class: "btn", type: "button", text: "Download video" });
     const dlMsg = el("span", { class: "rv-mut" });
-    if (!F || !F.parts || !F.parts.length) dlBox.replaceChildren(el("span", { class: "rv-mut", text: "The download appears here with the next draft." }));
+    if (!F || !F.parts || !F.parts.length) dlBox.replaceChildren(el("span", { class: "rv-mut", text: D.download_note || "The download appears here with the next draft." }));
     else {
       dlMsg.textContent = `${F.filename} · ${(F.size / 1048576).toFixed(0)} MB · 1080×1920, ready for Instagram`;
       dlBox.replaceChildren(dlBtn, dlMsg);
