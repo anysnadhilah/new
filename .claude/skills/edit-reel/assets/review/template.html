@@ -76,7 +76,23 @@ button { cursor: pointer; }
 .track .seg span { position: absolute; left: 4px; top: 2px; font: 500 9.5px var(--mono); color: var(--ink); opacity: .75; }
 .track .fx { position: absolute; top: 5px; height: 9px; border-radius: 3px; background: var(--butter); }
 .track .note-pin { position: absolute; top: 2px; width: 2px; height: 14px; background: var(--accent); }
+.track .chg { position: absolute; bottom: 0; width: 12px; height: 12px; margin-left: -6px; border-radius: 999px; background: var(--keep); border: 2px solid var(--surface); }
 .track .head { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--ink); pointer-events: none; }
+.changes-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: var(--keep-bg); border-radius: 12px; padding: 8px 10px; font-size: 13.5px; }
+.changes-bar span { flex: 1 1 140px; }
+.changes-bar b { color: var(--keep); }
+.chgrow { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; align-items: center; padding: 10px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.chgrow.on { border: 2px solid var(--keep); padding: 9px 11px; }
+.chgrow .tc { border: 1px solid var(--line); background: var(--bg); border-radius: 7px; padding: 3px 7px; text-align: center; }
+.chgrow .kindtag { font: 700 10.5px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--keep); }
+.prog { display: grid; gap: 5px; }
+.bar { height: 10px; border-radius: 999px; background: var(--sunken); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 999px; background: var(--accent); transition: width .6s ease; }
+.bar.wait i { width: 30%; animation: slide 1.6s ease-in-out infinite; }
+@keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+.progtxt { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.progtxt b { color: var(--ink); }
+.btn.big { padding: 12px 20px; font-size: 16px; background: var(--accent); color: var(--accent-ink); }
 .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
 .quicknote { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
@@ -153,7 +169,7 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
 .handoff p { margin: 0; color: var(--muted); font-size: 14px; max-width: 62ch; }
 .handoff code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px; padding: 2px 6px; color: var(--ink); }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 </style>
 
 <script type="application/json" id="review-data">__REVIEW_DATA__</script>
@@ -168,7 +184,8 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
       <span id="clock" class="clock tc">00:00.00 / 00:00.00</span>
     </div>
     <div id="track" class="track" role="slider" aria-label="Timeline" tabindex="0" aria-valuemin="0"></div>
-    <div class="legend"><span><i style="background:color-mix(in srgb,var(--accent) 30%,var(--sunken))"></i>cuts</span><span><i style="background:var(--butter)"></i>effects &amp; graphics</span><span><i style="background:var(--accent);width:3px"></i>your notes</span></div>
+    <div id="changes-bar" class="changes-bar" hidden></div>
+    <div class="legend"><span><i style="background:color-mix(in srgb,var(--accent) 30%,var(--sunken))"></i>cuts</span><span><i style="background:var(--butter)"></i>effects &amp; graphics</span><span><i style="background:var(--accent);width:3px"></i>your notes</span><span id="legend-chg" hidden><i style="background:var(--keep);border-radius:999px"></i>what changed</span></div>
     <form id="quicknote" class="quicknote">
       <input id="quicknote-text" type="text" autocomplete="off" placeholder="Note at this moment…" aria-label="Note at this moment">
       <button class="btn" id="quicknote-add" type="submit">Add at <span id="quicknote-at" class="tc">00:00.0</span></button>
@@ -187,8 +204,9 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
     <section id="panel" aria-live="polite"></section>
     <section class="handoff" aria-labelledby="handoff-title">
       <h2 id="handoff-title">Send it back for the next draft</h2>
-      <p>Your choices save as you make them. When you're done, mark the draft ready, then tell Claude <code>apply my review</code> in the chat. Claude reads every Keep, Change, Drop and note, re-edits, and updates this page.</p>
-      <div class="row"><button class="btn" id="ready" type="button">Mark ready for the next draft</button><span id="ready-state" class="saved"></span></div>
+      <p id="handoff-text">Your choices save as you make them. When you're done, press Apply my review: Claude reads every Keep, Change, Drop and note, re-edits, and the new draft lands on this page with a list of what changed.</p>
+      <div class="row"><button class="btn big" id="ready" type="button">Apply my review</button><span id="ready-state" class="saved"></span></div>
+      <div id="apply-prog" class="prog" hidden></div>
     </section>
   </main>
 </div>
@@ -216,6 +234,13 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
   // ---------- state
   const state = { tab: "cuts", decisions: {}, notes: [], look: null, mix: null, ready: null, db: null, canWrite: true };
   try { state.tab = localStorage.getItem("reel-review-tab") || "cuts"; } catch (e) {}
+  if (D.changes && D.changes.length) {                 // a new draft opens on what changed, once
+    let seen = null;
+    try { seen = localStorage.getItem("reel-review-seen"); } catch (e) {}
+    if (seen !== D.version) { state.tab = "changes"; try { localStorage.setItem("reel-review-seen", D.version); } catch (e) {} }
+  }
+  if (state.tab === "changes" && !(D.changes && D.changes.length)) state.tab = "cuts";
+  state.chg = -1;
 
   // ---------- header
   $("#name").textContent = D.name;
@@ -242,6 +267,7 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
     });
     D.graphics.forEach(g => track.append(el("div", { class: "fx", style: `left:${g.start / D.duration * 100}%;width:${Math.max(0.6, (g.end - g.start) / D.duration * 100)}%`, title: g.kind })));
     state.notes.filter(n => n.t != null).forEach(n => track.append(el("div", { class: "note-pin", style: `left:${n.t / D.duration * 100}%` })));
+    (D.changes || []).forEach(c => c.at != null && track.append(el("div", { class: "chg", style: `left:${c.at / D.duration * 100}%`, title: c.what })));
     track.append(head);
     tick();
   }
@@ -280,7 +306,8 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
   const debounce = (key, fn, ms = 600) => { clearTimeout(timers[key]); timers[key] = setTimeout(fn, ms); };
 
   // ---------- tabs
-  const TABS = [["cuts", "Cuts", () => D.cuts.length], ["graphics", "Graphics", () => D.graphics.length], ["captions", "Captions", () => D.captions.length], ["look", "Look", () => ""], ["notes", "Notes", () => state.notes.length]];
+  const CH = (D.changes || []);
+  const TABS = [...(CH.length ? [["changes", "What changed", () => CH.length]] : []), ["cuts", "Cuts", () => D.cuts.length], ["graphics", "Graphics", () => D.graphics.length], ["captions", "Captions", () => D.captions.length], ["look", "Look", () => ""], ["notes", "Notes", () => state.notes.length]];
   function drawTabs() {
     $("#tabs").replaceChildren(...TABS.map(([id, label, n]) => el("button", { role: "tab", "aria-selected": String(state.tab === id), id: "tab-" + id, type: "button", onclick: () => { state.tab = id; try { localStorage.setItem("reel-review-tab", id); } catch (e) {} render(); } }, label, el("span", { class: "count", text: String(n()) }))));
   }
@@ -310,7 +337,37 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
       el("div", { class: "body" }, el("div", { class: "kind", text: kind }), el("div", { class: "title", text: title }), el("div", { class: "meta tc", text: meta }), ...decider(item)));
   }
 
+  const timed = () => CH.map((c, i) => ({ ...c, i })).filter(c => c.at != null);
+  function showChange(i) {
+    const c = CH[i];
+    state.chg = i;
+    if (c && c.at != null) { seek(Math.max(0, c.at - 1)); video.play(); }
+    state.tab = "changes"; render();
+  }
+  function stepChange(dir) {
+    const list = timed();
+    if (!list.length) return;
+    const pos = list.findIndex(c => c.i === state.chg);
+    const next = list[(pos + dir + list.length) % list.length] || list[0];
+    showChange(next.i);
+  }
+  function drawChangesBar() {
+    const bar = $("#changes-bar");
+    bar.hidden = !CH.length; $("#legend-chg").hidden = !CH.length;
+    if (!CH.length) return;
+    const list = timed();
+    const pos = list.findIndex(c => c.i === state.chg);
+    bar.replaceChildren(el("span", {}, el("b", { text: `${CH.length} change${CH.length > 1 ? "s" : ""}` }), ` since ${D.changes_from}` + (pos >= 0 ? ` · ${pos + 1} of ${list.length}: ${CH[state.chg].what}` : ": the green dots on the timeline")),
+      list.length ? el("button", { class: "btn ghost", type: "button", "aria-label": "Previous change", onclick: () => stepChange(-1), text: "◀" }) : null,
+      list.length ? el("button", { class: "btn", type: "button", onclick: () => stepChange(1), text: pos >= 0 ? "Next change ▶" : "Show me ▶" }) : null);
+  }
+  const KIND = { caption: "caption", drop: "removed", look: "whole reel", cut: "cut", graphic: "graphic", note: "your note", change: "changed" };
   const PANELS = {
+    changes: () => [
+      el("p", { class: "panel-intro", text: `Everything Claude changed from your review of ${D.changes_from}. Tap a time to watch it from just before the change.` }),
+      el("div", { class: "list" }, CH.map((c, i) => el("div", { class: "chgrow" + (state.chg === i ? " on" : "") },
+        c.at != null ? el("button", { class: "tc", type: "button", onclick: () => showChange(i), text: tc(c.at, 1) }) : el("span", { class: "chip", text: "whole reel" }),
+        el("div", {}, el("div", { class: "kindtag", text: KIND[c.kind] || c.kind || "changed" }), el("div", { text: c.what }), c.note ? el("div", { class: "meta", text: "You asked: " + c.note }) : null))))],
     cuts: () => [
       el("p", { class: "panel-intro", text: "Every take in the draft, in order. Drop a take you don't want, or ask for a change like \"start half a second later\" or \"use the earlier take of this line\"." }),
       el("div", { class: "list" }, D.cuts.map(c => card(c, `Event ${c.event} · clip ${c.clip}${c.zoom > 1.01 ? " · zoom " + c.zoom.toFixed(2) + "×" : ""}`, c.line || "(no words)", `${tc(c.start)} → ${tc(c.end)} · ${(c.end - c.start).toFixed(1)} s · source ${tc(c.src_in)}–${tc(c.src_out)}`)))],
@@ -356,7 +413,7 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
       return [el("p", { class: "panel-intro", text: "Notes pinned to a moment come from the box under the player. Claude marks each one done with a short reply." }),
         list.length ? el("div", { class: "list" }, list.map(n => el("div", { class: "note" + (n.done ? " done" : "") },
           n.t != null ? el("button", { class: "tc", type: "button", onclick: () => { seek(n.t); video.play(); }, text: tc(n.t, 1) }) : el("span", { class: "chip", text: "whole reel" }),
-          el("div", {}, el("div", { text: n.text }), n.reply ? el("div", { class: "reply", text: "Claude: " + n.reply }) : null, el("div", { class: "status", text: n.done ? "done" : "open" })),
+          el("div", {}, el("div", { text: n.text }), n.reply ? el("div", { class: "reply", text: "Claude: " + n.reply + (n.new_t != null ? ` (now at ${tc(n.new_t, 1)})` : "") }) : null, el("div", { class: "status", text: n.done ? "done" : "open" })),
           !n.done && state.canWrite ? el("button", { class: "x", type: "button", "aria-label": "Delete note", onclick: () => deleteNote(n.id), text: "✕" }) : el("span")))) : el("div", { class: "empty", text: "No notes yet. Pause on a moment and type in the box under the player." }),
         el("div", { class: "row" }, general, el("button", { class: "btn ghost", type: "button", disabled: state.canWrite ? null : "", onclick: () => { if (general.value.trim()) { addNote(null, general.value.trim()); general.value = ""; } } }, "Add note for the whole reel"))];
     },
@@ -379,11 +436,57 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
     inp.value = "";
     state.tab = "notes"; render();
   });
+  let comments = null, canSend = "off";
+  function summary() {
+    const vals = Object.entries(state.decisions);
+    const n = st => vals.filter(([k, d]) => d.status === st && !k.startsWith("cap-")).length;
+    const caps = vals.filter(([k]) => k.startsWith("cap-")).length;
+    const open = state.notes.filter(x => !x.done).length;
+    const bits = [n("change") && `${n("change")} changes`, n("drop") && `${n("drop")} drops`, caps && `${caps} caption fixes`, open && `${open} notes`,
+      state.look && state.look !== D.style && `look: ${STYLE_NAMES[state.look] || state.look}`, state.mix && `graphics ${state.mix.graphics}, sound ${state.mix.sfx}`].filter(Boolean);
+    return bits.length ? bits.join(", ") : "no changes, just a fresh pass";
+  }
   $("#ready").addEventListener("click", async () => {
-    const body = { ready: true, v: D.version, at: new Date().toISOString() };
-    state.ready = body; render();
-    if (state.db) try { await state.db.doc("meta/status").set(body); } catch (e) { failWrite(e); }
+    const btn = $("#ready");
+    const body = { ready: true, v: D.version, at: new Date().toISOString(), state: "ready" };
+    state.ready = body; btn.disabled = true; render();
+    if (state.db) try { await state.db.doc("meta/status").set(body); } catch (e) { failWrite(e); btn.disabled = false; return; }
+    try { if (comments) canSend = await comments.canSendToClaude(); } catch (e) { canSend = "off"; }
+    if (comments && canSend === "available") {
+      try {
+        await comments.sendToClaude({ anchor: await comments.anchorFor(btn), text: `apply my review: ${D.name} ${D.version} (${summary()})` });
+        state.sent = "ok";
+        if (state.db) try { await state.db.doc("meta/status").update({ state: "sent" }); } catch (e) {}
+      } catch (e) { state.sent = e && e.code === "consent_required" ? "consent" : "fail"; btn.disabled = false; }
+    } else { state.sent = "manual"; btn.disabled = false; }
+    render();
   });
+  const clock12 = iso => { try { return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); } catch (e) { return ""; } };
+  function minsLeft(iso) {
+    const m = Math.round((new Date(iso) - Date.now()) / 60000);
+    return !isFinite(m) ? "" : m <= 0 ? "almost done" : `about ${m} min left`;
+  }
+  function drawApply() {
+    const st = state.ready && state.ready.v === D.version ? state.ready : null;
+    const box = $("#apply-prog");
+    const busy = st && (st.state === "applying" || st.state === "sent");
+    $("#ready").disabled = !state.canWrite || !!busy;
+    $("#ready").textContent = busy ? "Sent to Claude" : "Apply my review";
+    let line = "";
+    if (st && st.state === "applying") line = "Claude is making the next draft. It lands on this page.";
+    else if (st && state.sent === "ok") line = "Sent. Claude starts in a moment; the new draft lands on this page.";
+    else if (st && state.sent === "consent") line = "Allow comments for this page, then press Apply again.";
+    else if (st && (state.sent === "manual" || state.sent === "fail" || !state.sent))
+      line = "Saved. Claude isn't listening on this page right now: tell Claude \"apply my review\" in the chat.";
+    $("#ready-state").textContent = line;
+    box.hidden = !busy;
+    if (!busy) return;
+    const pct = Math.max(0, Math.min(100, Number(st.pct) || 0));
+    box.replaceChildren(el("div", { class: "bar" + (pct ? "" : " wait"), role: "progressbar", "aria-label": "Next draft progress", "aria-valuenow": String(pct) }, el("i", { style: pct ? `width:${pct}%` : "" })),
+      el("div", { class: "progtxt" }, el("span", {}, el("b", { text: pct ? pct + "%" : "" }), " " + (st.stage || "waiting for Claude")),
+        el("span", { text: st.eta ? `${minsLeft(st.eta)} · done around ${clock12(st.eta)}` : "usually 5-15 min" })));
+  }
+  setInterval(() => { if (state.ready && state.ready.state === "applying") drawApply(); }, 30000);
 
   function drawTally() {
     const vals = Object.values(state.decisions);
@@ -402,10 +505,8 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
     // keep focus and caret in a field that re-renders
     const active = document.activeElement && document.activeElement.id;
     const caret = active && document.activeElement.selectionStart;
-    drawTabs(); drawTally(); drawTrack();
+    drawTabs(); drawTally(); drawTrack(); drawChangesBar(); drawApply();
     $("#panel").replaceChildren(...PANELS[state.tab]());
-    $("#ready").disabled = !state.canWrite;
-    $("#ready-state").textContent = state.ready && state.ready.v === D.version ? "Marked ready " + new Date(state.ready.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ". Now tell Claude: apply my review." : "";
     if (active) { const n = document.getElementById(active); if (n) { n.focus(); try { n.setSelectionRange(caret, caret); } catch (e) {} } }
   }
   render();
@@ -426,6 +527,10 @@ textarea, .capin { width: 100%; border: 1px solid var(--line); border-radius: 10
     db.doc("meta/look").onSnapshot(s => { const b = s.exists ? s.data() : null; state.look = b && b.v === D.version ? b.style : null; render(); }, () => {});
     db.doc("meta/mix").onSnapshot(s => { const b = s.exists ? s.data() : null; state.mix = b && b.v === D.version ? { graphics: b.graphics, sfx: b.sfx } : null; render(); }, () => {});
     db.doc("meta/status").onSnapshot(s => { state.ready = s.exists ? s.data() : null; render(); }, () => {});
+    try {
+      comments = await window.claude.use("comments");
+      if (comments) { canSend = await comments.canSendToClaude(); render(); }
+    } catch (e) { comments = null; }
   })();
 })();
 </script>

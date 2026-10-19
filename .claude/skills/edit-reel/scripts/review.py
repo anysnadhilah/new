@@ -119,6 +119,13 @@ def main():
             "built": time.strftime("%d %b %H:%M"), "cuts": cuts, "graphics": graphics, "captions": captions,
             "graphics_amount": plan.get("graphics", "medium"), "sfx": plan.get("sfx", "normal"),
             "studio": config().get("studioUrl")}
+    ch_path = out / "changes.json"                 # what the last review changed (written by review_apply.py + Claude)
+    ch = json.loads(ch_path.read_text()) if ch_path.exists() else {}
+    if ch.get("from") and ch["from"] != version:
+        data["changes"] = [{**c, "at": None if c.get("at") is None else min(float(c["at"]), tl["duration"] - 0.1)}
+                           for c in ch.get("items", [])]
+        data["changes"].sort(key=lambda c: (c["at"] is None, c["at"] or 0))
+        data["changes_from"] = ch["from"]
     page = (SK / "assets" / "review" / "template.html").read_text()
     page = page.replace("__TITLE__", f"{name} Review")
     page = page.replace("__REVIEW_DATA__", json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))
@@ -134,7 +141,7 @@ def main():
     mb = (out / "preview.mp4").stat().st_size / 1e6
     print(f"review page for {version}: {out / 'index.html'} ({len(cuts)} cuts, {len(graphics)} graphics, "
           f"{len(captions)} captions, preview {mb:.1f} MB)")
-    print(f"publish: file_path={out / 'index.html'}  files=<review/files.json>  capabilities={{\"db\": {{}}}}"
+    print(f"publish: file_path={out / 'index.html'}  files=<review/files.json>  capabilities={{\"db\": {{}}, \"comments\": {{}}}}"
           + (f"  url={info['url']}" if info.get("url") else "  (first publish: save the url into review/review.json)"))
 
 

@@ -219,13 +219,20 @@ Give the user a review page instead of asking for notes in chat:
 PY SK/scripts/review.py <project>          # writes <project>/review/: index.html, thumbs/, preview.mp4, files.json
 ```
 Publish it with the Artifact tool: `file_path` = `<project>/review/index.html`, `root` = `<project>/review`, `files` =
-the map in `review/files.json` (keys and values are the same relative paths), `capabilities` = `{"db": {}}`,
+the map in `review/files.json` (keys and values are the same relative paths), `capabilities` =
+`{"db": {}, "comments": {}}` (comments carries the page's **Apply my review** button to you),
 `icon` = "film" on the first publish. Save the returned url into `review/review.json` as `"url"`; every later draft
 republishes to that same url (same `file_path` in this session, or pass `url`). Send the user the link and say:
 press Keep / Change / Drop on any take or graphic, retype misheard captions, switch the look, the amount of
-graphics and the sound level, pin notes to moments, then "Mark ready" and tell you "apply my review".
+graphics and the sound level, pin notes to moments, then press **Apply my review** on the page. No chat needed:
+the button posts an "apply my review: ..." comment that is sent to you (this session watches every page it
+publishes). If no session is listening, the page tells them to say "apply my review" in the chat instead.
 
-When they do:
+When an "apply my review" comment arrives from a review page (or the user says it):
+0. Reply in that comment thread in one line ("On it, the next draft lands here in about N min"). While you work,
+   `update` the page's `meta/status` with `{"state": "applying", "pct", "stage", "eta"}` at each step (same stages
+   and honest ETA as the Studio progress; the page shows a progress bar), and set the Studio request for this reel
+   (if any) to `editing` with the same `progress`.
 1. Export the page's database: ArtifactData `list` with `out_dir` = `<project>/work/review_export` for each of
    `decisions`, `notes` and `meta`.
 2. `PY SK/scripts/review_apply.py <project> <project>/work/review_export`: applies drops, caption fixes, the look,
@@ -234,10 +241,16 @@ When they do:
 3. Do each printed item in `edl.json` / `plan.json` (a take's "start later" = move its `in`; "use the other take" =
    pick it from `transcript.txt`; an effect "bigger/shorter" = its options and times). Then assemble (only if cuts
    changed), cutout (if cutout effects changed), render, check, `review.py`, and republish to the same url.
+   **Show where each change is**: before `review.py`, add one item per hand-made change to `review/changes.json`
+   (`{"what": "<plain words>", "kind": "cut|graphic|caption|drop|look|note", "at": <seconds in the NEW draft, or
+   null for the whole reel>, "note": "<what they asked, short>"}`); review_apply.py already wrote the mechanical
+   ones. Check each `at` on the new render (`render.py --at`). The new page opens on **What changed**: green dots
+   on the timeline, a "Next change" button that plays each one from a second before, and the list.
 4. Tidy the page's database with one ArtifactData `batch`: delete every `decisions` document and `meta/status`
    (pin each with the `version` the list showed), and `update` each note you handled with
-   `{"done": true, "reply": "<one short line on what you changed>"}`.
-5. Tell the user the page is updated with the new draft.
+   `{"done": true, "reply": "<one short line on what you changed>", "new_t": <its time in the new draft, or null>}`.
+5. Reply in the comment thread (and to the Studio request: `ready`, `version`, `reply`) that the new draft is up
+   with N changes; tell the user the same if they are in the chat.
 The page only shows decisions for the current draft version, so stale ones never leak into the next round.
 
 ## Hard rules

@@ -12,7 +12,9 @@ Done automatically:
   - Caption fixes: the new words replace the old ones, spread over the same time span.
   - Look: plan.json "style" switches.
 Printed for Claude to do by hand (needs judgement): every Change with its note, and every open timed note.
-Writes work/review_todo.json with that list. Then: assemble (if cuts changed), cutout (if effects need it),
+Writes work/review_todo.json with that list, and review/changes.json: what changed and where it now sits in the
+next draft (seconds), so the next review page can show each change on the timeline. Claude adds the hand-made
+changes to it (see SKILL.md, Step 9). Then: assemble (if cuts changed), cutout (if effects need it),
 render, check, review.py, publish to the same url.
 """
 import json
@@ -60,6 +62,7 @@ def main():
     notes = read_dir(exp / "notes")
     meta = read_dir(exp / "meta")
     done, todo = [], []
+    changes = []            # (what, kind, where): where = a dict that moves with the edit, a time in this draft, or None (whole reel)
 
     # ---- captions first (their ids are positions in the current plan)
     caps = plan.get("captions", [])
@@ -72,6 +75,7 @@ def main():
                 if caps[i].get("emph") and caps[i]["emph"].lower() not in d["text"].lower():
                     caps[i]["emph"] = None
                 done.append(f'caption {i}: "{old}" -> "{d["text"]}"')
+                changes.append((f'Caption fixed: "{d["text"]}"', "caption", caps[i]))
 
     # ---- graphics drops / changes
     effects = plan.get("effects", [])
@@ -81,6 +85,7 @@ def main():
         status, note = d.get("status"), (d.get("note") or "").strip()
         if k == "hook":
             if status == "drop":
+                changes.append(("Hook title removed", "drop", plan["hook"]["start"]))
                 plan["hook"] = None
                 done.append("hook removed")
             elif status == "change":
@@ -105,14 +110,19 @@ def main():
             elif status == "change" and i < len(effects):
                 todo.append({"what": f"effect {i} ({effects[i]['type']})", "current": effects[i], "note": note})
     for i in sorted(drop_fx):
-        done.append(f"effect removed: {effects[i]['type']} at {effects[i].get('start', effects[i].get('at'))}s")
+        t0 = effects[i].get("start", effects[i].get("at"))
+        t0 = t0[0] if isinstance(t0, list) else t0
+        done.append(f"effect removed: {effects[i]['type']} at {t0}s")
+        changes.append((f"Effect removed: {effects[i]['type']}", "drop", t0))
     for i in sorted(drop_st):
         done.append(f"sticker removed: {stickers[i].get('type')} at {stickers[i]['at']}s")
+        changes.append((f"Sticker removed: {stickers[i].get('type')}", "drop", stickers[i]["at"]))
     plan["effects"] = [e for i, e in enumerate(effects) if i not in drop_fx]
     plan["stickers"] = [s for i, s in enumerate(stickers) if i not in drop_st]
     if drop_sec:
         secs = plan.get("sections", [])
         done += [f'section title removed: "{secs[i]["title"]}"' for i in sorted(drop_sec)]
+        changes += [(f'Section title removed: "{secs[i]["title"]}"', "drop", secs[i]["start"]) for i in sorted(drop_sec)]
         plan["sections"] = [x for i, x in enumerate(secs) if i not in drop_sec]
 
     # ---- cut drops: remove the take and pull everything after it earlier
@@ -123,6 +133,9 @@ def main():
         if d.get("status") == "change":
             todo.append({"what": f"take {s['id']} ({s['clip']} {s['in']}-{s['out']}s)", "line": " ".join(w["w"] for w in s["words"]),
                          "note": (d.get("note") or "").strip()})
+    def shift(t):
+        return t
+
     if dropped:
         def shift(t):
             out = t
@@ -167,12 +180,15 @@ def main():
         ids = {s["id"] for s in dropped}
         edl[:] = [e for e in edl if e.get("id") not in ids]
         for s in dropped:
-            done.append(f"take {s['id']} removed ({s['end'] - s['start']:.1f}s): \"{' '.join(w['w'] for w in s['words'])[:60]}\"")
+            line = " ".join(w["w"] for w in s["words"])
+            done.append(f"take {s['id']} removed ({s['end'] - s['start']:.1f}s): \"{line[:60]}\"")
+            changes.append((f'Take removed: "{line[:60]}"', "drop", s["start"]))
 
     # ---- look
     look = meta.get("look", {})
     if look.get("style") and look.get("v") in (None, version) and look["style"] != plan.get("style"):
         done.append(f"look: {plan.get('style')} -> {look['style']}")
+        changes.append((f"Look: {plan.get('style')} -> {look['style']}", "look", None))
         plan["style"] = look["style"]
 
     # ---- graphics amount and sound level
@@ -181,9 +197,11 @@ def main():
     if mix.get("v") in (None, version):
         if mix.get("sfx") and mix["sfx"] != plan.get("sfx", "normal"):
             done.append(f"sound effects: {plan.get('sfx', 'normal')} -> {mix['sfx']}")
+            changes.append((f"Sound effects: {mix['sfx']}", "look", None))
             plan["sfx"] = mix["sfx"]
         if mix.get("graphics") and mix["graphics"] != plan.get("graphics", "medium"):
             done.append(f"motion graphics: {plan.get('graphics', 'medium')} -> {mix['graphics']} (run autofx.py)")
+            changes.append((f"Motion graphics: {mix['graphics']}", "look", None))
             plan["graphics"] = mix["graphics"]
             rerun_autofx = True
 
@@ -197,6 +215,22 @@ def main():
     todo = [t for t in todo if not (isinstance(t.get("current"), dict) and "type" in t["current"]
                                     and t["what"] != "hook" and json.dumps(t["current"], sort_keys=True) not in alive)]
 
+    def where(w):
+        if isinstance(w, dict):                         # moved with the edit (a fixed caption)
+            return w.get("start") if any(w is c for c in plan.get("captions", [])) else None
+        if w is None:
+            return None
+        moved = True
+        while moved:                                    # inside a removed take: the join where it used to be
+            moved = False
+            for s in dropped:
+                if s["start"] <= w < s["end"]:
+                    w, moved = s["start"] - 0.001, True
+        t = shift(max(0.0, w))
+        return None if t is None else round(max(0.0, t), 2)
+
+    items = [{"what": what, "kind": kind, "at": where(w)} for what, kind, w in changes]
+    save_json(proj / "review" / "changes.json", {"from": version, "items": sorted(items, key=lambda x: (x["at"] is not None, x["at"] or 0))})
     save_json(proj / "plan.json", plan)
     save_json(proj / "edl.json", edl)
     save_json(proj / "work" / "review_todo.json", {"cuts_changed": bool(dropped), "autofx": rerun_autofx,
@@ -207,6 +241,7 @@ def main():
     print("TO DO BY HAND (edit edl.json / plan.json, then reply to each note):")
     for t in todo or [{"what": "(nothing)", "note": ""}]:
         print("  -", t["what"], (f"@ {t['at']}s" if t.get("at") is not None else ""), "->", t.get("note", ""))
+    print("CHANGES: review/changes.json has", len(items), "items; add one per hand-made change below with its time in the NEW draft")
     print("NEXT:", "assemble.py, " if dropped else "", "autofx.py, " if rerun_autofx else "",
           "cutout.py (if effects need it), render.py, check.py, review.py, publish")
 
