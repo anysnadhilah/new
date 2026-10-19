@@ -15,7 +15,7 @@
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme]) {
     --bg: #16121A; --surface: #211B26; --sunken: #2A2330; --ink: #F2ECF5; --muted: #A99EB2; --line: #3A3141;
     --accent: #F17DB2; --accent-ink: #24101A; --butter: #FFE24D; --butter-ink: #2E2600;
     --ok: #5FCB8E; --ok-bg: #1C3327; --wait: #F0A845; --wait-bg: #3A2C14; --busy: #8FA6FF; --busy-bg: #1E2547;
@@ -30,17 +30,51 @@
   --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
   color-scheme: dark;
 }
+/* dopamine: bright candy colours, chunky ink borders and hard pop shadows */
+:root[data-theme="dopamine"] {
+  --bg: #FFF2FA; --surface: #FFFFFF; --sunken: #FFE3F3; --ink: #2A0B3D; --muted: #6A3B7C; --line: #2A0B3D;
+  --accent: #FF2E93; --accent-ink: #FFFFFF; --butter: #C8FF3C; --butter-ink: #1F2A00;
+  --ok: #067A4C; --ok-bg: #B8FFE0; --wait: #B44A00; --wait-bg: #FFE0B8; --busy: #4A1FD1; --busy-bg: #E2D6FF;
+  --pop1: #FF2E93; --pop2: #FF9F1C; --pop3: #2EC4F1; --pop4: #9B5DE5; --pop5: #C8FF3C;
+  --shadow: 5px 5px 0 var(--ink);
+  color-scheme: light;
+}
 * { box-sizing: border-box; }
 body {
   background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body);
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 24px 48px;
 }
+:root[data-theme="dopamine"] body {
+  background: radial-gradient(circle at 8% 4%, #FFD1EC 0, transparent 34%), radial-gradient(circle at 96% 10%, #CFF4FF 0, transparent 32%),
+    radial-gradient(circle at 90% 92%, #FFE7B8 0, transparent 34%), radial-gradient(circle at 4% 88%, #E6FFB8 0, transparent 30%), var(--bg);
+  background-attachment: fixed;
+}
+:root[data-theme="dopamine"] h1 { background: linear-gradient(90deg, var(--pop1), var(--pop2) 35%, var(--pop4) 70%, var(--pop3)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+:root[data-theme="dopamine"] :is(.order, .rules, .ticket, .card, .labbar, .views, .modes) { border: 2px solid var(--ink); }
+:root[data-theme="dopamine"] .ticket { box-shadow: 4px 4px 0 var(--pop3); }
+:root[data-theme="dopamine"] .ticket:nth-child(4n+2) { box-shadow: 4px 4px 0 var(--pop2); }
+:root[data-theme="dopamine"] .ticket:nth-child(4n+3) { box-shadow: 4px 4px 0 var(--pop4); }
+:root[data-theme="dopamine"] .ticket:nth-child(4n) { box-shadow: 4px 4px 0 var(--pop1); }
+:root[data-theme="dopamine"] .rules { box-shadow: 5px 5px 0 var(--pop2); }
+:root[data-theme="dopamine"] .btn:not(.ghost) { border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+:root[data-theme="dopamine"] .btn:not(.ghost):active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+:root[data-theme="dopamine"] .opt input:checked + span { background: #FFF6B8; border-color: var(--pop1); }
+:root[data-theme="dopamine"] .chip { background: #E9DDFF; }
+:root[data-theme="dopamine"] .chip:nth-child(3n+2) { background: #D3F6FF; }
+:root[data-theme="dopamine"] .chip:nth-child(3n) { background: #FFE0C2; }
+:root[data-theme="dopamine"] .bar { border: 2px solid var(--ink); height: 14px; }
+:root[data-theme="dopamine"] .bar i { background: linear-gradient(90deg, var(--pop1), var(--pop2), var(--pop5), var(--pop3), var(--pop4)); background-size: 300% 100%; animation: candy 4s linear infinite; }
+@keyframes candy { to { background-position: 300% 0; } }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .wrap { max-width: 1160px; margin: 0 auto; display: grid; gap: 22px; }
 header { display: grid; gap: 6px; }
+.headrow { display: flex; justify-content: space-between; align-items: start; gap: 12px; flex-wrap: wrap; }
+.modes { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); }
+.modes button { border: 0; background: none; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 13px; color: var(--muted); }
+.modes button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 .eyebrow { font: 600 11.5px var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 h1 { font: 800 clamp(30px, 5vw, 46px)/1 var(--display); letter-spacing: -.025em; margin: 0; }
 .lede { color: var(--muted); max-width: 64ch; margin: 0; }
@@ -82,6 +116,20 @@ textarea#links { font: 500 13px/1.6 var(--mono); }
 .queue { display: grid; gap: 12px; }
 .ticket { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; }
 .ticket .top { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+.ticket .x { flex: none; width: 28px; height: 28px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 15px; line-height: 1; display: grid; place-items: center; padding: 0; }
+.ticket .x:hover { color: var(--accent); border-color: var(--accent); }
+.ticket .right { display: flex; gap: 8px; align-items: center; }
+.confirm { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: var(--sunken); border-radius: 12px; padding: 8px 10px; font-size: 14px; }
+.confirm span { flex: 1 1 160px; }
+.btn.tiny { padding: 6px 12px; font-size: 13px; border-radius: 10px; }
+.prog { display: grid; gap: 5px; }
+.bar { height: 10px; border-radius: 999px; background: var(--sunken); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 999px; background: var(--busy); transition: width .6s ease; }
+.bar.wait i { width: 30% !important; animation: slide 1.6s ease-in-out infinite; }
+@keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+.progtxt { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.progtxt b { color: var(--ink); font-weight: 700; }
+.ticket.cancelled { opacity: .62; }
 .ticket h3 { font: 700 16px var(--body); margin: 0; overflow-wrap: anywhere; }
 .when { font: 500 12px var(--mono); color: var(--muted); }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -91,6 +139,7 @@ textarea#links { font: 500 13px/1.6 var(--mono); }
 .status.editing { background: var(--busy-bg); color: var(--busy); }
 .status.ready, .status.done { background: var(--ok-bg); color: var(--ok); }
 .status.problem { background: var(--wait-bg); color: var(--accent); }
+.status.cancelled { background: var(--sunken); color: var(--muted); }
 .links { font: 500 12px/1.5 var(--mono); color: var(--muted); overflow-wrap: anywhere; }
 .reply { font-size: 14px; }
 .ticket a.open { font-weight: 700; color: var(--accent); }
@@ -139,12 +188,17 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
 .labbar .msg { flex: 1 1 200px; }
 .btn.ghost { background: none; color: var(--ink); border: 1px solid var(--line); }
 #labnotes { min-height: 120px; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">edit reel</div>
+    <div class="headrow"><div class="eyebrow">edit reel</div>
+      <div class="modes" role="group" aria-label="Studio colours">
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dopamine" aria-pressed="false">Dopamine</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div></div>
     <h1>Reel Studio</h1>
     <p class="lede">Drop a video link, pick a look, choose how much motion graphics and sound you want. Claude cuts it, captions it, animates it and sends a review page back here.</p>
   </header>
@@ -208,6 +262,7 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
       <ol class="steps">
         <li>Fill in the form and press Start.</li>
         <li>Tell Claude <code>check my studio</code> in the chat (the owner's Claude picks up everyone's requests).</li>
+        <li>Watch the progress bar and the time left. Press <b>✕</b> on a reel to cancel it.</li>
         <li>When a reel shows <b>ready</b>, open its review page, keep or change anything, and send it back.</li>
       </ol>
       <div id="list" class="queue"><div class="empty">No reels yet. Your first one will show up here with its status and a link to its review page.</div></div>
@@ -227,7 +282,7 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
     kids.flat().forEach(c => c != null && n.append(c));
     return n;
   };
-  const STYLES = [["it-girl", "it girl", "Clean serif captions, the key line big, butter chapter titles."],
+  const STYLES = [["it-girl", "it girl", "Playfair serif captions, light pink oval titles, minimal stars."],
     ["whimsical", "whimsical", "Warm glow, chunky two-tone words, twinkling asterisks, pills."],
     ["scrapbook", "scrapbook", "A pinned title per idea, acrylic gems, zooms and graphics above your clip."],
     ["surprise", "surprise me", "Claude picks the look that suits the video."]];
@@ -276,25 +331,80 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
     } finally { $("#send").disabled = !canWrite; }
   });
 
-  const STATUS_TEXT = { new: "waiting", editing: "editing", ready: "ready", done: "done", problem: "needs you" };
+  const STATUS_TEXT = { new: "waiting", editing: "editing", ready: "ready", done: "done", problem: "needs you", cancelled: "cancelled" };
+  const ACTIVE = new Set(["new", "editing", "problem"]);
   const when = iso => { try { return new Date(iso).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } };
+  const clock = iso => { try { return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); } catch (e) { return ""; } };
+  const left = iso => {
+    const m = Math.round((new Date(iso) - Date.now()) / 60000);
+    if (!isFinite(m)) return "";
+    if (m <= 0) return "almost done";
+    if (m < 60) return `about ${m} min left`;
+    return `about ${Math.floor(m / 60)} h ${m % 60} min left`;
+  };
+  let lastDocs = [];
+  const confirming = new Set();
+  function progress(r, st) {
+    const p = r.progress || {};
+    if (st === "new") return el("div", { class: "prog" }, el("div", { class: "bar wait", role: "progressbar", "aria-label": "Waiting to start" }, el("i")),
+      el("div", { class: "progtxt" }, el("span", { text: "Waiting for Claude to start" }), el("span", { text: `takes about ${r.estimate_min || "15-25"} min once started` })));
+    if (st !== "editing") return null;
+    const pct = Math.max(0, Math.min(100, Number(p.pct) || 0));
+    const eta = p.eta ? `${left(p.eta)} · done around ${clock(p.eta)}` : "working out the time…";
+    return el("div", { class: "prog" },
+      el("div", { class: "bar" + (pct ? "" : " wait"), role: "progressbar", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(pct), "aria-label": "Edit progress" },
+        el("i", { style: `width:${pct}%` })),
+      el("div", { class: "progtxt" }, el("span", {}, el("b", { text: pct + "%" }), " " + (p.stage || "editing")), el("span", { text: eta })));
+  }
+  async function cancelReel(d, st) {
+    try {
+      if (ACTIVE.has(st)) await db.collection("requests").doc(d.id).update({ status: "cancelled", cancelled_at: new Date().toISOString() });
+      else await db.collection("requests").doc(d.id).delete();
+    } catch (e) { msg("Couldn't change that reel just now. Try again.", true); }
+    confirming.delete(d.id); draw(lastDocs);
+  }
   function draw(docs) {
+    lastDocs = docs;
     const list = $("#list");
     if (!docs.length) { list.replaceChildren(el("div", { class: "empty", text: "No reels yet. Your first one will show up here with its status and a link to its review page." })); return; }
     list.replaceChildren(...docs.map(d => {
       const r = d.data() || {};
       const st = r.status || "new";
       const name = r.title || (r.links && r.links[0] ? r.links[0].replace(/^https?:\/\/(www\.)?/, "").slice(0, 48) : "Untitled reel");
-      return el("article", { class: "ticket" },
-        el("div", { class: "top" }, el("h3", { text: name }), el("span", { class: "status " + st, text: STATUS_TEXT[st] || st })),
+      const active = ACTIVE.has(st);
+      const ask = confirming.has(d.id) ? el("div", { class: "confirm" },
+        el("span", { text: active ? (st === "editing" ? "Cancel this reel? Claude stops at the next step." : "Cancel this reel?") : "Remove this reel from the list?" }),
+        el("button", { type: "button", class: "btn tiny", text: active ? "Yes, cancel" : "Remove", onclick: () => cancelReel(d, st) }),
+        el("button", { type: "button", class: "btn ghost tiny", text: active ? "Keep it" : "Keep", onclick: () => { confirming.delete(d.id); draw(lastDocs); } })) : null;
+      return el("article", { class: "ticket " + st },
+        el("div", { class: "top" }, el("h3", { text: name }),
+          el("div", { class: "right" }, el("span", { class: "status " + st, text: STATUS_TEXT[st] || st }),
+            db ? el("button", { type: "button", class: "x", text: "✕", title: active ? "Cancel this reel" : "Remove from the list",
+              "aria-label": active ? "Cancel this reel" : "Remove this reel from the list",
+              onclick: () => { confirming.add(d.id); draw(lastDocs); } }) : null)),
+        ask,
+        progress(r, st),
         el("div", { class: "chips" }, [r.style && (r.style === "surprise" ? "surprise look" : r.style.replace("-", " ")), r.graphics && r.graphics + " graphics",
           r.sfx && "sound " + r.sfx, r.language && r.language !== "auto" && r.language].filter(Boolean).map(t => el("span", { class: "chip", text: t }))),
         el("div", { class: "links", text: (r.links || []).join("  ·  ") }),
         r.reply ? el("div", { class: "reply", text: "Claude: " + r.reply }) : null,
-        r.review_url ? el("a", { class: "open", href: r.review_url, target: "_blank", rel: "noopener" }, `Open review page${r.version ? " (" + r.version + ")" : ""} →`) : null,
-        el("div", { class: "when", text: "added " + when(r.at) }));
+        r.review_url && st !== "cancelled" ? el("a", { class: "open", href: r.review_url, target: "_blank", rel: "noopener" }, `Open review page${r.version ? " (" + r.version + ")" : ""} →`) : null,
+        el("div", { class: "when", text: "added " + when(r.at) + (r.cancelled_at ? " · cancelled " + when(r.cancelled_at) : "") }));
     }));
   }
+  setInterval(() => { if (lastDocs.some(d => ((d.data() || {}).status) === "editing") && !confirming.size) draw(lastDocs); }, 30000);
+
+  // ---------------- colour modes (light / dopamine / dark), remembered on this device
+  const setMode = (m, save) => {
+    if (m) document.documentElement.setAttribute("data-theme", m); else document.documentElement.removeAttribute("data-theme");
+    const shown = m || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.querySelectorAll(".modes button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === shown)));
+    if (save) { try { localStorage.setItem("studio-theme", m); } catch (e) {} }
+  };
+  document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode, true)));
+  let savedMode = null;
+  try { savedMode = localStorage.getItem("studio-theme"); } catch (e) {}
+  setMode(["light", "dopamine", "dark"].includes(savedMode) ? savedMode : null, false);
 
   function drawRules(docs) {
     const box = $("#rules");
