@@ -56,12 +56,12 @@ def final_parts(src, out):
                     "-movflags", "+faststart", str(dest)], check=True)
     pdir = out / "final"
     pdir.mkdir(exist_ok=True)
-    for old in pdir.glob("part-*.bin"):
+    for old in pdir.glob("part-*.mp4"):
         old.unlink()
     blob = dest.read_bytes()
     parts = []
     for i in range(0, len(blob), PART):
-        f = pdir / f"part-{i // PART:02d}.bin"
+        f = pdir / f"part-{i // PART:02d}.mp4"
         f.write_bytes(blob[i:i + PART])
         parts.append(f"final/{f.name}")
     return parts, len(blob)
@@ -161,7 +161,7 @@ def main():
     info_path.write_text(json.dumps(info, indent=2))
     files = {f"thumbs/{p.name}": str(p) for p in sorted((out / "thumbs").glob("*.jpg"))}
     files["preview.mp4"] = str(out / "preview.mp4")
-    files.update({p: {"from": str(out / p), "contentType": "application/octet-stream"} for p in parts})
+    files.update({p: str(out / p) for p in parts})
     (out / "files.json").write_text(json.dumps(files, indent=2))
     mb = (out / "preview.mp4").stat().st_size / 1e6
     print(f"review page for {version}: {out / 'index.html'} ({len(cuts)} cuts, {len(graphics)} graphics, "
