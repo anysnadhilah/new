@@ -40,6 +40,7 @@
   color-scheme: light;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
   background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body);
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
@@ -188,6 +189,79 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
 .labbar .msg { flex: 1 1 200px; }
 .btn.ghost { background: none; color: var(--ink); border: 1px solid var(--line); }
 #labnotes { min-height: 120px; }
+
+/* ---------- review: one reel's draft inside the studio (player + timeline left, decisions right) */
+.rv[hidden] { display: none; }
+.rv { display: grid; gap: 16px; }
+.rv-top { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.rv-top h2 { font: 800 clamp(24px, 4vw, 34px)/1.05 var(--display); margin: 0; flex: 1 1 240px; overflow-wrap: anywhere; }
+.rv-bay { display: grid; grid-template-columns: minmax(260px, 360px) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 820px) { .rv-bay { grid-template-columns: minmax(0, 1fr); } }
+.rv-mon { position: sticky; top: 12px; display: grid; gap: 10px; }
+@media (max-width: 820px) { .rv-mon { position: static; } .rv-screen { max-height: 54vh; } }
+.rv-screen { aspect-ratio: 9 / 16; max-width: 100%; max-height: 66vh; margin: 0 auto; border-radius: 18px; overflow: hidden; background: #000; box-shadow: var(--shadow); }
+.rv-screen video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rv-tr { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.rv-tr button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-weight: 600; }
+.rv-tr .rv-play { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); padding: 8px 18px; }
+.rv-tc { font: 500 12.5px var(--mono); font-variant-numeric: tabular-nums; color: var(--muted); }
+.rv-track { position: relative; height: 46px; border-radius: 10px; background: var(--sunken); overflow: hidden; cursor: pointer; touch-action: none; }
+.rv-track .s { position: absolute; top: 18px; bottom: 6px; border-right: 2px solid var(--bg); background: color-mix(in srgb, var(--accent) 22%, var(--sunken)); }
+.rv-track .s.alt { background: color-mix(in srgb, var(--accent) 36%, var(--sunken)); }
+.rv-track .s.drop { background: repeating-linear-gradient(135deg, var(--wait-bg) 0 5px, transparent 5px 10px); }
+.rv-track .f { position: absolute; top: 5px; height: 9px; border-radius: 3px; background: var(--butter); }
+.rv-track .n { position: absolute; top: 2px; width: 2px; height: 14px; background: var(--accent); }
+.rv-track .c { position: absolute; bottom: 1px; width: 12px; height: 12px; margin-left: -6px; border-radius: 999px; background: var(--ok); border: 2px solid var(--surface); }
+.rv-track .h { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--ink); pointer-events: none; }
+.rv-legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.rv-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.rv-qn { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.rv-qn input { border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; background: var(--surface); min-width: 0; }
+.rv-box { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; border-radius: 12px; padding: 9px 11px; font-size: 13.5px; }
+.rv-box > span { flex: 1 1 150px; }
+.rv-chg { background: var(--ok-bg); }
+.rv-chg b { color: var(--ok); }
+.rv-dl { background: var(--surface); border: 1px solid var(--line); }
+.rv-tally { display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+.rv-tally b { font: 800 19px var(--display); color: var(--ink); margin-right: 4px; }
+.rv-tabs { display: flex; gap: 4px; padding: 4px; background: var(--sunken); border-radius: 12px; overflow-x: auto; }
+.rv-tabs button { flex: 1 0 auto; border: 0; background: transparent; border-radius: 9px; padding: 8px 12px; font-weight: 600; color: var(--muted); }
+.rv-tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.rv-tabs small { font: 500 11px var(--mono); margin-left: 6px; }
+.rv-list { display: grid; gap: 10px; }
+.rv-item { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.rv-item.change { border-color: var(--wait); } .rv-item.drop { border-color: var(--accent); }
+.rv-item.drop .rv-th { filter: grayscale(1); opacity: .55; }
+.rv-th { border: 0; padding: 0; border-radius: 9px; width: 74px; aspect-ratio: 9 / 16; background-color: var(--sunken); background-repeat: no-repeat; position: relative; }
+.rv-th span { position: absolute; left: 4px; bottom: 4px; background: rgba(0,0,0,.65); color: #fff; border-radius: 5px; padding: 1px 4px; font: 500 9.5px var(--mono); }
+.rv-body { min-width: 0; display: grid; gap: 6px; align-content: start; }
+.rv-kind { font: 700 11px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.rv-title { font-weight: 600; overflow-wrap: anywhere; }
+.rv-dec { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; width: fit-content; max-width: 100%; flex-wrap: wrap; }
+.rv-dec button { border: 0; background: transparent; padding: 6px 13px; font-weight: 600; font-size: 13.5px; color: var(--muted); }
+.rv-dec button + button { border-left: 1px solid var(--line); }
+.rv-dec button[aria-pressed="true"] { background: var(--ok-bg); color: var(--ok); }
+.rv-dec button[aria-pressed="true"][data-v="change"] { background: var(--wait-bg); color: var(--wait); }
+.rv-dec button[aria-pressed="true"][data-v="drop"] { background: var(--sunken); color: var(--accent); }
+.rv textarea, .rv-cap { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--bg); resize: vertical; }
+.rv-row { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; align-items: center; padding: 8px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.rv-row.on { border: 2px solid var(--ok); padding: 7px 9px; }
+.rv-row.edited { border-color: var(--wait); }
+.rv-row > button { border: 1px solid var(--line); background: var(--bg); border-radius: 7px; padding: 3px 7px; font: 500 12.5px var(--mono); }
+.rv-cap { background: transparent; border-color: transparent; padding: 4px 6px; }
+.rv-cap:focus { border-color: var(--line); background: var(--bg); }
+.rv-looks { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.rv-look { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 13px; display: grid; gap: 4px; }
+.rv-look[aria-pressed="true"] { border: 2px solid var(--accent); padding: 12px; }
+.rv-look strong { font: 800 17px var(--display); }
+.rv-look span { color: var(--muted); font-size: 13px; }
+.rv-hand { display: grid; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+.rv-hand h3 { font: 800 19px var(--display); margin: 0; }
+.rv-hand p { margin: 0; color: var(--muted); font-size: 14px; }
+.rv-mut { color: var(--muted); font-size: 13.5px; }
+.rv-ok { color: var(--ok); font-size: 13.5px; }
+.ticket .openrv { justify-self: start; }
+.btn .rv-tc { color: inherit; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
@@ -220,6 +294,7 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
       <span class="msg" id="labmsg"></span>
     </div>
   </section>
+  <section class="rv" id="review" hidden aria-label="Reel review"></section>
   <div class="cols" id="reels">
     <form class="order" id="order" novalidate>
       <h2>New reel</h2>
@@ -359,7 +434,7 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
   async function cancelReel(d, st) {
     try {
       if (ACTIVE.has(st)) await db.collection("requests").doc(d.id).update({ status: "cancelled", cancelled_at: new Date().toISOString() });
-      else await db.collection("requests").doc(d.id).delete();
+      else { await freeReel(d.id); await db.collection("requests").doc(d.id).delete(); }
     } catch (e) { msg("Couldn't change that reel just now. Try again.", true); }
     confirming.delete(d.id); draw(lastDocs);
   }
@@ -388,7 +463,8 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
           r.sfx && "sound " + r.sfx, r.language && r.language !== "auto" && r.language].filter(Boolean).map(t => el("span", { class: "chip", text: t }))),
         el("div", { class: "links", text: (r.links || []).join("  ·  ") }),
         r.reply ? el("div", { class: "reply", text: "Claude: " + r.reply }) : null,
-        r.review_url && st !== "cancelled" ? el("a", { class: "open", href: r.review_url, target: "_blank", rel: "noopener" }, `Open review page${r.version ? " (" + r.version + ")" : ""} →`) : null,
+        r.in_studio && st !== "cancelled" ? el("button", { class: "btn small openrv", type: "button", onclick: () => openReview(d.id) }, `Open review & download${r.version ? " (" + r.version + ")" : ""}`)
+          : r.review_url && st !== "cancelled" ? el("a", { class: "open", href: r.review_url, target: "_blank", rel: "noopener" }, `Open review page${r.version ? " (" + r.version + ")" : ""} →`) : null,
         el("div", { class: "when", text: "added " + when(r.at) + (r.cancelled_at ? " · cancelled " + when(r.cancelled_at) : "") }));
     }));
   }
@@ -422,12 +498,276 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
     catch (err) { msg("Couldn't save the rule just now.", true); }
   });
 
+
+  // ---------------- Review: each reel's draft lives here (db: reviews/<id> + its decisions, notes, meta; media in assets)
+  const RV = { id: null, D: null, unsub: [], st: null };
+  const tc = (s, dp = 2) => { if (s == null || isNaN(s)) return "--:--"; const m = Math.floor(s / 60), r = s - m * 60; return String(m).padStart(2, "0") + ":" + r.toFixed(dp).padStart(dp ? 3 + dp : 2, "0"); };
+  const STYLE_NAMES = { "it-girl": "it girl", whimsical: "whimsical", scrapbook: "scrapbook" };
+  let comments = null, downloads = null, assets = null;
+  function closeReview() {
+    RV.unsub.forEach(u => { try { u(); } catch (e) {} }); RV.unsub = [];
+    const v = document.querySelector("#review video"); if (v) v.pause();
+    RV.id = null;
+  }
+  async function freeReel(id) {                  // delete a reel's review data and its video files
+    try {
+      const doc = await db.collection("reviews").doc(id).get();
+      const D = doc.exists ? (doc.data() || {}).data || {} : {};
+      if (assets && D.asset_ids) for (const a of D.asset_ids) { try { await assets.delete(a); } catch (e) {} }
+      for (const c of ["decisions", "notes", "meta"]) {
+        const s = await db.collection(`reviews/${id}/${c}`).get();
+        for (const x of s.docs) await db.collection(`reviews/${id}/${c}`).doc(x.id).delete();
+      }
+      if (doc.exists) await db.collection("reviews").doc(id).delete();
+    } catch (e) {}
+  }
+  async function openReview(id) {
+    closeReview();
+    view("review");
+    const box = $("#review");
+    box.replaceChildren(el("div", { class: "empty", text: "Opening the review…" }));
+    let D;
+    try { const d = await db.collection("reviews").doc(id).get(); D = d.exists ? (d.data() || {}).data : null; } catch (e) {}
+    if (!D) { box.replaceChildren(el("button", { class: "btn ghost small", type: "button", onclick: () => view("reels"), text: "← All reels" }), el("div", { class: "empty", text: "This review isn't here yet. Ask Claude to check your studio." })); return; }
+    RV.id = id; RV.D = D;
+    RV.st = { tab: (D.changes && D.changes.length) ? "changes" : "cuts", decisions: {}, notes: [], look: null, mix: null, ready: null, chg: -1, sent: null, blob: null };
+    try { if (localStorage.getItem("rv-seen-" + id) === D.version && RV.st.tab === "changes") RV.st.tab = "cuts"; localStorage.setItem("rv-seen-" + id, D.version); } catch (e) {}
+    buildReview(box, D);
+    const base = `reviews/${id}`;
+    RV.unsub.push(db.collection(base + "/decisions").onSnapshot(s => {
+      const next = {}; s.docs.forEach(d => { const b = d.data(); if (b && b.v === D.version) next[d.id] = { status: b.status, note: b.note || "", text: b.text }; });
+      RV.st.decisions = next; rvRender();
+    }, () => {}));
+    RV.unsub.push(db.collection(base + "/notes").onSnapshot(s => { RV.st.notes = s.docs.map(d => ({ id: d.id, ...d.data() })); rvRender(); }, () => {}));
+    RV.unsub.push(db.collection(base + "/meta").onSnapshot(s => {
+      const m = {}; s.docs.forEach(d => m[d.id] = d.data());
+      RV.st.look = m.look && m.look.v === D.version ? m.look.style : null;
+      RV.st.mix = m.mix && m.mix.v === D.version ? { graphics: m.mix.graphics, sfx: m.mix.sfx } : null;
+      RV.st.ready = m.status || null;
+      rvRender();
+    }, () => {}));
+  }
+  let rvRender = () => {};
+  function buildReview(box, D) {
+    const st = RV.st, base = `reviews/${RV.id}`;
+    const CH = D.changes || [];
+    const video = el("video", { src: D.preview, playsinline: "", preload: "metadata" });
+    if (D.thumbs) video.poster = "";
+    const clock = el("span", { class: "rv-tc", text: "" });
+    const track = el("div", { class: "rv-track", role: "slider", "aria-label": "Timeline", tabindex: "0" });
+    const head = el("div", { class: "h" });
+    const seek = t => { video.currentTime = Math.max(0, Math.min(D.duration - 0.05, t)); };
+    const play = el("button", { class: "rv-play", type: "button", text: "Play", onclick: () => video.paused ? video.play() : video.pause() });
+    video.addEventListener("play", () => play.textContent = "Pause"); video.addEventListener("pause", () => play.textContent = "Play");
+    const qnIn = el("input", { type: "text", placeholder: "Note at this moment…", "aria-label": "Note at this moment", autocomplete: "off" });
+    const qnAt = el("span", { class: "rv-tc", text: "00:00.0" });
+    const tick = () => { const t = video.currentTime || 0; head.style.left = (t / D.duration * 100) + "%"; clock.textContent = tc(t) + " / " + tc(D.duration); qnAt.textContent = tc(t, 1); };
+    video.addEventListener("timeupdate", tick);
+    const fromPointer = e => { const r = track.getBoundingClientRect(); seek((e.clientX - r.left) / r.width * D.duration); };
+    track.addEventListener("pointerdown", e => { track.setPointerCapture(e.pointerId); fromPointer(e); });
+    track.addEventListener("pointermove", e => { if (e.buttons) fromPointer(e); });
+    track.addEventListener("keydown", e => { if (e.key === "ArrowLeft") seek(video.currentTime - 1); if (e.key === "ArrowRight") seek(video.currentTime + 1); });
+    const chgBox = el("div", { class: "rv-box rv-chg", hidden: CH.length ? null : "" });
+    const dlBox = el("div", { class: "rv-box rv-dl" });
+    const tally = el("div", { class: "rv-tally" }), tabs = el("nav", { class: "rv-tabs", role: "tablist" }), panel = el("section", { "aria-live": "polite" });
+    const applyBtn = el("button", { class: "btn", type: "button", text: "Apply my review" });
+    const applyMsg = el("span", { class: "rv-mut" }), applyProg = el("div", { class: "prog", hidden: "" });
+    const form = el("form", { class: "rv-qn" }, qnIn, el("button", { class: "btn small", type: "submit" }, "Add at ", qnAt));
+    form.addEventListener("submit", e => { e.preventDefault(); if (!qnIn.value.trim()) return; addNote(Math.round(video.currentTime * 10) / 10, qnIn.value.trim()); qnIn.value = ""; st.tab = "notes"; rvRender(); });
+
+    box.replaceChildren(
+      el("div", { class: "rv-top" }, el("button", { class: "btn ghost small", type: "button", onclick: () => view("reels"), text: "← All reels" }), el("h2", { text: D.name })),
+      el("div", { class: "chips" }, [`draft ${D.version}`, `${D.duration.toFixed(1)} s`, STYLE_NAMES[D.style] || D.style, `${D.cuts.length} cuts`, `${D.graphics.length} graphics`, `sound ${D.sfx}`, `built ${D.built}`].map(t => el("span", { class: "chip", text: t }))),
+      el("div", { class: "rv-bay" },
+        el("div", { class: "rv-mon" }, el("div", { class: "rv-screen" }, video),
+          el("div", { class: "rv-tr" }, el("button", { type: "button", onclick: () => seek(video.currentTime - 2), text: "−2s" }), play, el("button", { type: "button", onclick: () => seek(video.currentTime + 2), text: "+2s" }), clock),
+          track, chgBox,
+          el("div", { class: "rv-legend" }, el("span", {}, el("i", { style: "background:color-mix(in srgb,var(--accent) 30%,var(--sunken))" }), "cuts"), el("span", {}, el("i", { style: "background:var(--butter)" }), "graphics"), el("span", {}, el("i", { style: "background:var(--accent);width:3px" }), "your notes"), CH.length ? el("span", {}, el("i", { style: "background:var(--ok);border-radius:999px" }), "what changed") : null),
+          form),
+        el("div", { style: "display:grid;gap:14px;min-width:0" }, dlBox, tally, tabs, panel,
+          el("div", { class: "rv-hand" }, el("h3", { text: "Send it back for the next draft" }),
+            el("p", { text: "Your choices save as you make them. Press Apply my review: Claude reads every Keep, Change, Drop and note, re-edits, and the new draft lands right here with a list of what changed." }),
+            el("div", { class: "go" }, applyBtn, applyMsg), applyProg))));
+    (function loop() { if (RV.D === D) { if (!video.paused) tick(); requestAnimationFrame(loop); } })();
+
+    // thumbnails: one sprite sheet, tile i
+    const thumb = (item, label) => {
+      const b = el("button", { class: "rv-th", type: "button", "aria-label": "Play from " + tc(item.start), onclick: () => { seek(item.start); video.play(); } }, el("span", { text: tc(item.start, 1) }));
+      if (D.thumbs && item.tile != null) {
+        const cols = D.thumbs.cols, rows = Math.ceil(D.thumbs.count / cols);
+        b.style.backgroundImage = `url("${D.thumbs.url}")`;
+        b.style.backgroundSize = `${cols * 100}% ${rows * 100}%`;
+        b.style.backgroundPosition = `${cols > 1 ? (item.tile % cols) / (cols - 1) * 100 : 0}% ${rows > 1 ? Math.floor(item.tile / cols) / (rows - 1) * 100 : 0}%`;
+      }
+      return b;
+    };
+    const timers = {};
+    const later = (k, fn) => { clearTimeout(timers[k]); timers[k] = setTimeout(fn, 600); };
+    async function saveDecision(id, body) {
+      st.decisions[id] = { ...(st.decisions[id] || {}), ...body }; rvRender();
+      try { await db.collection(base + "/decisions").doc(id).set({ ...st.decisions[id], v: D.version, at: new Date().toISOString() }); } catch (e) { applyMsg.textContent = "Couldn't save that choice just now."; }
+    }
+    async function clearDecision(id) { delete st.decisions[id]; rvRender(); try { await db.collection(base + "/decisions").doc(id).delete(); } catch (e) {} }
+    async function addNote(t, text) { try { await db.collection(base + "/notes").add({ t, text, v: D.version, at: new Date().toISOString(), done: false }); } catch (e) { applyMsg.textContent = "Couldn't save the note just now."; } }
+    const decider = item => {
+      const dec = st.decisions[item.id] || {}, status = dec.status || "keep";
+      const parts = [el("div", { class: "rv-dec", role: "group", "aria-label": "Decision" }, ...[["keep", "Keep"], ["change", "Change"], ["drop", "Drop"]].map(([v, l]) =>
+        el("button", { type: "button", "data-v": v, "aria-pressed": String(status === v), onclick: () => v === "keep" && !dec.note ? clearDecision(item.id) : saveDecision(item.id, { status: v }) }, l)))];
+      if (status !== "keep") {
+        const ta = el("textarea", { rows: "2", id: "rvn-" + item.id, placeholder: status === "change" ? "What should change? e.g. shorter, start 1s later, different text…" : "Why drop it? (optional)" });
+        ta.value = dec.note || "";
+        ta.addEventListener("input", () => later(item.id, () => saveDecision(item.id, { status, note: ta.value })));
+        parts.push(ta);
+      }
+      return parts;
+    };
+    const card = (item, kind, title, meta) => el("article", { class: "rv-item " + ((st.decisions[item.id] || {}).status || "") }, thumb(item),
+      el("div", { class: "rv-body" }, el("div", { class: "rv-kind", text: kind }), el("div", { class: "rv-title", text: title }), el("div", { class: "rv-tc", text: meta }), ...decider(item)));
+    const timed = () => CH.map((c, i) => ({ ...c, i })).filter(c => c.at != null);
+    const showChange = i => { st.chg = i; const c = CH[i]; if (c && c.at != null) { seek(Math.max(0, c.at - 1)); video.play(); } st.tab = "changes"; rvRender(); };
+    const step = dir => { const l = timed(); if (!l.length) return; const p = l.findIndex(c => c.i === st.chg); showChange((l[(p + dir + l.length) % l.length] || l[0]).i); };
+    const KIND = { caption: "caption", drop: "removed", look: "whole reel", cut: "cut", graphic: "graphic", note: "your note" };
+    const PANELS = {
+      changes: () => [el("p", { class: "hint", text: `Everything Claude changed from your review of ${D.changes_from}. Tap a time to watch it from just before the change.` }),
+        el("div", { class: "rv-list" }, CH.map((c, i) => el("div", { class: "rv-row" + (st.chg === i ? " on" : "") },
+          c.at != null ? el("button", { type: "button", onclick: () => showChange(i), text: tc(c.at, 1) }) : el("span", { class: "chip", text: "whole reel" }),
+          el("div", {}, el("div", { class: "rv-kind", style: "color:var(--ok)", text: KIND[c.kind] || c.kind || "changed" }), el("div", { text: c.what }), c.note ? el("div", { class: "rv-mut", text: "You asked: " + c.note }) : null))))],
+      cuts: () => [el("p", { class: "hint", text: "Every take in the draft, in order. Drop a take, or ask for a change like \"start half a second later\"." }),
+        el("div", { class: "rv-list" }, D.cuts.map(c => card(c, `Event ${c.event} · clip ${c.clip}`, c.line || "(no words)", `${tc(c.start)} → ${tc(c.end)} · ${(c.end - c.start).toFixed(1)} s`)))],
+      graphics: () => [el("p", { class: "hint", text: "Every graphic and effect. The picture is a real frame from the middle of it." }),
+        el("div", { class: "rv-list" }, D.graphics.map(g => card(g, g.kind, g.title, `${tc(g.start)} → ${tc(g.end)}${g.detail ? " · " + g.detail : ""}`)))],
+      captions: () => [el("p", { class: "hint", text: "Fix any misheard word: just retype it." }),
+        el("div", { class: "rv-list" }, D.captions.map(c => {
+          const dec = st.decisions[c.id];
+          const inp = el("input", { class: "rv-cap", id: "rvc-" + c.id, value: dec && dec.text != null ? dec.text : c.text, "aria-label": "Caption at " + tc(c.start) });
+          inp.addEventListener("input", () => later(c.id, () => inp.value.trim() === c.text.trim() ? clearDecision(c.id) : saveDecision(c.id, { status: "change", text: inp.value.trim() })));
+          inp.addEventListener("focus", () => seek(c.start));
+          return el("div", { class: "rv-row" + (dec ? " edited" : "") }, el("button", { type: "button", onclick: () => { seek(c.start); video.play(); }, text: tc(c.start) }), inp);
+        }))],
+      look: () => {
+        const pick = st.look || D.style, mix = { graphics: D.graphics_amount, sfx: D.sfx, ...(st.mix || {}) };
+        const seg = (key, opts) => el("div", { class: "rv-dec" }, ...opts.map(([v, l]) => el("button", { type: "button", "aria-pressed": String(mix[key] === v),
+          onclick: async () => { st.mix = { ...mix, [key]: v }; rvRender(); try { await db.collection(base + "/meta").doc("mix").set({ ...st.mix, v: D.version, at: new Date().toISOString() }); } catch (e) {} } }, l)));
+        return [el("p", { class: "hint", text: "Switch the look for the next draft. Everything else stays." }),
+          el("div", { class: "rv-looks" }, STYLES.filter(x => x[0] !== "surprise").map(([id, name, desc]) => el("button", { class: "rv-look", type: "button", "aria-pressed": String(pick === id),
+            onclick: async () => { st.look = id; rvRender(); try { await db.collection(base + "/meta").doc("look").set({ style: id, v: D.version, at: new Date().toISOString() }); } catch (e) {} } },
+            el("strong", { text: name }), el("span", { text: desc })))),
+          el("div", { class: "rv-kind", text: "Motion graphics" }), seg("graphics", [["light", "Light"], ["medium", "Medium"], ["max", "Max"]]),
+          el("div", { class: "rv-kind", text: "Sound effects" }), seg("sfx", [["off", "Off"], ["subtle", "Subtle"], ["normal", "Normal"], ["bold", "Bold"]])];
+      },
+      notes: () => {
+        const list = [...st.notes].sort((a, b) => (a.t ?? 1e9) - (b.t ?? 1e9));
+        const general = el("textarea", { rows: "2", id: "rv-general", placeholder: "Anything about the whole reel? e.g. faster pace, less sparkle…" });
+        return [el("p", { class: "hint", text: "Pause on a moment and type under the player, or write a note for the whole reel." }),
+          el("div", { class: "rv-list" }, list.map(n => el("div", { class: "rv-row" },
+            n.t != null ? el("button", { type: "button", onclick: () => { seek(n.new_t != null && n.done ? n.new_t : n.t); video.play(); }, text: tc(n.done && n.new_t != null ? n.new_t : n.t, 1) }) : el("span", { class: "chip", text: "whole reel" }),
+            el("div", {}, el("div", { text: n.text }), n.reply ? el("div", { class: "rv-ok", text: "Claude: " + n.reply }) : el("div", { class: "rv-mut", text: n.done ? "done" : "open" }),
+              !n.done ? el("button", { class: "btn ghost small", type: "button", style: "margin-top:4px", onclick: async () => { try { await db.collection(base + "/notes").doc(n.id).delete(); } catch (e) {} }, text: "Delete" }) : null)))),
+          el("div", { class: "go" }, general, el("button", { class: "btn ghost small", type: "button", onclick: () => { if (general.value.trim()) { addNote(null, general.value.trim()); general.value = ""; } } }, "Add note"))];
+      },
+    };
+    const TABS = [...(CH.length ? [["changes", "What changed", () => CH.length]] : []), ["cuts", "Cuts", () => D.cuts.length], ["graphics", "Graphics", () => D.graphics.length],
+      ["captions", "Captions", () => D.captions.length], ["look", "Look", () => ""], ["notes", "Notes", () => st.notes.length]];
+
+    function summary() {
+      const vals = Object.entries(st.decisions), n = s => vals.filter(([k, d]) => d.status === s && !k.startsWith("cap-")).length;
+      const caps = vals.filter(([k]) => k.startsWith("cap-")).length, open = st.notes.filter(x => !x.done).length;
+      return [n("change") && `${n("change")} changes`, n("drop") && `${n("drop")} drops`, caps && `${caps} caption fixes`, open && `${open} notes`,
+        st.look && st.look !== D.style && `look: ${STYLE_NAMES[st.look]}`, st.mix && `graphics ${st.mix.graphics}, sound ${st.mix.sfx}`].filter(Boolean).join(", ") || "a fresh pass";
+    }
+    applyBtn.addEventListener("click", async () => {
+      applyBtn.disabled = true;
+      try { await db.collection(base + "/meta").doc("status").set({ ready: true, v: D.version, at: new Date().toISOString(), state: "ready" }); } catch (e) { applyBtn.disabled = false; applyMsg.textContent = "Couldn't save just now. Try again."; return; }
+      let can = "off";
+      try { if (comments) can = await comments.canSendToClaude(); } catch (e) {}
+      if (can === "available") {
+        try {
+          await comments.sendToClaude({ anchor: await comments.anchorFor(applyBtn), text: `apply my review: ${D.name} ${D.version} (studio reel ${RV.id}: ${summary()})` });
+          st.sent = "ok";
+          try { await db.collection(base + "/meta").doc("status").update({ state: "sent" }); } catch (e) {}
+        } catch (e) { st.sent = e && e.code === "consent_required" ? "consent" : "fail"; }
+      } else st.sent = "manual";
+      applyBtn.disabled = false; rvRender();
+    });
+    const clock12 = iso => { try { return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); } catch (e) { return ""; } };
+
+    // download: the Instagram-ready file in asset parts, joined here
+    const F = D.download;
+    const dlBtn = el("button", { class: "btn", type: "button", text: "Download video" });
+    const dlMsg = el("span", { class: "rv-mut" });
+    if (!F || !F.parts || !F.parts.length) dlBox.replaceChildren(el("span", { class: "rv-mut", text: "The download appears here with the next draft." }));
+    else {
+      dlMsg.textContent = `${F.filename} · ${(F.size / 1048576).toFixed(0)} MB · 1080×1920, ready for Instagram`;
+      dlBox.replaceChildren(dlBtn, dlMsg);
+      if (!downloads) { dlBtn.disabled = true; dlMsg.textContent = "Open the studio in Claude to download."; }
+      dlBtn.addEventListener("click", async () => {
+        dlBtn.disabled = true;
+        try {
+          if (!st.blob) {
+            const chunks = [];
+            for (let i = 0; i < F.parts.length; i++) {
+              dlMsg.textContent = `Getting the video… ${Math.round(i / F.parts.length * 100)}%`;
+              const r = await fetch(F.parts[i]); if (!r.ok) throw new Error("part");
+              chunks.push(await r.blob());
+            }
+            st.blob = new Blob(chunks, { type: "video/mp4" });
+          }
+          dlMsg.textContent = "Choose where to save it…";
+          await downloads.save({ filename: F.filename, data: st.blob });
+          dlMsg.textContent = "Saved. Post it straight to Instagram."; dlBtn.textContent = "Download again";
+        } catch (e) {
+          dlMsg.textContent = e && e.code === "declined" ? "Not saved. Press Download whenever you're ready." : "Couldn't download just now. Check your connection and try again.";
+        } finally { dlBtn.disabled = false; }
+      });
+    }
+
+    rvRender = () => {
+      if (RV.D !== D) return;
+      const active = document.activeElement && document.activeElement.id, caret = active && document.activeElement.selectionStart;
+      // track
+      track.replaceChildren(...D.cuts.map((c, i) => el("div", { class: "s" + (i % 2 ? " alt" : "") + ((st.decisions[c.id] || {}).status === "drop" ? " drop" : ""), style: `left:${c.start / D.duration * 100}%;width:${(c.end - c.start) / D.duration * 100}%` })),
+        ...D.graphics.map(g => el("div", { class: "f", style: `left:${g.start / D.duration * 100}%;width:${Math.max(0.6, (g.end - g.start) / D.duration * 100)}%` })),
+        ...st.notes.filter(n => n.t != null).map(n => el("div", { class: "n", style: `left:${n.t / D.duration * 100}%` })),
+        ...CH.filter(c => c.at != null).map(c => el("div", { class: "c", style: `left:${c.at / D.duration * 100}%`, title: c.what })), head);
+      tick();
+      // changes bar
+      if (CH.length) {
+        const l = timed(), p = l.findIndex(c => c.i === st.chg);
+        chgBox.replaceChildren(el("span", {}, el("b", { text: `${CH.length} changes` }), ` since ${D.changes_from}` + (p >= 0 ? ` · ${p + 1} of ${l.length}: ${CH[st.chg].what}` : ": the green dots")),
+          l.length ? el("button", { class: "btn ghost small", type: "button", "aria-label": "Previous change", onclick: () => step(-1), text: "◀" }) : null,
+          l.length ? el("button", { class: "btn small", type: "button", onclick: () => step(1), text: p >= 0 ? "Next change ▶" : "Show me ▶" }) : null);
+      }
+      // tally + tabs + panel
+      const vals = Object.entries(st.decisions), caps = vals.filter(([k]) => k.startsWith("cap-")).length;
+      const n = s => vals.filter(([k, d]) => d.status === s && !k.startsWith("cap-")).length;
+      tally.replaceChildren(...[[n("change"), "change"], [n("drop"), "drop"], [caps, "caption fixes"], [st.notes.filter(x => !x.done).length, "open notes"]].map(([v, l]) => el("span", {}, el("b", { text: String(v) }), l)));
+      tabs.replaceChildren(...TABS.map(([id, label, cnt]) => el("button", { type: "button", role: "tab", "aria-selected": String(st.tab === id), onclick: () => { st.tab = id; rvRender(); } }, label, el("small", { text: String(cnt()) }))));
+      panel.replaceChildren(el("div", { style: "display:grid;gap:10px" }, ...PANELS[st.tab]()));
+      // apply state
+      const s = st.ready && st.ready.v === D.version ? st.ready : null;
+      const busy = s && (s.state === "applying" || s.state === "sent");
+      applyBtn.disabled = !!busy; applyBtn.textContent = busy ? "Sent to Claude" : "Apply my review";
+      applyMsg.textContent = s && s.state === "applying" ? "Claude is making the next draft. It lands right here."
+        : s && st.sent === "ok" ? "Sent. Claude starts in a moment." : s && st.sent === "consent" ? "Allow comments for this page, then press Apply again."
+        : s && s.state === "ready" ? "Saved. Claude isn't listening right now: tell Claude \"apply my review\" in the chat." : "";
+      applyProg.hidden = !busy;
+      if (busy) {
+        const pct = Math.max(0, Math.min(100, Number(s.pct) || 0));
+        applyProg.replaceChildren(el("div", { class: "bar" + (pct ? "" : " wait") }, el("i", { style: pct ? `width:${pct}%` : "" })),
+          el("div", { class: "progtxt" }, el("span", {}, el("b", { text: pct ? pct + "%" : "" }), " " + (s.stage || "waiting for Claude")), el("span", { text: s.eta ? `${left(s.eta)} · done around ${clock12(s.eta)}` : "usually 5-15 min" })));
+      }
+      if (active) { const x = document.getElementById(active); if (x) { x.focus(); try { x.setSelectionRange(caret, caret); } catch (e) {} } }
+    };
+    rvRender();
+  }
+
   // ---------------- Style Lab
   const lab = { data: null, tab: null, picks: {}, notes: "", saveT: null };
   const view = v => {
-    $("#reels").hidden = v !== "reels"; $("#lab").hidden = v !== "lab";
+    $("#reels").hidden = v !== "reels"; $("#lab").hidden = v !== "lab"; $("#review").hidden = v !== "review";
+    if (v !== "review") closeReview();
     $("#v-reels").setAttribute("aria-selected", v === "reels"); $("#v-lab").setAttribute("aria-selected", v === "lab");
-    try { localStorage.setItem("studio-view", v); } catch (e) {}
+    try { localStorage.setItem("studio-view", v === "review" ? "reels" : v); } catch (e) {}
     if (v === "lab" && !lab.data) loadLab();
   };
   $("#v-reels").addEventListener("click", () => view("reels"));
@@ -498,6 +838,9 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
     db.collection("requests").orderBy("at", "desc").limit(50).onSnapshot(s => draw(s.docs),
       e => banner("Live updates stopped (" + e.code + "). Reload the page to reconnect."));
     db.collection("rules").orderBy("at", "asc").limit(100).onSnapshot(s => drawRules(s.docs), () => {});
+    try { comments = await window.claude.use("comments"); } catch (e) {}
+    try { downloads = await window.claude.use("downloads"); } catch (e) {}
+    try { assets = await window.claude.use("assets"); } catch (e) {}
     try {
       const d = await db.collection("lab").doc("choices").get();
       if (d.exists) { const v = d.data() || {}; lab.picks = v.picks || {}; lab.notes = v.notes || ""; }

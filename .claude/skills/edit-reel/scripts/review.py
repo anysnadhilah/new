@@ -1,6 +1,13 @@
-"""Build the review page for the latest render: <project>/review/ (index.html, thumbs/, preview.mp4).
+"""Build the review for the latest render.
 
-    review.py <project>
+    review.py <project>                      # renders thumbnails, preview, the download; writes review/
+    review.py <project> --assets map.json    # after uploading review/upload.json's files to the Studio's assets:
+                                             # writes review/studio_doc.json for the Studio's reviews/<request id>
+
+The review lives inside the Reel Studio (see SKILL.md, Step 9): review/studio.json (the data, with local file names),
+review/upload.json (files to upload as Studio assets: preview, one thumbnail sprite, the download parts). map.json is
+{"<file name>": {"id": "<asset id>", "url": "<asset url>"}} from the upload result. A standalone page (index.html +
+files.json) is written too, for a setup without a Studio.
 
 Claude then publishes it with the Artifact tool (see SKILL.md, Step 9) and later reads the viewer's
 Keep / Change / Drop choices, caption fixes, look switch and timed notes back from the page's database.
@@ -10,6 +17,7 @@ import re
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 from PIL import Image
 
@@ -76,8 +84,35 @@ def fx_detail(spec):
     return ", ".join(bits)
 
 
+def sprite(out, items, cols=8):
+    """All thumbnails on one sheet (one upload instead of dozens); item["tile"] is its place."""
+    rows = (len(items) + cols - 1) // cols
+    sheet = Image.new("RGB", (cols * THUMB[0], max(1, rows) * THUMB[1]), (20, 20, 20))
+    for i, it in enumerate(items):
+        sheet.paste(Image.open(out / it["thumb"]), ((i % cols) * THUMB[0], (i // cols) * THUMB[1]))
+        it["tile"] = i
+    sheet.save(out / "thumbs.jpg", quality=78)
+    return {"file": "thumbs.jpg", "cols": cols, "count": len(items)}
+
+
+def studio_doc(proj, map_path):
+    out = proj / "review"
+    data = json.loads((out / "studio.json").read_text())
+    amap = json.loads(Path(map_path).read_text())
+    url = lambda name: amap[Path(name).name]["url"]
+    data["preview"] = url(data["preview"])
+    data["thumbs"]["url"] = url(data["thumbs"].pop("file"))
+    data["download"]["parts"] = [url(p) for p in data["download"]["parts"]]
+    data["asset_ids"] = [v["id"] for v in amap.values()]
+    doc = {"data": data, "updated": time.strftime("%Y-%m-%dT%H:%M:%S")}
+    (out / "studio_doc.json").write_text(json.dumps(doc, ensure_ascii=False))
+    print(f"studio doc: {out / 'studio_doc.json'} -> ArtifactData set on studioUrl, collection reviews, doc <request id>")
+
+
 def main():
-    proj = project_dir(sys.argv[1]) if len(sys.argv) > 1 else die("usage: review.py <project>")
+    proj = project_dir(sys.argv[1]) if len(sys.argv) > 1 else die("usage: review.py <project> [--assets map.json]")
+    if "--assets" in sys.argv:
+        return studio_doc(proj, sys.argv[sys.argv.index("--assets") + 1])
     plan = load_json(proj / "plan.json")
     tl = load_json(proj / "timeline.json")
     edl = load_json(proj / "edl.json")
@@ -134,6 +169,7 @@ def main():
         it["thumb"] = f"thumbs/{it['id']}.jpg"
         del it["at"]
     print(f"{len(items)} thumbnails in {time.time() - t0:.0f}s", flush=True)
+    sheet = sprite(out, items)
 
     preview(video, out / "preview.mp4")
     parts, size = final_parts(video, out)
@@ -163,10 +199,17 @@ def main():
     files["preview.mp4"] = str(out / "preview.mp4")
     files.update({p: str(out / p) for p in parts})
     (out / "files.json").write_text(json.dumps(files, indent=2))
+    studio = {**data, "preview": "preview.mp4", "thumbs": sheet}
+    studio.pop("studio", None)
+    for it in studio["cuts"] + studio["graphics"]:
+        it.pop("thumb", None)
+    (out / "studio.json").write_text(json.dumps(studio, ensure_ascii=False))
+    (out / "upload.json").write_text(json.dumps([str(out / "preview.mp4"), str(out / "thumbs.jpg")] + [str(out / p) for p in parts], indent=1))
     mb = (out / "preview.mp4").stat().st_size / 1e6
     print(f"review page for {version}: {out / 'index.html'} ({len(cuts)} cuts, {len(graphics)} graphics, "
           f"{len(captions)} captions, preview {mb:.1f} MB)")
-    print(f"publish: file_path={out / 'index.html'}  files=<review/files.json>  capabilities={{\"db\": {{}}, \"comments\": {{}}}}"
+    print(f"studio: upload the {2 + len(parts)} files in review/upload.json as Studio assets, save the map, then review.py --assets <map>")
+    print(f"standalone: file_path={out / 'index.html'}  files=<review/files.json>  capabilities={{\"db\": {{}}, \"comments\": {{}}}}"
           + (f"  url={info['url']}" if info.get("url") else "  (first publish: save the url into review/review.json)"))
 
 

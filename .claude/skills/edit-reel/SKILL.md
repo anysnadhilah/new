@@ -76,8 +76,7 @@ first): `update` it to `{"status": "editing", "progress": {"pct": 2, "stage": "g
 `links` → fetch.py; `style` (`surprise` → pick the style that suits the video and say why); `graphics` → autofx.py
 `--amount`; `sfx` → plan.json `"sfx"`; `language` (`auto` → leave it out, `mixed` → leave it out and say so in the
 prompt); `captions: "off"` → plan.json `"show_captions": false`; `notes` → follow them like a brief (names to spell,
-what to cut, the CTA). When the review page is up, `update` the request to `{"status": "ready", "review_url": <url>,
-"version": "vN", "reply": "<one line on what you made>"}`. If a link fails or something needs the user, set
+what to cut, the CTA). When the review is up (Step 9), the request is `ready` with `in_studio: true`. If a link fails or something needs the user, set
 `{"status": "problem", "reply": "<what is needed, in plain words>"}` and move on to the next request.
 **Progress and time left** (the Studio shows a progress bar and "about N min left"): at the start of every step,
 `update` the request's `progress` with `pct`, a short plain `stage` and `eta` = now + your honest estimate of the
@@ -212,49 +211,51 @@ notes: caption/sticker/hook notes only need Step 6-7 (re-render); take changes n
 Rough timings for a 60 s reel from 3-4 min of 4K phone footage: setup first time ~2 min; ingest ~1.5 min;
 assemble ~4 min; render ~2-4 min. First draft in ~15 min on a recent Mac, ~20-25 min in a cloud session.
 
-## Step 9: Review page (after every draft)
+## Step 9: Review (after every draft): inside the Reel Studio
 
-Give the user a review page instead of asking for notes in chat:
+Every reel's review lives in the Studio itself (one link for everything): the reel's card gets **Open review &
+download**, which opens the player, timeline, Keep / Change / Drop, captions, look, notes, **Download video** (the
+Instagram-ready 1080x1920 file) and **Apply my review**. No new artifact per reel.
 ```
-PY SK/scripts/review.py <project>          # writes <project>/review/: index.html, thumbs/, preview.mp4, files.json
+PY SK/scripts/review.py <project>          # thumbnails, preview, the download; writes review/studio.json + upload.json
 ```
-Publish it with the Artifact tool: `file_path` = `<project>/review/index.html`, `root` = `<project>/review`, `files` =
-the map in `review/files.json` (keys are published paths; pass `null` for old `final/part-*.mp4` parts no longer
-listed; one publish sends at most 64 MB, so send the first parts with the page, then the rest in a second publish
-to the same url), `capabilities` =
-`{"db": {}, "comments": {}, "downloads": true}` (comments carries the page's **Apply my review** button to you;
-downloads its **Download video** button: the Instagram-ready 1080x1920 file, joined from the parts),
-`icon` = "film" on the first publish. Save the returned url into `review/review.json` as `"url"`; every later draft
-republishes to that same url (same `file_path` in this session, or pass `url`). Send the user the link and say:
-press Keep / Change / Drop on any take or graphic, retype misheard captions, switch the look, the amount of
-graphics and the sound level, pin notes to moments, then press **Apply my review** on the page. No chat needed:
-the button posts an "apply my review: ..." comment that is sent to you (this session watches every page it
-publishes). If no session is listening, the page tells them to say "apply my review" in the chat instead.
+1. Upload the files listed in `review/upload.json` (preview, thumbs.jpg, part-NN.mp4) to the Studio's asset store:
+   Artifact publish with `url` = `studioUrl`, `asset: true`, `file_paths` = that list. Write the result as
+   `<project>/review/assets.json`: `{"<file name>": {"id": "<asset id>", "url": "<url>"}}`.
+2. `PY SK/scripts/review.py <project> --assets <project>/review/assets.json` writes `review/studio_doc.json`.
+3. One ArtifactData `batch` on `studioUrl`: `set` `reviews/<request id>` from that file (`file_path`; pin
+   `if_version` when it exists), and `update` the request with `{"in_studio": true, "status": "ready", "version":
+   "vN", "reply": "<one line>"}`. A reel with no Studio request: create one first (`status` "ready", `title`,
+   `style`, `at`) and use its id. Before replacing an older draft, delete the old draft's assets (Artifact `delete`
+   with `url` + `path` = each id in the old doc's `data.asset_ids`) so storage stays free: the store holds 1 GB
+   (about 13 reels); removing a finished reel with ✕ on its card frees its files too.
+4. Tell the user: open the Studio, tap the reel, and either download it or press Keep / Change / Drop and **Apply my
+   review**. (No Studio set up: publish the standalone `review/index.html` with `files` = `review/files.json`,
+   `capabilities` = `{"db": {}, "comments": {}, "downloads": true}`, at most 64 MB per publish.)
 
-When an "apply my review" comment arrives from a review page (or the user says it):
+When an "apply my review: ... (studio reel <id>: ...)" comment arrives on the Studio (or the user says it):
 0. Reply in that comment thread in one line ("On it, the next draft lands here in about N min"). While you work,
-   `update` the page's `meta/status` with `{"state": "applying", "pct", "stage", "eta"}` at each step (same stages
-   and honest ETA as the Studio progress; the page shows a progress bar), and set the Studio request for this reel
-   (if any) to `editing` with the same `progress`.
-1. Export the page's database: ArtifactData `list` with `out_dir` = `<project>/work/review_export` for each of
-   `decisions`, `notes` and `meta`.
+   `update` `reviews/<id>/meta/status` with `{"state": "applying", "pct", "stage", "eta"}` at each step and the
+   request with `{"status": "editing", "progress": {...}}` (same stages and honest ETA as Step 0b).
+1. Export the review: ArtifactData `list` with `out_dir` = `<project>/work/review_export` for each of
+   `reviews/<id>/decisions`, `reviews/<id>/notes` and `reviews/<id>/meta`; move each folder's json files so the
+   export has `decisions/`, `notes/`, `meta/` directly under it.
 2. `PY SK/scripts/review_apply.py <project> <project>/work/review_export`: applies drops, caption fixes, the look,
    graphics amount and sound level, and prints the Changes and notes that need judgement (also in
    `work/review_todo.json`). If it says to, re-run autofx.py after assemble.
 3. Do each printed item in `edl.json` / `plan.json` (a take's "start later" = move its `in`; "use the other take" =
    pick it from `transcript.txt`; an effect "bigger/shorter" = its options and times). Then assemble (only if cuts
-   changed), cutout (if cutout effects changed), render, check, `review.py`, and republish to the same url.
-   **Show where each change is**: before `review.py`, add one item per hand-made change to `review/changes.json`
+   changed), cutout (if cutout effects changed), render, check.
+   **Show where each change is**: add one item per hand-made change to `review/changes.json`
    (`{"what": "<plain words>", "kind": "cut|graphic|caption|drop|look|note", "at": <seconds in the NEW draft, or
    null for the whole reel>, "note": "<what they asked, short>"}`); review_apply.py already wrote the mechanical
-   ones. Check each `at` on the new render (`render.py --at`). The new page opens on **What changed**: green dots
-   on the timeline, a "Next change" button that plays each one from a second before, and the list.
-4. Tidy the page's database with one ArtifactData `batch`: delete every `decisions` document and `meta/status`
-   (pin each with the `version` the list showed), and `update` each note you handled with
-   `{"done": true, "reply": "<one short line on what you changed>", "new_t": <its time in the new draft, or null>}`.
-5. Reply in the comment thread (and to the Studio request: `ready`, `version`, `reply`) that the new draft is up
-   with N changes; tell the user the same if they are in the chat.
-The page only shows decisions for the current draft version, so stale ones never leak into the next round.
+   ones. Check each `at` on the new render (`render.py --at`). Then steps 1-3 above (review.py, upload, doc). The
+   review opens on **What changed**: green dots on the timeline, "Next change" plays each one from a second before.
+4. Tidy with one ArtifactData `batch`: delete every `reviews/<id>/decisions` document and `reviews/<id>/meta/status`,
+   and `update` each note you handled with `{"done": true, "reply": "<one short line>", "new_t": <time in the new
+   draft, or null>}`.
+5. Reply in the comment thread that the new draft is up with N changes; tell the user the same if they are in chat.
+The review only shows decisions for the current draft version, so stale ones never leak into the next round.
 
 ## Hard rules
 1. Never put text or graphics on the face (eyes to chin). The scripts place text in free zones; verify on snaps.
