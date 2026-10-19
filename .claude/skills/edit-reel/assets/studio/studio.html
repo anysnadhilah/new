@@ -398,7 +398,15 @@ code { font: 500 13px var(--mono); background: var(--sunken); border-radius: 6px
     try {
       await db.collection("requests").add(body);
       $("#links").value = ""; $("#title").value = ""; $("#notes").value = "";
-      msg("Added. Now tell Claude: check my studio");
+      // wake Claude straight from here (the owner's session watching this studio); otherwise ask for the chat
+      let can = "off";
+      try { if (comments) can = await comments.canSendToClaude(); } catch (e) {}
+      if (can === "available") {
+        try {
+          await comments.sendToClaude({ anchor: await comments.anchorFor($("#send")), text: `check my studio: new reel "${body.title || body.links[0]}" (${body.style}, ${body.graphics} graphics, sound ${body.sfx})` });
+          msg("Sent to Claude. Watch it here: the progress bar starts in a minute.");
+        } catch (e) { msg(e && e.code === "consent_required" ? "Added. Allow comments for this page so Claude hears your next reel; for this one tell Claude: check my studio" : "Added. Now tell Claude: check my studio"); }
+      } else msg("Added. Claude isn't listening right now: tell Claude \"check my studio\" in the chat.");
     } catch (err) {
       if (err && err.code === "invalid_argument") { canWrite = false; msg("This view can't add reels. Ask the owner to share the studio with you as Contributor.", true); }
       else if (err && err.code === "quota_exceeded") msg("The studio is full. Ask the owner to clear old reels.", true);

@@ -70,6 +70,11 @@ Then `update` the doc with `{"applied": <now>}` and tell the user what changed. 
 
 ## Step 0b: "check my studio"
 
+Pressing **Start this reel** in the Studio also posts a "check my studio: new reel ..." comment that is sent to the
+session watching the Studio (the one that published it), so the edit starts without the chat. Reply in that thread
+in one line ("Starting, about N min") and run this step. If no session is watching, the page tells the user to say
+"check my studio" in the chat.
+
 ArtifactData `query` on `studioUrl`, collection `requests`, where `status == "new"`. For each request (oldest
 first): `update` it to `{"status": "editing", "progress": {"pct": 2, "stage": "getting your clips", "eta": <ISO time>}}` (pin
 `if_version`), then run Steps 1-9 with its fields:
